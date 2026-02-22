@@ -474,7 +474,7 @@ function getDefaultSystemPrompt(): string {
   return `你是一位专业的全球科技与人工智能领域投资经理，正在为客户撰写"AI Industry 每日简报和投资建议"。
 
 ## 核心要求
-1. 数据准确性：仅使用提供的数据，任何无法核验的数值写 N/A
+1. 数据准确性：仅使用提供的数据，对于无法核验的数值直接省略该字段（不要写 N/A 或任何占位符）
 2. 专业中立：风格专业、精炼、符合投资报告标准
 3. 输出语言：中文
 4. 产业链视角：始终从AI产业链上下游视角分析
@@ -490,6 +490,12 @@ function getDefaultTaskPrompt(): string {
   return `基于以上市场数据，生成以下结构的JSON分析报告：
 
 {
+  "executiveSummary": {
+    "oneLiner": "一句话总结今日市场",
+    "keyEvent": "最重要的催化剂或事件（1-2句）",
+    "portfolioImpact": "对AI投资组合意味着什么（1-2句）",
+    "actionItem": "今日建议操作"
+  },
   "marketMacroNews": { "summary": "...", "keyNews": [...] },
   "companyDeepDive": [...],
   "industryLinkageAnalysis": { "gpuSupplyChain": {...}, "dataCenterExpansion": {...}, "semiconCapex": {...} },
@@ -540,7 +546,7 @@ function getDefaultTaskPrompt(): string {
 
 请确保：
 1. 所有内容用中文
-2. 数字准确，不确定写N/A
+2. 数字准确，无法确认的字段直接省略
 3. 输出有效JSON，可被JSON.parse()解析
 4. 不要添加markdown代码块标记
 5. 智慧资金分析要结合 AI 产业链视角，重点关注相关标的`;

@@ -25,6 +25,13 @@ interface StockPerformance {
 }
 
 interface LLMInsights {
+  executiveSummary?: {
+    oneLiner: string;
+    keyEvent: string;
+    portfolioImpact: string;
+    actionItem: string;
+    riskAlert?: string;
+  };
   indexAnalysis?: {
     marketOverview: string;
     indexDetails: Array<{
@@ -54,8 +61,8 @@ interface LLMInsights {
     investmentLogic: string;
     priceTarget?: {
       current: number;
-      target: number;
-      stopLoss: number;
+      target?: number;
+      stopLoss?: number;
       timeframe: string;
     };
     catalysts?: string[];
@@ -113,8 +120,8 @@ interface LLMInsights {
       stockPicks?: Array<{
         ticker: string;
         logic: string;
-        entry: number;
-        target: number;
+        entry?: number;
+        target?: number;
         position: string;
       }>;
     };
@@ -149,6 +156,14 @@ interface LLMInsights {
   };
   dailyBlessing?: string;
   forexAnalysis?: {
+    // New condensed format
+    macroSnapshot?: string;
+    riskImplication?: string;
+    actionNeeded?: {
+      needed: boolean;
+      suggestion?: string;
+    };
+    // Legacy format (backward compatibility)
     dollarIndexInsight?: {
       currentLevel: string;
       trendAnalysis: string;
@@ -238,6 +253,20 @@ export class ProfessionalBriefingGenerator {
   private date: string;
   private stockPerformance: Map<string, StockPerformance> = new Map();
 
+  /**
+   * 检查值是否为 N/A 或空值
+   */
+  private isNAOrEmpty(value: any): boolean {
+    if (value === undefined || value === null) return true;
+    if (typeof value === 'string') {
+      const trimmed = value.trim().toUpperCase();
+      return trimmed === '' || trimmed === 'N/A' || trimmed === '$N/A' || trimmed.includes('代码N/A') || trimmed === '代码N/A';
+    }
+    if (typeof value === 'number') return isNaN(value);
+    if (Array.isArray(value)) return value.length === 0 || value.every(v => this.isNAOrEmpty(v));
+    return false;
+  }
+
   constructor(analysis: ComprehensiveAnalysis, llmInsights: LLMInsights | null = null) {
     this.analysis = analysis;
     this.llmInsights = llmInsights;
@@ -302,6 +331,7 @@ export class ProfessionalBriefingGenerator {
   async generate(): Promise<{ markdown: string }> {
     const sections = [
       this.generateHeader(),
+      this.generateExecutiveSummary(),
       this.generateStockPoolSection(),
       this.generateMacroNewsSection(),
       this.generateCompanyDeepDiveSection(),
@@ -336,6 +366,67 @@ export class ProfessionalBriefingGenerator {
   }
 
   /**
+   * 执行摘要 - 报告最前面的快速概览
+   */
+  private generateExecutiveSummary(): string {
+    const summary = this.llmInsights?.executiveSummary;
+    if (!summary) {
+      return this.generateFallbackExecutiveSummary();
+    }
+
+    let content = `## 执行摘要\n\n`;
+
+    if (summary.oneLiner) {
+      content += `**今日概况**: ${summary.oneLiner}\n\n`;
+    }
+
+    if (summary.keyEvent) {
+      content += `**核心事件**: ${summary.keyEvent}\n\n`;
+    }
+
+    if (summary.portfolioImpact) {
+      content += `**组合影响**: ${summary.portfolioImpact}\n\n`;
+    }
+
+    if (summary.actionItem) {
+      content += `**今日建议**: ${summary.actionItem}\n\n`;
+    }
+
+    if (summary.riskAlert && !this.isNAOrEmpty(summary.riskAlert)) {
+      content += `**风险警示**: ${summary.riskAlert}\n\n`;
+    }
+
+    content += `---\n`;
+    return content;
+  }
+
+  /**
+   * 当 LLM 未提供执行摘要时，基于数据自动生成
+   */
+  private generateFallbackExecutiveSummary(): string {
+    let content = `## 执行摘要\n\n`;
+
+    const spx = this.stockPerformance.get('^GSPC');
+    const ixic = this.stockPerformance.get('^IXIC');
+    const vix = this.stockPerformance.get('^VIX');
+
+    if (spx && ixic) {
+      const direction = spx.changePercent > 0.3 ? '上涨' :
+                       spx.changePercent < -0.3 ? '下跌' : '窄幅波动';
+      content += `**今日概况**: 美股${direction}，S&P 500 ${spx.changePercent >= 0 ? '+' : ''}${spx.changePercent.toFixed(2)}%，`;
+      content += `纳指 ${ixic.changePercent >= 0 ? '+' : ''}${ixic.changePercent.toFixed(2)}%`;
+      if (vix) {
+        content += `，VIX ${vix.price.toFixed(1)}`;
+      }
+      content += `\n\n`;
+    }
+
+    content += `*详细分析请见各章节。*\n\n`;
+    content += `---\n`;
+    return content;
+  }
+
+  /**
    * 一、核心股票池表现
    */
   private generateStockPoolSection(): string {
@@ -348,7 +439,8 @@ export class ProfessionalBriefingGenerator {
       content += `⚠️ 无新收盘数据\n\n`;
       content += `| 分类 (Category) | 公司 (Company) | 股票代号 (Ticker) | 最新股价 (USD) | 涨跌幅 (%) | 表现 |\n`;
       content += `|:----------------|:---------------|:-----------------:|---------------:|------------:|:----:|\n`;
-      content += `| N/A | N/A | N/A | N/A | N/A | N/A |\n`;
+      content += `| - | - | - | - | - | - |\n`;
+      content += `\n*交易所无新数据，可能为非交易日或数据源延迟。*\n`;
       return content;
     }
 
@@ -374,10 +466,8 @@ export class ProfessionalBriefingGenerator {
         const emoji = isVix
           ? (index.changePercent > 0 ? '🟢' : index.changePercent < 0 ? '🔴' : '➡️')
           : (index.changePercent > 0 ? '🔴' : index.changePercent < 0 ? '🟢' : '➡️');
-        const changeStr = index.changePercent !== 0
-          ? `${index.changePercent >= 0 ? '+' : ''}${index.changePercent.toFixed(2)}%`
-          : 'N/A';
-        const priceStr = symbol === '^VIX' ? index.price.toFixed(2) : index.price.toFixed(2);
+        const changeStr = `${index.changePercent >= 0 ? '+' : ''}${index.changePercent.toFixed(2)}%`;
+        const priceStr = index.price.toFixed(2);
         content += `| ${indexInfo[symbol] || index.name} | ${symbol} | ${priceStr} | ${changeStr} | ${emoji} |\n`;
       }
     }
@@ -423,9 +513,7 @@ export class ProfessionalBriefingGenerator {
       if (etf) {
         // 红涨绿跌（中国股市习惯）
         const emoji = etf.changePercent > 0 ? '🔴' : etf.changePercent < 0 ? '🟢' : '➡️';
-        const changeStr = etf.changePercent !== 0
-          ? `${etf.changePercent >= 0 ? '+' : ''}${etf.changePercent.toFixed(2)}%`
-          : 'N/A';
+        const changeStr = `${etf.changePercent >= 0 ? '+' : ''}${etf.changePercent.toFixed(2)}%`;
         content += `| ${etfCategory[symbol] || 'ETF'} | ${etf.name} | ${symbol} | $${etf.price.toFixed(2)} | ${changeStr} | ${emoji} |\n`;
       }
     }
@@ -441,9 +529,7 @@ export class ProfessionalBriefingGenerator {
         const stock = this.stockPerformance.get(symbol);
         if (stock) {
           const emoji = stock.changePercent > 0 ? '🔴' : stock.changePercent < 0 ? '🟢' : '➡️';
-          const changeStr = stock.changePercent !== 0
-            ? `${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%`
-            : 'N/A';
+          const changeStr = `${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%`;
           content += `| ${category} | ${stock.name} | ${stock.ticker} | $${stock.price.toFixed(2)} | ${changeStr} | ${emoji} |\n`;
         }
       }
@@ -469,247 +555,95 @@ export class ProfessionalBriefingGenerator {
       return content;
     }
 
-    // ==== 1. 美元指数 ====
+    // ==== 摘要一览 ====
     const dollarIndex = forexData.dollarIndex;
-    if (dollarIndex) {
-      const emoji = dollarIndex.changePercent > 0 ? '🔴' : dollarIndex.changePercent < 0 ? '🟢' : '➡️';
-      const changeStr = dollarIndex.changePercent !== 0
-        ? `${dollarIndex.changePercent >= 0 ? '+' : ''}${dollarIndex.changePercent.toFixed(2)}%`
-        : 'N/A';
-      
-      content += `#### 💵 美元指数 (DXY)\n\n`;
-      content += `| 指标 | 数值 | 涨跌幅 | 表现 |\n`;
-      content += `|:-----|-----:|-------:|:----:|\n`;
-      content += `| 美元指数 | ${dollarIndex.current.toFixed(2)} | ${changeStr} | ${emoji} |\n\n`;
-      
-      // 优先使用LLM深度分析
-      if (forexLLM?.dollarIndexInsight) {
-        const llmDollar = forexLLM.dollarIndexInsight;
-        if (llmDollar.trendAnalysis) {
-          content += `**趋势分析**: ${llmDollar.trendAnalysis}\n\n`;
-        }
-        if (llmDollar.marketImpact) {
-          content += `**市场影响**: ${llmDollar.marketImpact}\n\n`;
-        }
-        if (llmDollar.tradingGuidance && llmDollar.tradingGuidance.length > 0) {
-          content += `**交易指引**:\n`;
-          llmDollar.tradingGuidance.forEach((guidance: string) => {
-            content += `- ${guidance}\n`;
-          });
-          content += `\n`;
-        }
-      } else {
-        // 使用规则引擎分析作为备选
-        if (dollarIndex.interpretation) {
-          content += `**解读**: ${dollarIndex.interpretation}\n\n`;
-        }
-        if (dollarIndex.implications && dollarIndex.implications.length > 0) {
-          content += `**市场影响**:\n`;
-          dollarIndex.implications.forEach((imp: string) => {
-            content += `- ${imp}\n`;
-          });
-          content += `\n`;
-        }
+    const treasuryYields = forexData.treasuryYields;
+    const vix = this.stockPerformance.get('^VIX');
+
+    if (dollarIndex || treasuryYields || vix) {
+      content += `| 指标 | 数值 | 涨跌幅 |\n`;
+      content += `|:-----|-----:|-------:|\n`;
+      if (dollarIndex) {
+        content += `| 美元指数 (DXY) | ${dollarIndex.current.toFixed(2)} | ${this.formatChange(dollarIndex.changePercent)} |\n`;
       }
+      if (treasuryYields?.yields?.['10Y']) {
+        const y10 = treasuryYields.yields['10Y'];
+        content += `| 10Y 美债收益率 | ${y10.rate.toFixed(2)}% | ${this.formatChange(y10.changePercent)} |\n`;
+      }
+      if (vix) {
+        content += `| VIX 恐慌指数 | ${vix.price.toFixed(2)} | ${this.formatChange(vix.changePercent)} |\n`;
+      }
+      content += `\n`;
     }
 
-    // ==== 2. 美债收益率 ====
-    const treasuryYields = forexData.treasuryYields;
-    if (treasuryYields && treasuryYields.yields) {
-      content += `#### 📊 美债收益率\n\n`;
-      content += `| 期限 | 收益率(%) | 涨跌幅 | 趋势 |\n`;
-      content += `|:-----|----------:|-------:|:-----|\n`;
-      
-      // 按期限顺序显示
+    // ==== LLM 精简分析（优先新格式，兼容旧格式） ====
+    if (forexLLM?.macroSnapshot) {
+      content += `**宏观快照**: ${forexLLM.macroSnapshot}\n\n`;
+      if (forexLLM.riskImplication) {
+        content += `**对AI股票的影响**: ${forexLLM.riskImplication}\n\n`;
+      }
+      if (forexLLM.actionNeeded?.needed && forexLLM.actionNeeded.suggestion) {
+        content += `**操作建议**: ${forexLLM.actionNeeded.suggestion}\n\n`;
+      }
+    } else if (forexLLM?.crossMarketAnalysis?.integratedView) {
+      content += `**综合解读**: ${forexLLM.crossMarketAnalysis.integratedView}\n\n`;
+      if (forexLLM.actionableStrategy?.timingGuidance) {
+        content += `**时机判断**: ${forexLLM.actionableStrategy.timingGuidance}\n\n`;
+      }
+    } else if (forexData.overallAssessment?.keyTakeaways?.length) {
+      content += `**关键要点**: ${forexData.overallAssessment.keyTakeaways.join('；')}\n\n`;
+    }
+
+    // ==== 详细数据 ====
+    content += `---\n\n`;
+    content += `##### 详细数据\n\n`;
+
+    // 完整收益率表
+    if (treasuryYields?.yields) {
+      content += `**美债收益率**:\n\n`;
+      content += `| 期限 | 收益率 | 涨跌幅 | 趋势 |\n`;
+      content += `|:-----|-------:|-------:|:----:|\n`;
       const periods = ['3M', '2Y', '5Y', '10Y', '30Y'];
       for (const period of periods) {
         const yieldData = treasuryYields.yields[period];
         if (yieldData) {
-          const trendEmoji = yieldData.trend === 'rising' ? '⬆️' : 
-                            yieldData.trend === 'falling' ? '⬇️' : '➡️';
-          const changeStr = yieldData.changePercent !== 0
-            ? `${yieldData.changePercent >= 0 ? '+' : ''}${yieldData.changePercent.toFixed(2)}%`
-            : 'N/A';
-          content += `| ${period} | ${yieldData.rate.toFixed(2)}% | ${changeStr} | ${trendEmoji} |\n`;
+          const trendEmoji = yieldData.trend === 'rising' ? '⬆️' : yieldData.trend === 'falling' ? '⬇️' : '➡️';
+          content += `| ${period} | ${yieldData.rate.toFixed(2)}% | ${this.formatChange(yieldData.changePercent)} | ${trendEmoji} |\n`;
         }
       }
       content += `\n`;
 
-      // 收益率曲线分析
       if (treasuryYields.yieldCurve) {
         const curve = treasuryYields.yieldCurve;
-        content += `**收益率曲线形态**: ${this.getYieldCurveShapeText(curve.shape)}\n`;
-        content += `- 2年期-10年期利差: ${curve.spread2Y10Y >= 0 ? '+' : ''}${curve.spread2Y10Y.toFixed(2)}%\n`;
-        if (curve.spread10Y30Y !== undefined) {
-          content += `- 10年期-30年期利差: ${curve.spread10Y30Y >= 0 ? '+' : ''}${curve.spread10Y30Y.toFixed(2)}%\n`;
-        }
-        content += `\n`;
-      }
-
-      // 优先使用LLM深度分析
-      if (forexLLM?.treasuryYieldAnalysis) {
-        const llmYield = forexLLM.treasuryYieldAnalysis;
-        
-        if (llmYield.curveInterpretation) {
-          content += `**曲线深度解读**: ${llmYield.curveInterpretation}\n\n`;
-        }
-        
-        if (llmYield.rateEnvironment) {
-          content += `**利率环境影响**: ${llmYield.rateEnvironment}\n\n`;
-        }
-        
-        if (llmYield.keyInsights && llmYield.keyInsights.length > 0) {
-          content += `**关键洞察**:\n`;
-          llmYield.keyInsights.forEach((insight: string) => {
-            content += `- ${insight}\n`;
-          });
-          content += `\n`;
-        }
-        
-        if (llmYield.sectorRotation) {
-          content += `**行业轮动建议**: ${llmYield.sectorRotation}\n\n`;
-        }
-        
-        if (llmYield.riskWarning) {
-          content += `⚠️ **风险提示**: ${llmYield.riskWarning}\n\n`;
-        }
-      } else {
-        // 使用规则引擎分析作为备选
-        if (treasuryYields.yieldCurve?.interpretation) {
-          content += `**曲线解读**: ${treasuryYields.yieldCurve.interpretation}\n\n`;
-        }
-        
-        if (treasuryYields.volatility) {
-          const vol = treasuryYields.volatility;
-          const volEmoji = vol.level === 'low' ? '🟢' : vol.level === 'medium' ? '🟡' : '🔴';
-          content += `**波动性**: ${volEmoji} ${vol.level === 'low' ? '低' : vol.level === 'medium' ? '中' : '高'}\n`;
-          content += `${vol.description}\n\n`;
-        }
-
-        if (treasuryYields.marketImplications && treasuryYields.marketImplications.length > 0) {
-          content += `**市场含义**:\n`;
-          treasuryYields.marketImplications.forEach((imp: string) => {
-            content += `${imp}\n\n`;
-          });
-        }
-
-        if (treasuryYields.risks && treasuryYields.risks.length > 0) {
-          content += `**风险提示**:\n`;
-          treasuryYields.risks.forEach((risk: string) => {
-            content += `${risk}\n\n`;
-          });
-        }
-
-        if (treasuryYields.outlook) {
-          content += `**投资展望**: ${treasuryYields.outlook}\n\n`;
-        }
+        content += `**收益率曲线**: ${this.getYieldCurveShapeText(curve.shape)}，2Y-10Y利差 ${curve.spread2Y10Y >= 0 ? '+' : ''}${curve.spread2Y10Y.toFixed(2)}%\n\n`;
       }
     }
 
-    // ==== 3. 主要货币对 ====
+    // 货币对表
     const currencyPairs = forexData.currencyPairs;
     if (currencyPairs && Object.keys(currencyPairs).length > 0) {
-      content += `#### 🌍 主要货币对\n\n`;
+      content += `**主要货币对**:\n\n`;
       content += `| 货币对 | 汇率 | 涨跌幅 | 美元动向 |\n`;
-      content += `|:-------|-----:|-------:|:---------|\n`;
-      
-      // 按顺序显示货币对
+      content += `|:-------|-----:|-------:|:--------:|\n`;
       const pairs = ['USDCHF', 'USDSGD', 'USDJPY', 'USDCNH'];
       for (const pair of pairs) {
         const pairData = currencyPairs[pair];
         if (pairData) {
-          const trendEmoji = pairData.trend === 'usd_strengthening' ? '💪' : 
-                            pairData.trend === 'usd_weakening' ? '📉' : '➡️';
-          const trendText = pairData.trend === 'usd_strengthening' ? '走强' : 
-                           pairData.trend === 'usd_weakening' ? '走弱' : '持稳';
-          const changeStr = pairData.changePercent !== 0
-            ? `${pairData.changePercent >= 0 ? '+' : ''}${pairData.changePercent.toFixed(2)}%`
-            : 'N/A';
-          content += `| ${pair} | ${pairData.rate.toFixed(4)} | ${changeStr} | ${trendEmoji} ${trendText} |\n`;
+          const trendText = pairData.trend === 'usd_strengthening' ? '走强' : pairData.trend === 'usd_weakening' ? '走弱' : '持稳';
+          content += `| ${pair} | ${pairData.rate.toFixed(4)} | ${this.formatChange(pairData.changePercent)} | ${trendText} |\n`;
         }
       }
       content += `\n`;
-
-      // 货币对解读（选择重要的显示）
-      const usdcnh = currencyPairs['USDCNH'];
-      const usdjpy = currencyPairs['USDJPY'];
-      if (usdcnh && usdcnh.interpretation) {
-        content += `**人民币汇率**: ${usdcnh.interpretation}\n\n`;
-      }
-      if (usdjpy && usdjpy.interpretation) {
-        content += `**日元汇率**: ${usdjpy.interpretation}\n\n`;
-      }
-    }
-
-    // ==== 4. 综合评估 ====
-    content += `#### 🎯 综合评估\n\n`;
-    
-    // 优先使用LLM跨市场分析和策略建议
-    if (forexLLM) {
-      // 跨市场联动分析
-      if (forexLLM.crossMarketAnalysis) {
-        const cross = forexLLM.crossMarketAnalysis;
-        
-        if (cross.integratedView) {
-          content += `**三市联动**: ${cross.integratedView}\n\n`;
-        }
-        
-        if (cross.equityBondCorrelation) {
-          content += `**股债相关性**: ${cross.equityBondCorrelation}\n\n`;
-        }
-        
-        if (cross.dollarEquityRelationship) {
-          content += `**美元-股市关系**: ${cross.dollarEquityRelationship}\n\n`;
-        }
-      }
-      
-      // 可操作策略
-      if (forexLLM.actionableStrategy) {
-        const strategy = forexLLM.actionableStrategy;
-        
-        if (strategy.hedgeRecommendations && strategy.hedgeRecommendations.length > 0) {
-          content += `**对冲建议**:\n`;
-          strategy.hedgeRecommendations.forEach((rec: string) => {
-            content += `- ${rec}\n`;
-          });
-          content += `\n`;
-        }
-        
-        if (strategy.opportunitySpotting && strategy.opportunitySpotting.length > 0) {
-          content += `**投资机会**:\n`;
-          strategy.opportunitySpotting.forEach((opp: string) => {
-            content += `- ${opp}\n`;
-          });
-          content += `\n`;
-        }
-        
-        if (strategy.timingGuidance) {
-          content += `**时机判断**: ${strategy.timingGuidance}\n\n`;
-        }
-      }
-    } else {
-      // 使用规则引擎分析作为备选
-      const overall = forexData.overallAssessment;
-      if (overall) {
-        if (overall.keyTakeaways && overall.keyTakeaways.length > 0) {
-          content += `**关键要点**:\n`;
-          overall.keyTakeaways.forEach((point: string) => {
-            content += `- ${point}\n`;
-          });
-          content += `\n`;
-        }
-
-        if (overall.tradingGuidance && overall.tradingGuidance.length > 0) {
-          content += `**交易指引**:\n`;
-          overall.tradingGuidance.forEach((guidance: string) => {
-            content += `- ${guidance}\n`;
-          });
-          content += `\n`;
-        }
-      }
     }
 
     return content;
+  }
+
+  /**
+   * 格式化涨跌幅，0% 显示为 0.00% 而非 N/A
+   */
+  private formatChange(changePercent: number): string {
+    return `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
   }
 
   /**
@@ -849,7 +783,9 @@ export class ProfessionalBriefingGenerator {
       newsHeadlines.slice(0, 10).forEach((headline: any, index: number) => {
         content += `### ${index + 1}. ${headline.headline || headline.title || headline}\n\n`;
         if (typeof headline === 'object') {
-          content += `**来源**: ${headline.source || 'N/A'}\n\n`;
+          if (headline.source && !this.isNAOrEmpty(headline.source)) {
+            content += `**来源**: ${headline.source}\n\n`;
+          }
           if (headline.summary) {
             content += `**摘要**: ${headline.summary}\n\n`;
           }
@@ -879,12 +815,20 @@ export class ProfessionalBriefingGenerator {
         content += `**事件摘要**: ${company.event}\n\n`;
         content += `**投资逻辑解读**: ${company.investmentLogic}\n\n`;
         
-        if (company.priceTarget) {
+        if (company.priceTarget && !this.isNAOrEmpty(company.priceTarget.current)) {
+          const timeframeMap: Record<string, string> = { short: '短期', medium: '中期', long: '长期' };
           content += `**价格目标**:\n`;
           content += `- 当前价: $${company.priceTarget.current}\n`;
-          content += `- 目标价: $${company.priceTarget.target}\n`;
-          content += `- 止损价: $${company.priceTarget.stopLoss}\n`;
-          content += `- 时间框架: ${company.priceTarget.timeframe === 'short' ? '短期' : company.priceTarget.timeframe === 'medium' ? '中期' : '长期'}\n\n`;
+          if (!this.isNAOrEmpty(company.priceTarget.target)) {
+            content += `- 目标价: $${company.priceTarget.target}\n`;
+          }
+          if (!this.isNAOrEmpty(company.priceTarget.stopLoss)) {
+            content += `- 止损价: $${company.priceTarget.stopLoss}\n`;
+          }
+          if (company.priceTarget.timeframe) {
+            content += `- 时间框架: ${timeframeMap[company.priceTarget.timeframe] || company.priceTarget.timeframe}\n`;
+          }
+          content += `\n`;
         }
         
         if (company.catalysts && company.catalysts.length > 0) {
@@ -934,23 +878,31 @@ export class ProfessionalBriefingGenerator {
 
     const linkage = this.llmInsights?.industryLinkageAnalysis;
 
-    // 辅助函数：安全处理数组或字符串字段
-    const formatField = (field: string[] | string | undefined): string => {
-      if (!field) return 'N/A';
-      if (typeof field === 'string') return field;
-      if (Array.isArray(field)) return field.join('、') || 'N/A';
-      return 'N/A';
+    // 辅助函数：安全处理数组或字符串字段，返回 null 表示无有效数据
+    const formatField = (field: string[] | string | undefined): string | null => {
+      if (!field) return null;
+      if (typeof field === 'string') return this.isNAOrEmpty(field) ? null : field;
+      if (Array.isArray(field)) {
+        const valid = field.filter(f => !this.isNAOrEmpty(f));
+        return valid.length > 0 ? valid.join('、') : null;
+      }
+      return null;
+    };
+
+    // 辅助函数：渲染链路分析的一个字段
+    const renderField = (label: string, value: string | null): string => {
+      return value ? `**${label}**: ${value}\n\n` : '';
     };
 
     // GPU供给链
     content += `### 1. GPU/加速卡供给与价格链\n\n`;
     if (linkage?.gpuSupplyChain) {
       const gpu = linkage.gpuSupplyChain;
-      content += `**事件**: ${gpu.event}\n\n`;
-      content += `**传导机制**: ${gpu.mechanism}\n\n`;
-      content += `**受益环节**: ${formatField(gpu.beneficiaries)}\n\n`;
-      content += `**受损环节**: ${formatField(gpu.losers)}\n\n`;
-      content += `**跟踪指标**: ${formatField(gpu.trackingMetrics)}\n\n`;
+      content += renderField('事件', gpu.event);
+      content += renderField('传导机制', gpu.mechanism);
+      content += renderField('受益环节', formatField(gpu.beneficiaries));
+      content += renderField('受损环节', formatField(gpu.losers));
+      content += renderField('跟踪指标', formatField(gpu.trackingMetrics));
     } else {
       content += `GPU供给 → 训练/推理成本 → 云厂商与模型公司毛利/CapEx\n\n`;
       content += `- **受益方**: NVDA（供给方）、云厂商（规模效应）\n`;
@@ -961,11 +913,11 @@ export class ProfessionalBriefingGenerator {
     content += `### 2. 数据中心扩张链\n\n`;
     if (linkage?.dataCenterExpansion) {
       const dc = linkage.dataCenterExpansion;
-      content += `**事件**: ${dc.event}\n\n`;
-      content += `**传导机制**: ${dc.mechanism}\n\n`;
-      content += `**受益环节**: ${formatField(dc.beneficiaries)}\n\n`;
-      content += `**受损环节**: ${formatField(dc.losers)}\n\n`;
-      content += `**跟踪指标**: ${formatField(dc.trackingMetrics)}\n\n`;
+      content += renderField('事件', dc.event);
+      content += renderField('传导机制', dc.mechanism);
+      content += renderField('受益环节', formatField(dc.beneficiaries));
+      content += renderField('受损环节', formatField(dc.losers));
+      content += renderField('跟踪指标', formatField(dc.trackingMetrics));
     } else {
       content += `数据中心扩张 → 服务器/网络/电力与冷却需求增长\n\n`;
       content += `- **受益方**: VRT（电源散热）、ETN（电气设备）、ANET（网络）、SMCI（服务器）\n`;
@@ -976,11 +928,11 @@ export class ProfessionalBriefingGenerator {
     content += `### 3. 半导体资本开支链\n\n`;
     if (linkage?.semiconCapex) {
       const capex = linkage.semiconCapex;
-      content += `**事件**: ${capex.event}\n\n`;
-      content += `**传导机制**: ${capex.mechanism}\n\n`;
-      content += `**受益环节**: ${formatField(capex.beneficiaries)}\n\n`;
-      content += `**受损环节**: ${formatField(capex.losers)}\n\n`;
-      content += `**跟踪指标**: ${formatField(capex.trackingMetrics)}\n\n`;
+      content += renderField('事件', capex.event);
+      content += renderField('传导机制', capex.mechanism);
+      content += renderField('受益环节', formatField(capex.beneficiaries));
+      content += renderField('受损环节', formatField(capex.losers));
+      content += renderField('跟踪指标', formatField(capex.trackingMetrics));
     } else {
       content += `半导体资本开支 → 设备/EDA订单 → 行业能见度\n\n`;
       content += `- **受益方**: AMAT、LRCX、KLAC（设备）、SNPS、CDNS（EDA）\n`;
@@ -1036,13 +988,22 @@ export class ProfessionalBriefingGenerator {
     content += `### 总体判断\n\n`;
     if (strategy?.overallJudgment) {
       const judgment = strategy.overallJudgment;
-      content += `| 维度 | 判断 |\n`;
-      content += `|:-----|:-----|\n`;
-      content += `| 估值 | ${judgment.valuation || 'N/A'} |\n`;
-      content += `| 业绩 | ${judgment.earnings || 'N/A'} |\n`;
-      content += `| 利率 | ${judgment.rates || 'N/A'} |\n`;
-      content += `| 政策 | ${judgment.policy || 'N/A'} |\n`;
-      content += `| 资金偏好 | ${judgment.fundFlow || 'N/A'} |\n\n`;
+      const rows: Array<[string, string]> = [];
+      if (!this.isNAOrEmpty(judgment.valuation)) rows.push(['估值', judgment.valuation]);
+      if (!this.isNAOrEmpty(judgment.earnings)) rows.push(['业绩', judgment.earnings]);
+      if (!this.isNAOrEmpty(judgment.rates)) rows.push(['利率', judgment.rates]);
+      if (!this.isNAOrEmpty(judgment.policy)) rows.push(['政策', judgment.policy]);
+      if (!this.isNAOrEmpty(judgment.fundFlow)) rows.push(['资金偏好', judgment.fundFlow]);
+      if (rows.length > 0) {
+        content += `| 维度 | 判断 |\n`;
+        content += `|:-----|:-----|\n`;
+        rows.forEach(([dim, val]) => {
+          content += `| ${dim} | ${val} |\n`;
+        });
+        content += `\n`;
+      } else {
+        content += `- 需结合最新数据综合判断\n\n`;
+      }
     } else {
       content += `- **估值-业绩-利率-政策**: 需结合最新数据综合判断\n`;
       content += `- **资金偏好**: 关注AI相关ETF资金流向\n\n`;
@@ -1081,12 +1042,26 @@ export class ProfessionalBriefingGenerator {
         content += `- **验证指标**: ${medium.verificationMetrics.join('、')}\n`;
       }
       if (medium.stockPicks && medium.stockPicks.length > 0) {
-        content += `\n**精选标的**:\n\n`;
-        content += `| 股票 | 核心逻辑 | 买入价 | 目标价 | 建议仓位 |\n`;
-        content += `|:----:|:---------|-------:|-------:|:--------:|\n`;
-        medium.stockPicks.forEach(pick => {
-          content += `| ${pick.ticker} | ${pick.logic} | $${pick.entry} | $${pick.target} | ${pick.position} |\n`;
-        });
+        const validPicks = medium.stockPicks.filter(pick => !this.isNAOrEmpty(pick.ticker));
+        if (validPicks.length > 0) {
+          const hasPrice = validPicks.some(pick => !this.isNAOrEmpty(pick.entry) || !this.isNAOrEmpty(pick.target));
+          content += `\n**精选标的**:\n\n`;
+          if (hasPrice) {
+            content += `| 股票 | 核心逻辑 | 买入价 | 目标价 | 建议仓位 |\n`;
+            content += `|:----:|:---------|-------:|-------:|:--------:|\n`;
+            validPicks.forEach(pick => {
+              const entry = this.isNAOrEmpty(pick.entry) ? '-' : `$${pick.entry}`;
+              const target = this.isNAOrEmpty(pick.target) ? '-' : `$${pick.target}`;
+              content += `| ${pick.ticker} | ${pick.logic} | ${entry} | ${target} | ${pick.position} |\n`;
+            });
+          } else {
+            content += `| 股票 | 核心逻辑 | 建议仓位 |\n`;
+            content += `|:----:|:---------|:--------:|\n`;
+            validPicks.forEach(pick => {
+              content += `| ${pick.ticker} | ${pick.logic} | ${pick.position} |\n`;
+            });
+          }
+        }
       }
       content += `\n`;
     } else {
@@ -1133,13 +1108,16 @@ export class ProfessionalBriefingGenerator {
         content += `\n`;
       }
       if (portfolio.etfs && portfolio.etfs.length > 0) {
-        content += `**ETF配置**:\n\n`;
-        content += `| ETF | 名称 | 适用场景 |\n`;
-        content += `|:----|:-----|:---------|\n`;
-        portfolio.etfs.forEach(etf => {
-          content += `| ${etf.ticker} | ${etf.name} | ${etf.useCase} |\n`;
-        });
-        content += `\n`;
+        const validEtfs = portfolio.etfs.filter(etf => !this.isNAOrEmpty(etf.ticker) && !this.isNAOrEmpty(etf.name));
+        if (validEtfs.length > 0) {
+          content += `**ETF配置**:\n\n`;
+          content += `| ETF | 名称 | 适用场景 |\n`;
+          content += `|:----|:-----|:---------|\n`;
+          validEtfs.forEach(etf => {
+            content += `| ${etf.ticker} | ${etf.name} | ${etf.useCase || '-'} |\n`;
+          });
+          content += `\n`;
+        }
       }
     } else {
       content += `**个股参考**: NVDA、MSFT、TSM、AMZN、META、AMD、ASML、AVGO\n\n`;
@@ -1164,7 +1142,10 @@ export class ProfessionalBriefingGenerator {
         content += `\n`;
       }
       if (risk.hedgeInstruments && risk.hedgeInstruments.length > 0) {
-        content += `**对冲工具**: ${risk.hedgeInstruments.join('、')}\n`;
+        const validInstruments = risk.hedgeInstruments.filter(item => !this.isNAOrEmpty(item));
+        if (validInstruments.length > 0) {
+          content += `**对冲工具**: ${validInstruments.join('、')}\n`;
+        }
       }
     } else {
       content += `**主要风险**:\n`;
@@ -1198,14 +1179,19 @@ export class ProfessionalBriefingGenerator {
       content += `**概况**: ${congress.summary}\n\n`;
 
       if (congress.notableTrades && congress.notableTrades.length > 0) {
-        content += `**近期重要交易**:\n\n`;
-        content += `| 议员 | 党派 | 股票 | 操作 | 金额 | 意义 |\n`;
-        content += `|:-----|:----:|:----:|:----:|:----:|:-----|\n`;
-        for (const trade of congress.notableTrades.slice(0, 5)) {
-          const partyEmoji = trade.party === 'D' ? '🔵' : trade.party === 'R' ? '🔴' : '⚪';
-          content += `| ${trade.politician} | ${partyEmoji} | ${trade.ticker} | ${trade.action} | ${trade.amount} | ${trade.significance} |\n`;
+        const validTrades = congress.notableTrades
+          .filter(trade => !this.isNAOrEmpty(trade.politician) && !this.isNAOrEmpty(trade.ticker))
+          .slice(0, 5);
+        if (validTrades.length > 0) {
+          content += `**近期重要交易**:\n\n`;
+          content += `| 议员 | 党派 | 股票 | 操作 | 金额 | 意义 |\n`;
+          content += `|:-----|:----:|:----:|:----:|:----:|:-----|\n`;
+          for (const trade of validTrades) {
+            const partyEmoji = trade.party === 'D' ? '🔵' : trade.party === 'R' ? '🔴' : '⚪';
+            content += `| ${trade.politician} | ${partyEmoji} | ${trade.ticker} | ${trade.action} | ${trade.amount || '-'} | ${trade.significance || '-'} |\n`;
+          }
+          content += `\n`;
         }
-        content += `\n`;
       }
 
       if (congress.focusStocks && congress.focusStocks.length > 0) {
