@@ -39,6 +39,13 @@
 - **可视化摘要** - 指数表现、产业链股票、市场要闻一图尽览
 - **邮件集成** - 信息图自动附加到每日邮件
 
+### 🌐 静态网站（GitHub Pages）
+- **每日研报展示** - Astro 构建的静态网站，自动发布每日简报
+- **信息图 + Slides** - 研报页面集成信息图查看器和 Slides 画廊
+- **中英文双语** - 支持中文和英文界面
+- **RSS 订阅** - 提供 RSS Feed，方便通过阅读器订阅
+- **自动部署** - GitHub Actions 每日生成后自动构建并部署到 GitHub Pages
+
 ---
 
 ## 🚀 快速开始
@@ -46,8 +53,8 @@
 ### 1. 克隆并安装
 
 ```bash
-git clone https://github.com/luoli523/finance-briefing-agent.git
-cd finance-briefing-agent
+git clone https://github.com/luoli523/fin-report.git
+cd fin-report
 
 # 运行安装脚本 (自动检测环境、安装依赖、创建配置)
 ./install.sh
@@ -108,6 +115,7 @@ npm run daily
 6. **📑 生成 Slides** (~60秒) - NotebookLM PPT
 7. **📧 发送邮件** - 含信息图和 Slides 附件
 8. **📱 发送 Telegram** - 简报摘要
+9. **🌐 发布网站** - 自动构建并部署到 GitHub Pages
 
 生成的文件：
 - `output/ai-briefing-YYYY-MM-DD.md` - Markdown 简报
@@ -273,8 +281,8 @@ npm run workflow:full
 
 | 命令 | 说明 | 包含步骤 |
 |------|------|----------|
-| `npm run daily` | 完整流程 | 收集 → 分析 → 生成 → 信息图 → Slides → 邮件 → Telegram |
-| `npm run workflow:full` | 同上 | 收集 → 分析 → 生成 → 信息图 → Slides → 邮件 → Telegram |
+| `npm run daily` | 完整流程 | 收集 → 分析 → 生成 → 信息图 → Slides → 邮件 → Telegram → 网站部署 |
+| `npm run workflow:full` | 同上 | 收集 → 分析 → 生成 → 信息图 → Slides → 邮件 → Telegram → 网站部署 |
 | `npm run workflow:pro` | 只生成简报 | 收集 → 分析 → 生成 |
 
 ### 独立命令
@@ -488,7 +496,7 @@ STOCKGEIST_API_KEY=your_stockgeist_key
 ## 📁 项目结构
 
 ```
-finance-briefing-agent/
+fin-report/
 ├── src/
 │   ├── collectors/          # 数据收集器
 │   │   ├── yahoo-finance.ts # 美股行情（免费）
@@ -538,7 +546,26 @@ finance-briefing-agent/
 │
 ├── output/                  # 生成的简报
 ├── docs/                    # 详细文档
-└── config/                  # 配置工具
+├── config/                  # 配置工具
+│
+├── website/                 # Astro 静态网站 (GitHub Pages)
+│   ├── src/
+│   │   ├── pages/           # 页面路由
+│   │   │   ├── index.astro  # 首页（最新研报）
+│   │   │   ├── archive.astro # 历史归档
+│   │   │   ├── rss.xml.ts   # RSS Feed
+│   │   │   ├── reports/     # 中文研报详情页
+│   │   │   └── en/          # 英文版页面
+│   │   ├── components/      # UI 组件
+│   │   │   ├── InfographicViewer.astro  # 信息图查看器
+│   │   │   └── SlideGallery.astro       # Slides 画廊
+│   │   ├── content/reports/ # 研报 Markdown 内容
+│   │   ├── layouts/         # 页面布局
+│   │   └── i18n/            # 国际化
+│   └── public/images/       # 信息图和 Slides 图片
+│
+└── scripts/
+    └── prepare-website-content.sh  # 研报内容发布脚本
 ```
 
 ---
@@ -775,6 +802,38 @@ npm run send-telegram 2026-01-25
 2. 设置 Bot 为群管理员（可选，用于发送消息）
 3. 获取群组 Chat ID（负数，如 `-123456789`）
 4. 更新 `TELEGRAM_CHAT_ID` 为群组 ID
+
+---
+
+## 🌐 网站部署（GitHub Pages）
+
+项目包含一个基于 Astro 构建的静态网站，自动部署到 GitHub Pages，用于展示每日研报。
+
+**在线访问**：`https://<username>.github.io/fin-report/`
+
+### 网站功能
+
+- **首页** - 展示最新一期研报，含信息图和 Slides
+- **历史归档** - 按日期浏览所有历史研报
+- **研报详情** - 信息图查看器（点击放大）+ Slides 画廊（键盘/触屏切换）+ 完整 Markdown 内容
+- **RSS 订阅** - 通过 RSS 阅读器订阅每日更新
+- **中英文双语** - 支持中文和英文界面切换
+
+### 本地开发
+
+```bash
+cd website
+npm install
+npm run dev     # 启动开发服务器 http://localhost:4321
+npm run build   # 构建静态站点到 dist/
+```
+
+### 自动发布流程
+
+网站内容在 GitHub Actions 中自动发布：
+1. 每日简报生成完成后，`scripts/prepare-website-content.sh` 将研报和图片复制到 `website/` 目录
+2. 自动构建 Astro 静态站点
+3. 通过 `peaceiris/actions-gh-pages` 部署到 `gh-pages` 分支
 
 ---
 
