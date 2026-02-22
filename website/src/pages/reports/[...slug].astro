@@ -40,12 +40,12 @@ const { Content } = await report.render();
       <InfographicViewer src={report.data.infographic} alt={report.data.title} />
     )}
 
-    <div class="prose prose-gray prose-lg max-w-none mt-8">
-      <Content />
-    </div>
-
     {report.data.hasSlides && report.data.slideCount > 0 && (
       <SlideGallery dateStr={report.data.dateStr} count={report.data.slideCount} lang={lang} />
     )}
+
+    <div class="prose prose-gray prose-lg max-w-none mt-8">
+      <Content />
+    </div>
   </article>
 </BaseLayout>
