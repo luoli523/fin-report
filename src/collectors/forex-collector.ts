@@ -71,41 +71,54 @@ export class ForexCollector extends BaseCollector<ForexConfig> {
       symbols.push(...Object.values(FOREX_SYMBOLS.currencyPairs));
     }
 
+    let quotes: QuoteData[] = [];
     try {
-      const quotes = await this.fetchQuotes(symbols);
-
-      const items: DataItem[] = quotes.map(quote => ({
-        id: quote.symbol,
-        title: quote.name,
-        content: this.formatQuoteSummary(quote),
-        timestamp: quote.timestamp,
-        metadata: quote,
-      }));
-
-      const result: CollectedData = {
-        source: this.name,
-        type: 'market',
-        collectedAt: new Date(),
-        items,
-        metadata: {
-          dollarIndex: this.extractDollarIndex(quotes),
-          treasuryYields: this.extractTreasuryYields(quotes),
-          currencyPairs: this.extractCurrencyPairs(quotes),
-        },
-        raw: this.config.saveRaw ? quotes : undefined,
-      };
-
-      if (this.config.saveRaw) {
-        await this.saveRawData(quotes);
-      }
-      await this.saveProcessedData(result);
-
-      this.log(`Collected ${quotes.length} forex data points`);
-      return result;
+      quotes = await this.fetchQuotes(symbols);
     } catch (error) {
-      this.logError('Failed to collect forex data', error as Error);
-      throw error;
+      this.logError('Batch forex fetch failed, trying individual symbols', error as Error);
     }
+
+    // If batch failed or returned empty, try symbols one by one
+    if (quotes.length === 0) {
+      for (const symbol of symbols) {
+        try {
+          const singleQuotes = await this.fetchQuotes([symbol]);
+          quotes.push(...singleQuotes);
+        } catch {
+          this.log(`Skipping failed symbol: ${symbol}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+
+    const items: DataItem[] = quotes.map(quote => ({
+      id: quote.symbol,
+      title: quote.name,
+      content: this.formatQuoteSummary(quote),
+      timestamp: quote.timestamp,
+      metadata: quote,
+    }));
+
+    const result: CollectedData = {
+      source: this.name,
+      type: 'market',
+      collectedAt: new Date(),
+      items,
+      metadata: {
+        dollarIndex: this.extractDollarIndex(quotes),
+        treasuryYields: this.extractTreasuryYields(quotes),
+        currencyPairs: this.extractCurrencyPairs(quotes),
+      },
+      raw: this.config.saveRaw ? quotes : undefined,
+    };
+
+    if (this.config.saveRaw && quotes.length > 0) {
+      await this.saveRawData(quotes);
+    }
+    await this.saveProcessedData(result);
+
+    this.log(`Collected ${quotes.length}/${symbols.length} forex data points`);
+    return result;
   }
 
   private async fetchQuotes(symbols: string[]): Promise<QuoteData[]> {

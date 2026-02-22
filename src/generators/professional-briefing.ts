@@ -154,6 +154,23 @@ interface LLMInsights {
       hedgeInstruments: string[];
     };
   };
+  earningsCalendar?: {
+    thisWeek?: Array<{
+      ticker: string;
+      date: string;
+      time: string;
+      keyMetrics: string;
+      expectation?: string;
+    }>;
+    nextWeek?: Array<{
+      ticker: string;
+      date: string;
+      time: string;
+      keyMetrics: string;
+      expectation?: string;
+    }>;
+    impact?: string;
+  };
   dailyBlessing?: string;
   forexAnalysis?: {
     // New condensed format
@@ -332,6 +349,7 @@ export class ProfessionalBriefingGenerator {
     const sections = [
       this.generateHeader(),
       this.generateExecutiveSummary(),
+      this.generateEarningsCalendarSection(),
       this.generateStockPoolSection(),
       this.generateMacroNewsSection(),
       this.generateCompanyDeepDiveSection(),
@@ -427,6 +445,49 @@ export class ProfessionalBriefingGenerator {
   }
 
   /**
+   * 财报日历速览（执行摘要下方）
+   */
+  private generateEarningsCalendarSection(): string {
+    const ec = (this.llmInsights as any)?.earningsCalendar;
+    if (!ec) return '';
+
+    const hasThisWeek = ec.thisWeek && ec.thisWeek.length > 0;
+    const hasNextWeek = ec.nextWeek && ec.nextWeek.length > 0;
+    if (!hasThisWeek && !hasNextWeek) return '';
+
+    let content = `## 财报日历\n\n`;
+
+    if (hasThisWeek) {
+      content += `### 本周重要财报\n\n`;
+      content += `| 日期 | 股票 | 时间 | 关注重点 |\n`;
+      content += `|:-----|:----:|:----:|:---------|\n`;
+      for (const item of ec.thisWeek) {
+        if (this.isNAOrEmpty(item.ticker)) continue;
+        content += `| ${item.date || '-'} | ${item.ticker} | ${item.time || '-'} | ${item.keyMetrics || '-'} |\n`;
+      }
+      content += `\n`;
+    }
+
+    if (hasNextWeek) {
+      content += `### 下周重要财报\n\n`;
+      content += `| 日期 | 股票 | 时间 | 关注重点 |\n`;
+      content += `|:-----|:----:|:----:|:---------|\n`;
+      for (const item of ec.nextWeek) {
+        if (this.isNAOrEmpty(item.ticker)) continue;
+        content += `| ${item.date || '-'} | ${item.ticker} | ${item.time || '-'} | ${item.keyMetrics || '-'} |\n`;
+      }
+      content += `\n`;
+    }
+
+    if (ec.impact && !this.isNAOrEmpty(ec.impact)) {
+      content += `**财报季影响**: ${ec.impact}\n\n`;
+    }
+
+    content += `---\n`;
+    return content;
+  }
+
+  /**
    * 一、核心股票池表现
    */
   private generateStockPoolSection(): string {
@@ -460,32 +521,65 @@ export class ProfessionalBriefingGenerator {
     for (const symbol of MONITORED_SYMBOLS.indices) {
       const index = this.stockPerformance.get(symbol);
       if (index) {
-        // VIX 指数涨跌含义相反：VIX 上涨代表市场恐慌（利空），用绿色；下跌代表市场平静（利好），用红色
-        // 其他指数：红涨绿跌（中国股市习惯）
+        // VIX: 上涨=市场恐慌(红), 下跌=市场平静(绿)
+        // 其他指数: 绿涨红跌（国际惯例，方便美股投资者阅读）
         const isVix = symbol === '^VIX';
         const emoji = isVix
-          ? (index.changePercent > 0 ? '🟢' : index.changePercent < 0 ? '🔴' : '➡️')
-          : (index.changePercent > 0 ? '🔴' : index.changePercent < 0 ? '🟢' : '➡️');
+          ? (index.changePercent > 0 ? '🔴' : index.changePercent < 0 ? '🟢' : '➡️')
+          : (index.changePercent > 0 ? '🟢' : index.changePercent < 0 ? '🔴' : '➡️');
         const changeStr = `${index.changePercent >= 0 ? '+' : ''}${index.changePercent.toFixed(2)}%`;
         const priceStr = index.price.toFixed(2);
         content += `| ${indexInfo[symbol] || index.name} | ${symbol} | ${priceStr} | ${changeStr} | ${emoji} |\n`;
       }
     }
 
+    // === 涨跌幅速览 ===
+    const allStocks = Array.from(this.stockPerformance.values())
+      .filter(s => !s.ticker.startsWith('^') && !['SMH','SOXX','QQQ','VOO','ARKQ','BOTZ','ROBT','GLD'].includes(s.ticker));
+    const sortedByChange = [...allStocks].sort((a, b) => b.changePercent - a.changePercent);
+    const topGainers = sortedByChange.filter(s => s.changePercent > 0).slice(0, 5);
+    const topLosers = sortedByChange.filter(s => s.changePercent < 0).slice(-5).reverse();
+
+    if (topGainers.length > 0 || topLosers.length > 0) {
+      content += `\n### 今日涨跌幅速览\n\n`;
+      if (topGainers.length > 0) {
+        content += `**涨幅前5**: ${topGainers.map(s => `${s.ticker} ${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%`).join(' | ')}\n\n`;
+      }
+      if (topLosers.length > 0) {
+        content += `**跌幅前5**: ${topLosers.map(s => `${s.ticker} ${s.changePercent.toFixed(2)}%`).join(' | ')}\n\n`;
+      }
+    }
+
     // === 指数深度分析 ===
-    content += `\n### 指数变化深度分析\n\n`;
+    content += `### 指数变化深度分析\n\n`;
     const indexAnalysis = this.llmInsights?.indexAnalysis as any;
     if (indexAnalysis) {
-      // 市场概况
       if (indexAnalysis.marketOverview) {
         content += `**市场整体格局**: ${indexAnalysis.marketOverview}\n\n`;
       }
-      // 跨指数分析（如果存在）
+      if (indexAnalysis.dataAnalysis) {
+        content += `**数据面分析**: ${indexAnalysis.dataAnalysis}\n\n`;
+      }
+      if (indexAnalysis.newsAnalysis) {
+        content += `**信息面分析**: ${indexAnalysis.newsAnalysis}\n\n`;
+      }
+      if (indexAnalysis.underlyingLogic) {
+        content += `**底层逻辑**: ${indexAnalysis.underlyingLogic}\n\n`;
+      }
+      if (indexAnalysis.keyDrivers && Array.isArray(indexAnalysis.keyDrivers) && indexAnalysis.keyDrivers.length > 0) {
+        content += `**主要驱动因素**:\n`;
+        indexAnalysis.keyDrivers.forEach((driver: string) => {
+          content += `- ${driver}\n`;
+        });
+        content += `\n`;
+      }
+      if (indexAnalysis.riskAppetite) {
+        content += `**风险偏好**: ${indexAnalysis.riskAppetite}\n\n`;
+      }
       if (indexAnalysis.crossIndexAnalysis) {
-        content += `**综合分析**: ${indexAnalysis.crossIndexAnalysis}\n\n`;
+        content += `**跨指数联动**: ${indexAnalysis.crossIndexAnalysis}\n\n`;
       }
     } else {
-      // 无 LLM 分析时的默认内容
       content += this.generateDefaultIndexAnalysis();
     }
 
@@ -511,8 +605,7 @@ export class ProfessionalBriefingGenerator {
     for (const symbol of MONITORED_SYMBOLS.etf) {
       const etf = this.stockPerformance.get(symbol);
       if (etf) {
-        // 红涨绿跌（中国股市习惯）
-        const emoji = etf.changePercent > 0 ? '🔴' : etf.changePercent < 0 ? '🟢' : '➡️';
+        const emoji = etf.changePercent > 0 ? '🟢' : etf.changePercent < 0 ? '🔴' : '➡️';
         const changeStr = `${etf.changePercent >= 0 ? '+' : ''}${etf.changePercent.toFixed(2)}%`;
         content += `| ${etfCategory[symbol] || 'ETF'} | ${etf.name} | ${symbol} | $${etf.price.toFixed(2)} | ${changeStr} | ${emoji} |\n`;
       }
@@ -523,12 +616,11 @@ export class ProfessionalBriefingGenerator {
     content += `| 分类 (Category) | 公司 (Company) | 股票代号 (Ticker) | 最新股价 (USD) | 涨跌幅 (%) | 表现 |\n`;
     content += `|:----------------|:---------------|:-----------------:|---------------:|------------:|:----:|\n`;
 
-    // 按产业链分类输出（红涨绿跌）
     for (const [category, symbols] of Object.entries(AI_INDUSTRY_CATEGORIES)) {
       for (const symbol of symbols) {
         const stock = this.stockPerformance.get(symbol);
         if (stock) {
-          const emoji = stock.changePercent > 0 ? '🔴' : stock.changePercent < 0 ? '🟢' : '➡️';
+          const emoji = stock.changePercent > 0 ? '🟢' : stock.changePercent < 0 ? '🔴' : '➡️';
           const changeStr = `${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%`;
           content += `| ${category} | ${stock.name} | ${stock.ticker} | $${stock.price.toFixed(2)} | ${changeStr} | ${emoji} |\n`;
         }

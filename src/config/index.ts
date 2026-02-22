@@ -324,12 +324,23 @@ export const RSS_FEEDS = {
     'https://www.federalregister.gov/api/v1/documents.rss',   // 联邦政府公告
   ],
   
-  // 其他 RSS 源（新闻网站、博客等）
-  // 可以添加任何支持 RSS 的网站
+  // 科技与 AI 产业新闻 RSS
+  techAI: [
+    'https://techcrunch.com/category/artificial-intelligence/feed/',
+    'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml',
+    'https://feeds.arstechnica.com/arstechnica/technology-lab',
+    'https://semianalysis.substack.com/feed',
+  ],
+
+  // 财经新闻 RSS
+  finance: [
+    'https://www.cnbc.com/id/100003114/device/rss/rss.html',
+    'https://feeds.marketwatch.com/marketwatch/topstories/',
+    'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664',
+  ],
+
+  // 其他 RSS 源
   others: [
-    // 示例: 添加其他财经新闻 RSS
-    // 'https://www.cnbc.com/id/100003114/device/rss/rss.html',
-    // 'https://feeds.bloomberg.com/markets/news.rss',
   ],
 };
 
@@ -340,6 +351,8 @@ export function getAllRSSFeeds(): string[] {
   return [
     ...RSS_FEEDS.twitter,      // Twitter feeds (目前已禁用)
     ...RSS_FEEDS.government,   // 政府机构 RSS
+    ...RSS_FEEDS.techAI,       // 科技与 AI 产业新闻
+    ...RSS_FEEDS.finance,      // 财经新闻
     ...RSS_FEEDS.others,       // 其他 RSS
   ];
 }

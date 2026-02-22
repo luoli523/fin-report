@@ -329,6 +329,47 @@ function buildDataSummary(analysis: ComprehensiveAnalysis): string {
     summary += `\n`;
   }
   
+  // 财报日历与分析师评级
+  if ((analysis as any).earningsCalendar) {
+    const ec = (analysis as any).earningsCalendar;
+    summary += `## 财报日历与分析师评级\n\n`;
+
+    const earningsItems = (ec.items || []).filter((i: any) => i.metadata?.type === 'earnings');
+    const ratingItems = (ec.items || []).filter((i: any) => i.metadata?.type === 'analyst-rating');
+
+    if (earningsItems.length > 0) {
+      summary += `### 未来两周重要财报\n`;
+      earningsItems.slice(0, 15).forEach((item: any) => {
+        const m = item.metadata;
+        const timeStr = m.hour === 'bmo' ? '盘前' : m.hour === 'amc' ? '盘后' : m.hour || '';
+        summary += `- ${m.date} ${timeStr}: ${m.symbol} (Q${m.quarter} ${m.year})`;
+        if (m.epsEstimate !== null) summary += ` EPS预期: $${m.epsEstimate}`;
+        if (m.revenueEstimate !== null) summary += ` 收入预期: $${(m.revenueEstimate / 1e9).toFixed(2)}B`;
+        summary += `\n`;
+      });
+      summary += `\n`;
+    }
+
+    if (ratingItems.length > 0) {
+      summary += `### 核心标的分析师共识\n`;
+      ratingItems.forEach((item: any) => {
+        const m = item.metadata;
+        const rec = m.recommendation;
+        const pt = m.priceTarget;
+        summary += `- ${m.symbol}:`;
+        if (rec) {
+          const total = (rec.strongBuy || 0) + (rec.buy || 0) + (rec.hold || 0) + (rec.sell || 0) + (rec.strongSell || 0);
+          summary += ` [${rec.strongBuy}强买/${rec.buy}买/${rec.hold}持有/${rec.sell}卖/${rec.strongSell}强卖] (${total}位分析师)`;
+        }
+        if (pt) {
+          summary += ` 目标价中位数: $${pt.targetMedian} (低: $${pt.targetLow}, 高: $${pt.targetHigh})`;
+        }
+        summary += `\n`;
+      });
+      summary += `\n`;
+    }
+  }
+
   // 美元与利率环境
   if (analysis.forex) {
     summary += `## 美元与利率环境\n\n`;

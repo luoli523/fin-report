@@ -26,6 +26,7 @@ import {
   SocialSentimentCollector,
   TwitterSentimentCollector,
   ForexCollector,
+  EarningsCalendarCollector,
   CollectedData,
 } from '../collectors/index.js';
 import { appConfig, STOCK_INFO, AI_INDUSTRY_CATEGORIES } from '../config/index.js';
@@ -424,9 +425,9 @@ async function main() {
     console.error(`❌ Failed: ${(error as Error).message}\n`);
   }
 
-  // 2. Finnhub - 财经新闻（免费 API Key）
+  // 2. Finnhub - 财经新闻 + 核心个股新闻（免费 API Key）
   console.log('┌──────────────────────────────────────────────────────────────┐');
-  console.log('│ 📰 [2/9] Finnhub - Financial News (Free API Key)             │');
+  console.log('│ 📰 [2/9] Finnhub - Market & Company News (Free API Key)      │');
   console.log('└──────────────────────────────────────────────────────────────┘');
 
   if (appConfig.finnhub.apiKey) {
@@ -436,7 +437,35 @@ async function main() {
         apiKey: appConfig.finnhub.apiKey,
         saveRaw: true,
       });
+
+      // General market news
       const newsData = await finnhubCollector.collect();
+
+      // Per-ticker company news for core holdings
+      const coreSymbols = ['NVDA', 'MSFT', 'GOOGL', 'TSM', 'META', 'AMZN', 'AMD', 'AVGO'];
+      const today = new Date().toISOString().split('T')[0];
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      let companyNewsCount = 0;
+
+      for (const symbol of coreSymbols) {
+        try {
+          const companyNews = await finnhubCollector.fetchCompanyNews(symbol, yesterday, today);
+          if (companyNews.length > 0) {
+            const companyItems = companyNews.slice(0, 5).map(article => ({
+              id: article.id,
+              title: article.headline,
+              content: article.summary,
+              timestamp: article.publishedAt,
+              metadata: { ...article, companySymbol: symbol },
+            }));
+            newsData.items.push(...companyItems);
+            companyNewsCount += companyItems.length;
+          }
+          await new Promise(resolve => setTimeout(resolve, 300));
+        } catch {
+          // Skip failed company news silently
+        }
+      }
 
       aggregatedData.news = newsData;
       summary.collectors.push({
@@ -447,7 +476,7 @@ async function main() {
       });
       summary.totalItems += newsData.items.length;
 
-      console.log(`✅ Collected ${newsData.items.length} news articles\n`);
+      console.log(`✅ Collected ${newsData.items.length} news articles (${companyNewsCount} company-specific)\n`);
     } catch (error) {
       summary.collectors.push({
         name: 'finnhub-news',
@@ -686,9 +715,56 @@ async function main() {
     console.log('⏭️  Skipped: STOCKGEIST_API_KEY not configured (optional)\n');
   }
 
-  // 9. Forex - 美元指数、美债收益率、外汇（免费）
+  // 9. Earnings Calendar & Analyst Ratings (免费, Finnhub)
   console.log('┌──────────────────────────────────────────────────────────────┐');
-  console.log('│ 💵 [9/9] Forex - Dollar Index, Yields, FX Pairs (Free)       │');
+  console.log('│ 📅 [9/10] Earnings Calendar & Analyst Ratings (Free)         │');
+  console.log('└──────────────────────────────────────────────────────────────┘');
+
+  if (appConfig.finnhub.apiKey) {
+    try {
+      const earningsStart = Date.now();
+      const earningsCollector = new EarningsCalendarCollector({
+        apiKey: appConfig.finnhub.apiKey,
+        saveRaw: true,
+        symbols: [
+          'NVDA', 'MSFT', 'GOOGL', 'TSM', 'META', 'AMZN', 'AMD', 'AVGO',
+          'ORCL', 'CRM', 'NOW', 'ADBE', 'SNOW', 'DDOG', 'PLTR',
+          'DELL', 'ANET', 'VRT', 'AMAT', 'LRCX', 'KLAC',
+          'TSLA', 'AAPL', 'INTC', 'MU', 'ARM',
+        ],
+      });
+      const earningsData = await earningsCollector.collect();
+
+      (aggregatedData as any).earningsCalendar = earningsData;
+      summary.collectors.push({
+        name: 'earnings-calendar',
+        status: 'success',
+        itemCount: earningsData.items.length,
+        duration: Date.now() - earningsStart,
+      });
+      summary.totalItems += earningsData.items.length;
+
+      console.log(`✅ Collected ${earningsData.items.length} earnings/ratings items\n`);
+    } catch (error) {
+      summary.collectors.push({
+        name: 'earnings-calendar',
+        status: 'failed',
+        error: (error as Error).message,
+      });
+      console.error(`❌ Failed: ${(error as Error).message}\n`);
+    }
+  } else {
+    summary.collectors.push({
+      name: 'earnings-calendar',
+      status: 'skipped',
+      error: 'FINNHUB_API_KEY not configured',
+    });
+    console.log('⏭️  Skipped: FINNHUB_API_KEY not configured\n');
+  }
+
+  // 10. Forex - 美元指数、美债收益率、外汇（免费）
+  console.log('┌──────────────────────────────────────────────────────────────┐');
+  console.log('│ 💵 [10/10] Forex - Dollar Index, Yields, FX Pairs (Free)     │');
   console.log('└──────────────────────────────────────────────────────────────┘');
 
   try {

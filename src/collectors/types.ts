@@ -3,7 +3,7 @@
  */
 
 // 数据类型枚举
-export type DataType = 'news' | 'market' | 'economic' | 'sec-filings' | 'government-news' | 'company-ir' | 'rss' | 'congress-trading' | 'hedge-fund' | 'prediction-market' | 'social-sentiment';
+export type DataType = 'news' | 'market' | 'economic' | 'sec-filings' | 'government-news' | 'company-ir' | 'rss' | 'congress-trading' | 'hedge-fund' | 'prediction-market' | 'social-sentiment' | 'earnings-calendar';
 
 // 市场类型
 export type MarketType = 'stock' | 'index' | 'forex' | 'crypto' | 'commodity';

@@ -39,3 +39,6 @@ export type { TwitterSentiment, TwitterSentimentConfig } from './twitter-sentime
 // 外汇与美元收集器
 export { ForexCollector, createForexCollector, forexCollector, FOREX_SYMBOLS } from './forex-collector';
 export type { ForexConfig } from './forex-collector';
+
+// 财报日历与分析师评级
+export { EarningsCalendarCollector, createEarningsCalendarCollector } from './earnings-calendar';

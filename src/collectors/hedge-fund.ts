@@ -61,28 +61,67 @@ export class HedgeFundCollector extends BaseCollector<HedgeFundConfig> {
     { name: 'Elliott Investment Management', cik: '0001048445' },
   ];
 
-  // CUSIP 到股票代码映射 (主要 AI 股票)
+  // CUSIP 到股票代码映射 (AI 产业链 + 主要科技股)
   private readonly cusipToTicker: Record<string, { ticker: string; name: string }> = {
+    // GPU/加速与半导体
     '67066G104': { ticker: 'NVDA', name: 'NVIDIA Corp' },
+    '007903107': { ticker: 'AMD', name: 'Advanced Micro Devices' },
+    '11135F101': { ticker: 'AVGO', name: 'Broadcom Inc' },
+    '87612E106': { ticker: 'QCOM', name: 'Qualcomm Inc' },
+    '55354G100': { ticker: 'MU', name: 'Micron Technology' },
+    'G0402G103': { ticker: 'ARM', name: 'ARM Holdings' },
+    '958102105': { ticker: 'WDC', name: 'Western Digital' },
+    '81180W104': { ticker: 'STX', name: 'Seagate Technology' },
+    // 晶圆与制造
+    '874039100': { ticker: 'TSM', name: 'Taiwan Semiconductor' },
+    'N07059210': { ticker: 'ASML', name: 'ASML Holding' },
+    // 设备/EDA
+    '038222105': { ticker: 'AMAT', name: 'Applied Materials' },
+    '512807108': { ticker: 'LRCX', name: 'Lam Research' },
+    '482480100': { ticker: 'KLAC', name: 'KLA Corporation' },
+    '871607107': { ticker: 'SNPS', name: 'Synopsys Inc' },
+    '127387108': { ticker: 'CDNS', name: 'Cadence Design Systems' },
+    // 服务器与基础设施
+    '86800U104': { ticker: 'SMCI', name: 'Super Micro Computer' },
+    '24703L202': { ticker: 'DELL', name: 'Dell Technologies' },
+    '42824C109': { ticker: 'HPE', name: 'Hewlett Packard Enterprise' },
+    '04342Y104': { ticker: 'ANET', name: 'Arista Networks' },
+    '92537N108': { ticker: 'VRT', name: 'Vertiv Holdings' },
+    '278058102': { ticker: 'ETN', name: 'Eaton Corporation' },
+    // 云与平台
     '594918104': { ticker: 'MSFT', name: 'Microsoft Corp' },
     '023135106': { ticker: 'AMZN', name: 'Amazon.com Inc' },
     '02079K305': { ticker: 'GOOGL', name: 'Alphabet Inc Class A' },
     '02079K107': { ticker: 'GOOG', name: 'Alphabet Inc Class C' },
-    '30303M102': { ticker: 'META', name: 'Meta Platforms Inc' },
-    '037833100': { ticker: 'AAPL', name: 'Apple Inc' },
-    '88160R101': { ticker: 'TSLA', name: 'Tesla Inc' },
-    '007903107': { ticker: 'AMD', name: 'Advanced Micro Devices' },
-    '11135F101': { ticker: 'AVGO', name: 'Broadcom Inc' },
     '68389X105': { ticker: 'ORCL', name: 'Oracle Corp' },
-    '79466L302': { ticker: 'CRM', name: 'Salesforce Inc' },
+    // 应用与软件
+    '30303M102': { ticker: 'META', name: 'Meta Platforms Inc' },
     '00724F101': { ticker: 'ADBE', name: 'Adobe Inc' },
+    '79466L302': { ticker: 'CRM', name: 'Salesforce Inc' },
     '81762P102': { ticker: 'NOW', name: 'ServiceNow Inc' },
-    '69608A108': { ticker: 'PLTR', name: 'Palantir Technologies' },
     '833445109': { ticker: 'SNOW', name: 'Snowflake Inc' },
-    '87612E106': { ticker: 'QCOM', name: 'Qualcomm Inc' },
+    '23804L103': { ticker: 'DDOG', name: 'Datadog Inc' },
+    '69608A108': { ticker: 'PLTR', name: 'Palantir Technologies' },
+    // 自动驾驶/机器人
+    '88160R101': { ticker: 'TSLA', name: 'Tesla Inc' },
+    'M6082J104': { ticker: 'MBLY', name: 'Mobileye Global' },
+    // 数据中心能源
+    '92840M102': { ticker: 'VST', name: 'Vistra Corp' },
+    '21037T109': { ticker: 'CEG', name: 'Constellation Energy' },
+    // 其他重要标的
+    '037833100': { ticker: 'AAPL', name: 'Apple Inc' },
     '458140100': { ticker: 'INTC', name: 'Intel Corp' },
-    '55354G100': { ticker: 'MU', name: 'Micron Technology' },
+    '56585A102': { ticker: 'MRVL', name: 'Marvell Technology' },
+    '58933Y105': { ticker: 'LLY', name: 'Eli Lilly' },
+    '46625H100': { ticker: 'JPM', name: 'JPMorgan Chase' },
     '00206R102': { ticker: 'T', name: 'AT&T Inc' },
+    // Mega-cap tech & ETFs (often in 13F top holdings)
+    '78462F103': { ticker: 'SPY', name: 'SPDR S&P 500 ETF Trust' },
+    '46090E103': { ticker: 'IVV', name: 'iShares Core S&P 500 ETF' },
+    '084670702': { ticker: 'BRK.B', name: 'Berkshire Hathaway B' },
+    '92826C839': { ticker: 'V', name: 'Visa Inc' },
+    '57636Q104': { ticker: 'MA', name: 'Mastercard Inc' },
+    '91324P102': { ticker: 'UNH', name: 'UnitedHealth Group' },
   };
 
   constructor(config: Partial<HedgeFundConfig> = {}) {
