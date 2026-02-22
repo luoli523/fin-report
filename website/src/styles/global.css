@@ -25,3 +25,184 @@
     @apply border border-gray-200 px-3 py-1.5;
   }
 }
+
+/* ─── Report Enhancement Styles ─── */
+
+@layer components {
+
+  /* Reading Progress Bar */
+  #reading-progress-container {
+    pointer-events: none;
+  }
+
+  /* ─── Section Cards ─── */
+
+  .report-section {
+    @apply bg-white rounded-xl mb-5 px-6 py-5 border-l-4 border-l-gray-200;
+    @apply shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-shadow duration-200;
+    scroll-margin-top: 1rem;
+  }
+
+  .report-section:hover {
+    @apply shadow-md;
+  }
+
+  .section-hero {
+    @apply border-l-blue-600 shadow-md;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 40%, #eef2ff 100%);
+  }
+
+  .section-hero h2:first-child {
+    @apply text-blue-900;
+  }
+
+  .section-data     { @apply border-l-sky-400; }
+  .section-holdings  { @apply border-l-emerald-500; }
+  .section-analysis  { @apply border-l-purple-500; }
+  .section-news      { @apply border-l-orange-400; }
+  .section-outlook   { @apply border-l-amber-500; }
+  .section-signal    { @apply border-l-cyan-500; }
+  .section-strategy  { @apply border-l-indigo-500; }
+
+  .section-appendix {
+    @apply border-l-gray-300;
+    background: rgba(249, 250, 251, 0.6);
+  }
+
+  .section-blessing {
+    @apply border-l-rose-400;
+    background: linear-gradient(135deg, #fff1f2 0%, #ffffff 50%, #fdf2f8 100%);
+  }
+
+  /* Prose overrides inside sections */
+  .prose .report-section h2:first-child {
+    @apply mt-0 mb-3;
+  }
+
+  .prose .report-section h3 {
+    @apply mt-5 mb-2;
+  }
+
+  .prose .report-section > *:last-child {
+    @apply mb-0;
+  }
+
+  /* ─── Desktop TOC ─── */
+
+  #toc-desktop ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-link {
+    @apply block pl-3 py-1.5 text-sm leading-snug text-gray-400;
+    @apply border-l-2 border-transparent transition-all duration-200;
+    text-decoration: none;
+  }
+
+  .toc-link:hover {
+    @apply text-gray-700 border-l-gray-300;
+    text-decoration: none;
+  }
+
+  .toc-link.active {
+    @apply text-blue-600 border-l-blue-600 font-medium;
+    text-decoration: none;
+  }
+
+  /* ─── Holdings Card Grid ─── */
+
+  .holdings-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+  }
+
+  .prose .holdings-grid {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .holding-card {
+    @apply bg-white rounded-lg border p-4 transition-shadow hover:shadow-md;
+    border-top-width: 3px;
+  }
+
+  .holding-card.signal-buy    { border-top-color: #10b981; }
+  .holding-card.signal-sell   { border-top-color: #ef4444; }
+  .holding-card.signal-hold   { border-top-color: #9ca3af; }
+
+  .holding-ticker {
+    @apply text-lg font-bold text-gray-900;
+  }
+
+  .holding-signal-badge {
+    @apply inline-block px-2 py-0.5 text-xs font-semibold rounded-full mt-1;
+  }
+
+  .holding-signal-badge.buy    { @apply bg-emerald-100 text-emerald-700; }
+  .holding-signal-badge.sell   { @apply bg-red-100 text-red-700; }
+  .holding-signal-badge.hold   { @apply bg-gray-100 text-gray-600; }
+
+  .holding-status {
+    @apply text-sm text-gray-600 mt-2 leading-relaxed;
+  }
+
+  .holding-keypoint {
+    @apply text-xs text-gray-500 mt-2 pt-2 border-t border-gray-100 leading-relaxed;
+  }
+
+  /* ─── Appendix Collapse ─── */
+
+  .appendix-toggle {
+    @apply inline-flex items-center gap-1 text-sm font-medium cursor-pointer;
+    @apply text-blue-600 hover:text-blue-700 bg-transparent border-0 p-0 mt-1 mb-2;
+  }
+
+  .appendix-body {
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    overflow: hidden;
+  }
+
+  .appendix-body.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .appendix-body.expanded {
+    max-height: 9999px;
+    opacity: 1;
+  }
+
+  /* ─── Mobile TOC ─── */
+
+  .toc-mobile-link {
+    @apply block py-2.5 px-3 text-gray-700 rounded-lg transition-colors;
+    text-decoration: none;
+  }
+
+  .toc-mobile-link:hover {
+    @apply text-blue-600 bg-blue-50;
+    text-decoration: none;
+  }
+
+  .toc-mobile-link.active {
+    @apply text-blue-600 bg-blue-50 font-medium;
+  }
+
+  /* ─── Section icon in heading ─── */
+
+  .section-icon {
+    @apply mr-1.5;
+    font-size: 1.1em;
+  }
+
+  /* ─── Stock ticker pills in theme sections ─── */
+
+  .stock-pill {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-gray-100 text-gray-700;
+  }
+
+  .stock-pill.up   { @apply bg-green-50 text-green-700; }
+  .stock-pill.down { @apply bg-red-50 text-red-700; }
+}

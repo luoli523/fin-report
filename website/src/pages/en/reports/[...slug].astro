@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import InfographicViewer from '../../../components/InfographicViewer.astro';
 import SlideGallery from '../../../components/SlideGallery.astro';
+import ReportContent from '../../../components/ReportContent.astro';
 import { t, getBasePath } from '../../../i18n/ui';
 
 const lang = 'en';
@@ -24,15 +25,16 @@ const { Content } = await report.render();
   title={`${report.data.title} - ${t(lang, 'site.title')}`}
   description={report.data.description}
   lang={lang}
+  wide
 >
-  <div class="mb-6">
+  <div class="mb-4">
     <a href={`${base}/archive`} class="text-sm text-blue-600 hover:text-blue-700">
       &larr; {t(lang, 'report.backToArchive')}
     </a>
   </div>
 
   <article>
-    <header class="mb-8">
+    <header class="mb-6">
       <time class="text-sm font-medium text-blue-600">{report.data.dateStr}</time>
       <h1 class="mt-1 text-2xl font-bold text-gray-900">{report.data.title}</h1>
     </header>
@@ -45,8 +47,8 @@ const { Content } = await report.render();
       <SlideGallery dateStr={report.data.dateStr} count={report.data.slideCount} lang={lang} />
     )}
 
-    <div class="prose prose-gray prose-lg max-w-none mt-8">
+    <ReportContent lang={lang}>
       <Content />
-    </div>
+    </ReportContent>
   </article>
 </BaseLayout>
