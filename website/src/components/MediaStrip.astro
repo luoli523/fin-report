@@ -1,0 +1,148 @@
+---
+interface Props {
+  infographic?: string;
+  title?: string;
+  hasSlides?: boolean;
+  slideCount?: number;
+  dateStr?: string;
+}
+
+const { infographic, title = '', hasSlides = false, slideCount = 0, dateStr = '' } = Astro.props;
+
+const padLen = slideCount >= 100 ? 3 : 2;
+const slides = hasSlides && slideCount > 0
+  ? Array.from({ length: slideCount }, (_, i) => {
+      const num = String(i + 1).padStart(padLen, '0');
+      return `/fin-report/images/slides/${dateStr}/slide-${num}.webp`;
+    })
+  : [];
+
+const hasMedia = !!infographic || slides.length > 0;
+const hasAll = !!infographic && slides.length > 0;
+const igId = `ig-${Math.random().toString(36).slice(2, 8)}`;
+const slGalleryId = `slg-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+{hasMedia && <div class:list={['my-6 gap-4', hasAll ? 'flex items-stretch media-strip-row' : 'flex']}>
+
+  <!-- Infographic: fixed-width thumbnail, click to zoom -->
+  {infographic && <button
+    class:list={[
+      'group relative rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer shrink-0',
+      hasAll ? 'w-[220px]' : 'w-full max-w-sm'
+    ]}
+    data-open-dialog={igId}
+  >
+    <div class="w-full h-full overflow-hidden bg-gray-50 relative">
+      <img src={infographic} alt={title} loading="lazy" decoding="async"
+           class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300" />
+      <div class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/60 to-transparent">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
+          <span class="text-xs text-white font-medium">信息图 · 点击放大</span>
+        </div>
+      </div>
+    </div>
+  </button>}
+
+  <!-- Slides: inline carousel, fills remaining width -->
+  {slides.length > 0 && <div class="flex-1 min-w-0 rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm flex flex-col" id={slGalleryId}>
+    <div class="relative overflow-hidden bg-gray-50 flex-1 min-h-0">
+      <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-full" data-sl-track>
+        {slides.map((src, i) => (
+          <div class="w-full flex-none snap-start flex items-center justify-center bg-gray-50">
+            <img src={src} alt={`Slide ${i + 1}`} loading={i < 3 ? 'eager' : 'lazy'} decoding="async" class="w-full h-full object-contain" />
+          </div>
+        ))}
+      </div>
+      <button data-sl-prev class="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-black/40 text-white text-lg hover:bg-black/60 transition-colors">&lsaquo;</button>
+      <button data-sl-next class="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-black/40 text-white text-lg hover:bg-black/60 transition-colors">&rsaquo;</button>
+      <div class="absolute top-2 right-2 z-10 rounded-full bg-black/50 px-2.5 py-0.5 text-xs text-white font-medium">
+        <span data-sl-counter>1</span> / {slideCount}
+      </div>
+    </div>
+    <div class="flex gap-1 px-3 py-2 overflow-x-auto border-t border-gray-100 bg-gray-50/50" data-sl-thumbs>
+      {slides.map((src, i) => (
+        <button
+          class:list={['flex-none rounded border-2 overflow-hidden transition-all hover:opacity-90', i === 0 ? 'border-blue-500 opacity-100' : 'border-transparent opacity-50']}
+          data-sl-thumb={i}>
+          <img src={src} alt={`Thumb ${i + 1}`} loading="lazy" decoding="async" class="h-9 w-auto" />
+        </button>
+      ))}
+    </div>
+  </div>}
+
+</div>}
+
+<!-- Infographic zoom modal -->
+{infographic && <dialog id={igId}
+  class="max-w-[95vw] max-h-[95vh] rounded-xl bg-transparent backdrop:bg-black/80 p-0 m-auto"
+  data-backdrop-close>
+  <div class="relative">
+    <button data-close={igId}
+      class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+    </button>
+    <img src={infographic} alt={title} class="max-h-[90vh] rounded-xl" />
+  </div>
+</dialog>}
+
+<script is:inline>
+document.addEventListener('DOMContentLoaded', () => {
+  // Dialog open/close
+  document.querySelectorAll('[data-open-dialog]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = document.getElementById(btn.getAttribute('data-open-dialog'));
+      if (d) d.showModal();
+    });
+  });
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById(btn.getAttribute('data-close'))?.close();
+    });
+  });
+  document.querySelectorAll('dialog[data-backdrop-close]').forEach(d => {
+    d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+  });
+});
+</script>
+
+<script define:vars={{ slGalleryId, slideCount }}>
+document.addEventListener('DOMContentLoaded', () => {
+  if (slideCount <= 0) return;
+  const root = document.getElementById(slGalleryId);
+  if (!root) return;
+  const track = root.querySelector('[data-sl-track]');
+  const counter = root.querySelector('[data-sl-counter]');
+  const prevBtn = root.querySelector('[data-sl-prev]');
+  const nextBtn = root.querySelector('[data-sl-next]');
+  const thumbs = root.querySelectorAll('[data-sl-thumb]');
+  let cur = 0;
+  function goTo(i) {
+    cur = Math.max(0, Math.min(slideCount - 1, i));
+    track.children[cur].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    counter.textContent = String(cur + 1);
+    thumbs.forEach((t, idx) => {
+      t.classList.toggle('border-blue-500', idx === cur);
+      t.classList.toggle('border-transparent', idx !== cur);
+      t.classList.toggle('opacity-100', idx === cur);
+      t.classList.toggle('opacity-50', idx !== cur);
+    });
+  }
+  prevBtn.addEventListener('click', () => goTo(cur - 1));
+  nextBtn.addEventListener('click', () => goTo(cur + 1));
+  thumbs.forEach(t => t.addEventListener('click', () => goTo(Number(t.getAttribute('data-sl-thumb')))));
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') goTo(cur - 1);
+    if (e.key === 'ArrowRight') goTo(cur + 1);
+  });
+});
+</script>
+
+<style>
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .media-strip-row { height: 320px; }
+  @media (min-width: 768px) { .media-strip-row { height: 360px; } }
+</style>

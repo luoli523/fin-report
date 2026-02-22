@@ -41,13 +41,27 @@ if [ -z "$DESCRIPTION" ]; then
   DESCRIPTION="AI Industry 每日简报 $DATE"
 fi
 
-# --- Step 2: Count slides ---
+# --- Step 2: Convert slide PDF to images if needed, then count ---
+SLIDES_PDF="$OUTPUT_DIR/ai-briefing-${DATE}-slide-deck.pdf"
+
+if [ -f "$SLIDES_PDF" ] && [ ! -d "$SLIDES_DIR" ]; then
+  # PDF exists but no image directory — auto-convert
+  if command -v pdftoppm &> /dev/null; then
+    echo "  Converting slide PDF to images..."
+    mkdir -p "$SLIDES_DIR"
+    pdftoppm -png -r 200 "$SLIDES_PDF" "$SLIDES_DIR/slide"
+    echo "  Converted $(find "$SLIDES_DIR" -maxdepth 1 -name "slide-*.png" | wc -l | tr -d ' ') slides from PDF"
+  else
+    echo "  WARNING: pdftoppm not found, cannot convert slide PDF"
+    echo "  Install: brew install poppler (macOS) / apt-get install poppler-utils (Linux)"
+  fi
+fi
+
 SLIDE_COUNT=0
 HAS_SLIDES="false"
 if [ -d "$SLIDES_DIR" ]; then
-  # Count PNG slides (prefer PNG, fall back to JPG)
-  PNG_COUNT=$(ls "$SLIDES_DIR"/slide-*.png 2>/dev/null | wc -l | tr -d ' ')
-  JPG_COUNT=$(ls "$SLIDES_DIR"/slide-*.jpg 2>/dev/null | wc -l | tr -d ' ')
+  PNG_COUNT=$(find "$SLIDES_DIR" -maxdepth 1 -name "slide-*.png" 2>/dev/null | wc -l | tr -d ' ')
+  JPG_COUNT=$(find "$SLIDES_DIR" -maxdepth 1 -name "slide-*.jpg" 2>/dev/null | wc -l | tr -d ' ')
   if [ "$PNG_COUNT" -gt 0 ]; then
     SLIDE_COUNT=$PNG_COUNT
     SLIDE_EXT="png"

@@ -1,12 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import InfographicViewer from '../../components/InfographicViewer.astro';
-import SlideGallery from '../../components/SlideGallery.astro';
+import MediaStrip from '../../components/MediaStrip.astro';
 import ReportContent from '../../components/ReportContent.astro';
-import { t } from '../../i18n/ui';
-
-const lang = 'zh';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports');
@@ -21,32 +17,31 @@ const { Content } = await report.render();
 ---
 
 <BaseLayout
-  title={`${report.data.title} - ${t(lang, 'site.title')}`}
+  title={`${report.data.title} - 鬼哥的 AI 行业每日简报`}
   description={report.data.description}
-  lang={lang}
   wide
 >
   <div class="mb-4">
     <a href="/fin-report/archive" class="text-sm text-blue-600 hover:text-blue-700">
-      &larr; {t(lang, 'report.backToArchive')}
+      &larr; 返回归档
     </a>
   </div>
 
   <article>
-    <header class="mb-6">
+    <header class="mb-2">
       <time class="text-sm font-medium text-blue-600">{report.data.dateStr}</time>
       <h1 class="mt-1 text-2xl font-bold text-gray-900">{report.data.title}</h1>
     </header>
 
-    {report.data.infographic && (
-      <InfographicViewer src={report.data.infographic} alt={report.data.title} />
-    )}
+    <MediaStrip
+      infographic={report.data.infographic}
+      title={report.data.title}
+      hasSlides={report.data.hasSlides}
+      slideCount={report.data.slideCount}
+      dateStr={report.data.dateStr}
+    />
 
-    {report.data.hasSlides && report.data.slideCount > 0 && (
-      <SlideGallery dateStr={report.data.dateStr} count={report.data.slideCount} lang={lang} />
-    )}
-
-    <ReportContent lang={lang}>
+    <ReportContent>
       <Content />
     </ReportContent>
   </article>

@@ -1,20 +1,10 @@
----
-import { t, type Lang } from '../i18n/ui';
-
-interface Props {
-  lang?: Lang;
-}
-
-const { lang = 'zh' } = Astro.props;
----
-
 <footer class="mt-16 border-t border-gray-200 bg-white">
   <div class="mx-auto max-w-5xl px-4 py-8">
     <p class="text-center text-xs text-gray-400">
-      {t(lang, 'footer.disclaimer')}
+      免责声明：本报告仅供参考，不构成投资建议。
     </p>
     <p class="mt-2 text-center text-xs text-gray-400">
-      {t(lang, 'footer.poweredBy')}
+      由 Finance Briefing Agent 自动生成
     </p>
   </div>
 </footer>

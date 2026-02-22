@@ -4,9 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import InfographicViewer from '../components/InfographicViewer.astro';
 import ReportCard from '../components/ReportCard.astro';
 import SubscribeForm from '../components/SubscribeForm.astro';
-import { t } from '../i18n/ui';
 
-const lang = 'zh';
 const reports = (await getCollection('reports'))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
@@ -14,12 +12,12 @@ const latest = reports[0];
 const recent = reports.slice(1, 6);
 ---
 
-<BaseLayout title={t(lang, 'site.title')} description={t(lang, 'site.description')} lang={lang}>
+<BaseLayout title="鬼哥的 AI 行业每日简报" description="每日自动生成的 AI 行业金融分析与投资简报">
   {latest ? (
     <>
       <section class="mb-10">
         <div class="flex items-center gap-3 mb-4">
-          <h1 class="text-2xl font-bold text-gray-900">{t(lang, 'home.latestBriefing')}</h1>
+          <h1 class="text-2xl font-bold text-gray-900">最新简报</h1>
           <time class="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
             {latest.data.dateStr}
           </time>
@@ -35,16 +33,16 @@ const recent = reports.slice(1, 6);
           href={`/fin-report/reports/${latest.slug}`}
           class="mt-4 inline-block rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
         >
-          {t(lang, 'home.readFull')} &rarr;
+          阅读完整报告 &rarr;
         </a>
       </section>
 
       {recent.length > 0 && (
         <section>
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-bold text-gray-900">{t(lang, 'home.recentReports')}</h2>
+            <h2 class="text-xl font-bold text-gray-900">近期报告</h2>
             <a href="/fin-report/archive" class="text-sm text-blue-600 hover:text-blue-700">
-              {t(lang, 'home.viewAll')} &rarr;
+              查看全部 &rarr;
             </a>
           </div>
           <div class="flex flex-col gap-3">
@@ -56,7 +54,6 @@ const recent = reports.slice(1, 6);
                 description={r.data.description}
                 hasSlides={r.data.hasSlides}
                 infographic={r.data.infographic}
-                lang={lang}
               />
             ))}
           </div>
@@ -64,8 +61,8 @@ const recent = reports.slice(1, 6);
       )}
     </>
   ) : (
-    <p class="text-center text-gray-500 py-20">{t(lang, 'noReports')}</p>
+    <p class="text-center text-gray-500 py-20">暂无报告</p>
   )}
 
-  <SubscribeForm lang={lang} />
+  <SubscribeForm />
 </BaseLayout>

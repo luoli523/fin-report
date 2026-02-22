@@ -2,29 +2,27 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import type { Lang } from '../i18n/ui';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description?: string;
-  lang?: Lang;
   wide?: boolean;
 }
 
-const { title, description = '', lang = 'zh', wide = false } = Astro.props;
+const { title, description = '', wide = false } = Astro.props;
 ---
 
 <!doctype html>
-<html lang={lang === 'zh' ? 'zh-CN' : 'en'}>
+<html lang="zh-CN">
   <head>
     <BaseHead title={title} description={description} />
   </head>
   <body>
-    <Header lang={lang} />
+    <Header />
     <main class:list={['mx-auto px-4 py-8', wide ? 'max-w-6xl' : 'max-w-5xl']}>
       <slot />
     </main>
-    <Footer lang={lang} />
+    <Footer />
   </body>
 </html>

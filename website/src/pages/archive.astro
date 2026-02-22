@@ -2,27 +2,24 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ReportCard from '../components/ReportCard.astro';
-import { t } from '../i18n/ui';
 
-const lang = 'zh';
 const reports = (await getCollection('reports'))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-// Group by month
 const grouped = new Map<string, typeof reports>();
 for (const r of reports) {
-  const month = r.data.dateStr.slice(0, 7); // YYYY-MM
+  const month = r.data.dateStr.slice(0, 7);
   if (!grouped.has(month)) grouped.set(month, []);
   grouped.get(month)!.push(r);
 }
 ---
 
-<BaseLayout title={`${t(lang, 'archive.title')} - ${t(lang, 'site.title')}`} description={t(lang, 'archive.description')} lang={lang}>
-  <h1 class="mb-2 text-2xl font-bold text-gray-900">{t(lang, 'archive.title')}</h1>
-  <p class="mb-8 text-gray-500">{t(lang, 'archive.description')}</p>
+<BaseLayout title="历史归档 - 鬼哥的 AI 行业每日简报" description="所有每日简报按日期排列">
+  <h1 class="mb-2 text-2xl font-bold text-gray-900">历史归档</h1>
+  <p class="mb-8 text-gray-500">所有每日简报按日期排列</p>
 
   {reports.length === 0 ? (
-    <p class="text-center text-gray-500 py-20">{t(lang, 'noReports')}</p>
+    <p class="text-center text-gray-500 py-20">暂无报告</p>
   ) : (
     [...grouped.entries()].map(([month, items]) => (
       <section class="mb-8">
@@ -36,7 +33,6 @@ for (const r of reports) {
               description={r.data.description}
               hasSlides={r.data.hasSlides}
               infographic={r.data.infographic}
-              lang={lang}
             />
           ))}
         </div>

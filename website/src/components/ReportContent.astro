@@ -1,12 +1,7 @@
 ---
-interface Props {
-  lang?: string;
-}
-
-const { lang = 'zh' } = Astro.props;
-const tocTitle = lang === 'zh' ? '目录' : 'Contents';
-const expandLabel = lang === 'zh' ? '展开' : 'Expand';
-const collapseLabel = lang === 'zh' ? '收起' : 'Collapse';
+const tocTitle = '目录';
+const expandLabel = '展开';
+const collapseLabel = '收起';
 ---
 
 <!-- Reading progress bar -->
