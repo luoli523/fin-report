@@ -1,13 +1,14 @@
 /**
- * 专业投资简报生成脚本
- * 
- * 按照用户要求的6大部分格式生成：
- * 一、核心股票池表现
- * 二、市场宏观动态与要闻
- * 三、关键公司深度动态
- * 四、行业影响与关联分析
- * 五、产业链资本动向与资产交易
- * 六、投资建议与策略展望
+ * 专业投资简报生成脚本（v2 — 倒金字塔结构）
+ *
+ * 按读者阅读优先级渲染：
+ * 1. 执行摘要 + 行动清单
+ * 2. 市场全景（指数 + TOP5 + 宏观）
+ * 3. 核心持仓追踪
+ * 4. 今日主题与催化剂
+ * 5. 要闻 + 前瞻
+ * 6. 智慧资金 + 策略
+ * 附录：完整行情 + 利率汇率
  */
 
 import * as fs from 'fs';
@@ -225,12 +226,13 @@ async function main() {
   console.log(`      大小: ${(fs.statSync(markdownPath).size / 1024).toFixed(2)} KB`);
 
   console.log('\n📋 报告内容:');
-  console.log('   一、核心股票池表现（按AI产业链分类）');
-  console.log('   二、市场宏观动态与要闻');
-  console.log('   三、关键公司深度动态');
-  console.log('   四、行业影响与关联分析');
-  console.log('   五、产业链资本动向与资产交易');
-  console.log('   六、投资建议与策略展望');
+  console.log('   1. 执行摘要 + 行动清单');
+  console.log('   2. 市场全景');
+  console.log('   3. 核心持仓追踪');
+  console.log('   4. 今日主题与催化剂');
+  console.log('   5. 要闻速递 + 本周前瞻');
+  console.log('   6. 智慧资金与情绪 + 策略配置');
+  console.log('   附录: 完整行情表 + 利率汇率详情');
 
   console.log('\n📄 查看报告:');
   console.log(`   cat ${markdownPath}`);

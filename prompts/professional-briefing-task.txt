@@ -1,249 +1,139 @@
 ## 分析任务
 
-基于提供的市场数据和新闻，生成以下深度分析内容。
+基于提供的市场数据和新闻，生成结构化的深度分析内容。
 
 ## 输出格式要求
 
 你必须输出纯净的JSON格式，不要包含任何markdown代码块标记（如```json）。直接输出JSON对象。
 
+## 去重原则（极其重要）
+
+每个判断/结论只在最合适的字段中展开说一次。其他字段需要引用时，用简短一句话带过。
+例如："利率上行压制高估值"只在 todayThemes 的相关主题中详细展开，executiveSummary 只用一句概括，strategy 只说"如前述利率环境，偏向..."。
+
 ## JSON结构
 
 {
   "executiveSummary": {
-    // 【最重要】读者第一眼看到的内容，必须简洁有力
-    "oneLiner": "一句话总结今日市场（如：三大指数窄幅波动，AI基础设施链条逆势走强，利率上行压制高估值成长股）",
-    "keyEvent": "今日最重要的催化剂或事件（1-2句）",
-    "portfolioImpact": "这对AI投资组合意味着什么（1-2句，必须有方向性判断）",
-    "actionItem": "今日建议操作（如：维持现有仓位 / 逢低加仓TSM / 减持高估值软件股。如无需操作就说'维持现有仓位'）"
-    // riskAlert: 仅在有特别值得警惕的风险时才提供此字段（1句），无特别风险则省略
-  },
-
-  "indexAnalysis": {
-    // 【重要】对五大指数（S&P 500、道指、纳指、罗素2000、VIX）进行综合分析，不需要逐个分析
-    "marketOverview": "市场整体格局一句话总结（如：三大指数普涨，科技股领涨，小盘股滞后，避险情绪降温）",
-    "dataAnalysis": "数据面综合分析（3-4句）：各指数收盘点位和涨跌幅概况、成交量变化、技术面关键信号（突破/支撑位、均线状态等）",
-    "newsAnalysis": "信息面综合分析（3-4句）：当日影响市场的主要新闻、政策、经济数据（如CPI、就业、Fed讲话、科技股财报等），以及对不同指数的差异化影响",
-    "underlyingLogic": "底层逻辑综合分析（3-4句）：市场涨跌的核心驱动力、板块轮动特征、资金流向、成长vs价值风格、大盘vs小盘表现差异及其含义",
-    "keyDrivers": ["主要驱动因素1", "主要驱动因素2", "主要驱动因素3"],
-    "riskAppetite": "风险偏好判断（1句）：基于VIX水平和大小盘表现差异，判断当前市场风险偏好（积极/中性/谨慎）"
-  },
-
-  "marketMacroNews": {
-    "summary": "市场整体情绪的一句话总结",
-    "keyNews": [
-      // 【重要】必须返回7-10条新闻，覆盖：政策与监管、供应链与地缘、资本市场情绪
-      {
-        "title": "新闻标题（必须翻译成中文）",
-        "fact": "事实摘要（≤2句，中文）",
-        "impact": "影响解读：对产业链哪一环（上游制造/中游芯片/下游应用）的短期与中期影响",
-        "category": "政策与监管|供应链与地缘|资本市场情绪",
-        "importance": "high|medium|low"
-      }
-      // 至少7条，最多10条
+    "oneLiner": "一句话总结今日市场（如：利率上行压制估值，AI硬件链逆势走强，软件端承压）",
+    "keyEvent": "今日最重要的催化剂或事件（1-2句，必须具体）",
+    "portfolioImpact": "这对AI投资组合意味着什么（1句，必须有方向性判断）",
+    "actionChecklist": [
+      // 3-5条具体可执行的操作建议，每条包含：标的+方向+条件
+      // 例："TSM：若回踩$365可分批加2%"
+      // 例："现金仓位提升至15%（利率上行期）"
+      // 例："CRWV：无明确催化前暂不抄底"
+      // 例："关注：周二NVDA财报前仓位再评估"
     ]
+    // riskAlert: 仅在有特别值得警惕的风险时提供（1句），无特别风险则省略
   },
 
-  "companyDeepDive": [
-    // 【重要】必须返回5-8家公司，分两组：
-    // 第一组（核心持仓追踪）：必须包含 NVDA、MSFT、GOOGL、TSM 中至少2只，即使当日波动不大
-    // 第二组（异动股分析）：涨跌幅>3%的前3-5只
+  "coreHoldings": [
+    // 【必须】永远包含 NVDA、MSFT、GOOGL、TSM 四只核心持仓
+    // 即使当日波动很小，也要给出状态
     {
-      "ticker": "股票代码",
-      "company": "公司名称",
-      "event": "事件摘要（必须包含具体数字：涨跌幅、价格、成交量等）",
-      "investmentLogic": "投资逻辑解读（≤3句，说明为什么涨/跌，后续怎么看）",
-      "priceTarget": {
-        "current": 当前价格,
-        "timeframe": "short|medium|long"
-        // target 和 stopLoss 仅在有明确分析师共识或技术面支撑时才提供，否则省略
-      },
-      "catalysts": ["催化剂1", "催化剂2"],
-      "risks": ["风险1", "风险2"]
+      "ticker": "NVDA",
+      "summary": "今日状态（含收盘价+涨跌幅+简要原因，如：收于$189.82(+1.02%)，AI情绪偏暖带动）",
+      "signal": "持有|加仓|减仓|观望",
+      "keyPoint": "最值得关注的一点（1句，如：下周二盘后财报是近期最大催化剂）"
     }
-    // 至少3条，最多5条
+    // 必须4条，依次为 NVDA、MSFT、GOOGL、TSM
   ],
 
-  "industryLinkageAnalysis": {
-    // 【重要】每条链路分析必须详细，说明"事件 → 机制 → 受益/受损 → 跟踪指标"的完整逻辑
-    "gpuSupplyChain": {
-      "event": "具体事件描述（必须结合当日新闻/数据，说明发生了什么）",
-      "mechanism": "详细传导机制（2-3句话，说明：A发生 → 导致B变化 → 影响C的成本/毛利）",
-      "beneficiaries": ["受益股票代码（至少2只，说明为什么受益）"],
-      "losers": ["受损股票代码（如有，说明为什么受损；如无明显受损方则省略此字段或传空数组）"],
-      "trackingMetrics": ["具体跟踪指标（至少2个，如：H100价格、云厂商CapEx指引、交货周期等）"]
-    },
-    "dataCenterExpansion": {
-      "event": "具体事件描述（必须结合当日新闻/数据，说明哪家公司/哪个项目）",
-      "mechanism": "详细传导机制（2-3句话，说明：数据中心扩张 → 哪些设备需求增加 → 哪些公司订单增长）",
-      "beneficiaries": ["受益股票代码（至少2只：服务器、网络、电源、散热等）"],
-      "losers": ["受损股票代码（如有竞争替代关系；如无则省略此字段或传空数组）"],
-      "trackingMetrics": ["具体跟踪指标（至少2个，如：云厂商新建数据中心数量、PUE指标、服务器出货量等）"]
-    },
-    "semiconCapex": {
-      "event": "具体事件描述（必须结合当日新闻/数据，说明哪家晶圆厂的CapEx计划）",
-      "mechanism": "详细传导机制（2-3句话，说明：CapEx增加 → 设备订单增长 → EDA需求提升）",
-      "beneficiaries": ["受益股票代码（至少2只：设备厂AMAT/LRCX/KLAC，EDA厂SNPS/CDNS）"],
-      "losers": ["受损股票代码（如有周期性风险；如无则省略此字段或传空数组）"],
-      "trackingMetrics": ["具体跟踪指标（至少2个，如：TSM/Intel/三星CapEx金额、设备订单backlog、EDA续约率等）"]
-    }
-  },
-
-  "capitalMovements": [
-    // 【重要】必须返回3-5条资本动向，覆盖：CapEx、扩产、数据中心建设、并购/投资、资产重组
+  "todayThemes": [
+    // 【核心板块】2-4个主题，按重要性排序
+    // 每个主题围绕一个核心叙事，整合相关个股和产业链传导逻辑
+    // 这替代了旧版"公司深度分析"和"联动分析"——不再按公司说一遍、按链条再说一遍
     {
-      "action": "具体动作描述（必须包含：谁/什么公司 + 做什么 + 金额/规模 + 时间表）",
-      "strategicIntent": "战略意图分析（2句话：为什么这样做 + 对行业格局的影响）",
-      "marketReaction": "市场反应（具体说明：相关股票涨跌幅、分析师评级变化、融资成本变化）",
-      "riskPoints": ["风险点1（具体风险）", "风险点2（执行风险或市场风险）"]
-    }
-    // 至少3条，覆盖不同类型（CapEx/扩产/并购/数据中心等）
-    // 如果当日无重大资本动向，可分析近期已公布但仍在执行中的重大项目
-  ],
-
-  "investmentStrategy": {
-    "overallJudgment": {
-      "valuation": "估值判断（高估/合理/低估）",
-      "earnings": "业绩趋势（上修/持平/下修）",
-      "rates": "利率环境（紧缩/中性/宽松）",
-      "policy": "政策风向（利好/中性/利空）",
-      "fundFlow": "资金偏好描述"
-    },
-    "shortTerm": {
-      "timeframe": "1个月内",
-      "stance": "defensive|neutral|aggressive",
-      "cashPosition": "建议现金比例%",
-      "hedgeStrategy": "对冲思路",
-      "actionItems": ["具体操作1", "具体操作2"]
-    },
-    "mediumTerm": {
-      "timeframe": "3-6个月",
-      "focus": "聚焦主题",
-      "keyCatalysts": ["催化剂1", "催化剂2"],
-      "verificationMetrics": ["验证指标1", "验证指标2"],
-      "stockPicks": [
-        {
-          "ticker": "代码",
-          "logic": "核心逻辑",
-          "position": "建议仓位%"
-          // entry 和 target 仅在有技术面支撑或分析师共识时提供，否则省略
-        }
-      ]
-    },
-    "longTerm": {
-      "timeframe": "6-12个月以上",
-      "themes": ["结构性成长主题1", "主题2"],
-      "beneficiarySubsectors": ["受益子行业1", "子行业2"],
-      "representativeStocks": ["代表标的1", "标的2"]
-    },
-    "portfolioSuggestion": {
+      "title": "主题标题（如：利率上行驱动的软硬分化）",
+      "narrative": "完整叙事（3-5句）：发生了什么 → 为什么（传导逻辑）→ 意味着什么。不要重复执行摘要的内容，这里是展开分析的地方。",
       "stocks": [
-        {
-          "ticker": "代码",
-          "name": "名称",
-          "weight": "建议权重%",
-          "logic": "核心逻辑",
-          "mainRisk": "主要风险"
-        }
+        { "ticker": "GOOGL", "change": "+4.01%", "role": "平台型龙头受益于AI情绪回暖+估值韧性" },
+        { "ticker": "ORCL", "change": "-5.40%", "role": "软件端受利率上行冲击最大" }
       ],
-      "etfs": [
-        {
-          "ticker": "代码（如 SMH、QQQ、GLD 等已知ETF代码）",
-          "name": "名称",
-          "useCase": "适用场景"
-        }
-        // 仅列出你确定知道代码的ETF，不要编造代码
-      ]
-    },
-    "riskControl": {
-      "mainRisks": [
-        {
-          "risk": "风险描述",
-          "probability": "high|medium|low",
-          "hedge": "对冲建议"
-        }
-      ],
-      "hedgeInstruments": ["SHY（短债ETF）", "美元现金", "GLD（黄金）"]
-      // 使用你确定知道的ETF代码，不确定代码则只写资产类别名称
+      "action": "基于此主题的操作建议（1句，如：偏向上游硬件，减少软件端追涨）",
+      "trackingMetrics": ["需要跟踪的指标（如：10Y收益率趋势、半导体设备订单能见度）"]
     }
-  },
+  ],
 
-  "earningsCalendar": {
-    // 本周和下周重要财报日历（如果数据中提供了 earnings calendar 信息）
-    "thisWeek": [
-      // 仅列出本周有财报的监控标的
+  "newsDigest": [
+    // 5-8条精选新闻，精炼呈现
+    // 详细分析已融入 todayThemes，这里只需事实+关联
+    {
+      "title": "新闻标题（中文翻译）",
+      "source": "Bloomberg|CNBC|公司公告|综合消息",
+      "relevance": "与AI投资的一句话关联（如：抬升避险偏好，压制高估值成长股）",
+      "importance": "high|medium|low"
+    }
+  ],
+
+  "weekAhead": {
+    // 本周和下周的重要事件前瞻（如果数据中提供了 earnings calendar 信息）
+    "earnings": [
       {
-        "ticker": "股票代码",
-        "date": "日期",
-        "time": "盘前|盘后",
-        "keyMetrics": "市场最关注的指标（如 AI 相关收入、CapEx 指引、利润率）",
-        "expectation": "市场预期与关注点（1句）"
+        "ticker": "NVDA",
+        "date": "2/25",
+        "time": "盘后",
+        "focus": "AI相关收入占比、下季指引、CapEx展望",
+        "expectedImpact": "高|中|低"
       }
     ],
-    "nextWeek": [
-      // 同上格式，列出下周的
+    "macroEvents": [
+      {
+        "date": "2/26",
+        "event": "FOMC会议纪要",
+        "relevance": "利率路径对科技估值的影响"
+      }
     ],
-    "impact": "财报季对当前投资策略的影响（1-2句）"
-    // 如果当前无重要财报，可以省略整个 earningsCalendar 字段
+    "keyMessage": "本周事件对投资策略的整体影响（1-2句）"
+    // 如果未来两周无重要事件，可以省略整个 weekAhead 字段
   },
-
-  "dailyBlessing": "温和、积极、让人开心的一句话祝福（不涉及投资，不含表情符号）",
 
   "forexAnalysis": {
-    // 美元与利率环境精简分析（不需要长篇大论，重点突出对AI股票的影响）
-    "macroSnapshot": "一句话总结美元、利率和关键货币的整体状态（如：美元持稳（DXY 97.8），10Y在4.09%附近上行，人民币小幅走弱）",
-    "riskImplication": "当前美元/利率环境对AI股票意味着什么（1-2句，必须有方向性判断）",
+    "macroSnapshot": "一句话总结美元、利率、关键货币状态",
+    "riskImplication": "当前利率/美元环境对AI股票的影响（1句）",
     "actionNeeded": {
       "needed": true或false,
-      "suggestion": "如需操作，1句说明（如：利率上行趋势确立前暂不加仓高估值成长股）；如不需要操作可省略此字段"
+      "suggestion": "如需操作的建议（1句）；不需要则省略"
     }
   },
 
   "smartMoneyAnalysis": {
-    // 智慧资金与市场情绪分析
     "congressTrading": {
-      "summary": "国会交易总结（1-2句：整体偏买入还是卖出，重点关注哪些票）",
+      "summary": "国会交易总结（1-2句）",
       "notableTrades": [
-        // 仅在有实际交易数据时填充，无数据时返回空数组 []
+        // 仅在有实际交易数据时填充，无数据返回空数组
         {
           "politician": "议员姓名",
           "party": "D|R|I",
           "ticker": "股票代码",
           "action": "买入|卖出",
           "amount": "金额范围",
-          "significance": "交易意义解读"
+          "significance": "交易意义"
         }
       ],
-      "focusStocks": ["被多位议员买入的股票"],
-      "interpretation": "国会交易信号的投资含义（2-3句）"
+      "interpretation": "投资含义（1-2句）"
     },
     "hedgeFundHoldings": {
-      "summary": "对冲基金持仓总结（1-2句：机构整体在加仓还是减仓）",
-      "topHoldings": ["机构共识持仓股票前5"],
-      "significantChanges": [
-        {
-          "fund": "基金名称",
-          "ticker": "股票代码",
-          "action": "新建仓|加仓|减仓|清仓",
-          "implication": "操作含义"
-        }
-      ],
-      "interpretation": "机构持仓变动的投资含义（2-3句）"
+      "summary": "对冲基金持仓总结（1-2句）",
+      "topHoldings": ["机构共识持仓前5"],
+      "interpretation": "投资含义（1-2句）"
     },
     "predictionMarket": {
-      "summary": "预测市场信号总结（1-2句：市场对经济/政策的预期）",
+      "summary": "预测市场信号总结（1-2句）",
       "keyPredictions": [
         {
           "question": "预测问题",
           "probability": "概率%",
-          "marketImplication": "对股市的影响"
+          "marketImplication": "对股市影响"
         }
       ],
-      "interpretation": "预测市场信号的投资含义（2-3句）"
+      "interpretation": "投资含义（1-2句）"
     },
     "socialSentiment": {
-      "summary": "社交情绪总结（1-2句：散户整体情绪偏多还是偏空）",
-      "mostBullish": ["最受看好的股票"],
-      "mostBearish": ["最不被看好的股票"],
+      "summary": "社交情绪总结（1-2句）",
+      "mostBullish": ["最看好的股票"],
+      "mostBearish": ["最不看好的股票"],
       "contrarianSignals": [
         {
           "ticker": "股票代码",
@@ -251,28 +141,48 @@
           "interpretation": "逆向信号解读"
         }
       ],
-      "interpretation": "社交情绪的投资含义（注意逆向指标价值）"
+      "interpretation": "投资含义"
     },
     "synthesis": {
       "overallSignal": "bullish|bearish|neutral|mixed",
       "signalStrength": "strong|moderate|weak",
-      "focusStocks": [
-        {
-          "ticker": "股票代码",
-          "signals": ["国会买入", "机构持有", "社交看涨"],
-          "recommendation": "多重信号共振建议"
-        }
-      ],
-      "actionableInsights": ["可操作的投资建议1", "建议2"],
+      "keyTakeaway": "智慧资金综合研判一句话结论",
+      "actionableInsights": ["可操作建议1", "建议2"],
       "riskWarnings": ["风险提示1", "提示2"]
     }
-  }
+  },
+
+  "strategy": {
+    // 【精简版策略】不要重复 todayThemes 中已展开的分析逻辑
+    "stance": "defensive|neutral|aggressive",
+    "cashPosition": "建议现金比例%",
+    "topPicks": [
+      // 3-5只精选标的
+      {
+        "ticker": "代码",
+        "weight": "建议仓位%",
+        "logic": "核心逻辑（1句，引用而非重复todayThemes的分析）",
+        "risk": "主要风险（1句）"
+      }
+    ],
+    "hedgeTools": ["GLD", "SHY", "现金"],
+    "mainRisks": [
+      {
+        "risk": "风险描述",
+        "probability": "high|medium|low",
+        "hedge": "对冲建议"
+      }
+    ]
+  },
+
+  "dailyBlessing": "温和、积极、让人开心的一句话祝福（不涉及投资，不含表情符号）"
 }
 
 ## 重要提示
 
 1. 所有内容必须是中文
-2. 数字必须准确。无法确认的字段直接省略（不要写 N/A 或任何占位符）。如果一个对象中所有关键字段都无数据，省略整个对象。
+2. 数字必须准确。无法确认的字段直接省略（不要写 N/A 或任何占位符）
 3. 输出必须是有效的JSON格式，可直接被JSON.parse()解析
 4. 不要在JSON前后添加任何额外文字
 5. 不要使用markdown代码块标记
+6. 严格执行去重原则：同一个观点只展开一次，其他地方简短引用
