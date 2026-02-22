@@ -1,0 +1,116 @@
+---
+import { t, type Lang } from '../i18n/ui';
+
+interface Props {
+  dateStr: string;
+  count: number;
+  lang?: Lang;
+}
+
+const { dateStr, count, lang = 'zh' } = Astro.props;
+const slides = Array.from({ length: count }, (_, i) => {
+  const num = String(i + 1).padStart(3, '0');
+  return `/fin-report/images/slides/${dateStr}/slide-${num}.webp`;
+});
+const galleryId = `gallery-${dateStr}`;
+---
+
+<section class="my-8">
+  <h2 class="mb-4 text-xl font-bold text-gray-900">{t(lang, 'report.slides')}</h2>
+
+  <div class="relative rounded-lg border border-gray-200 bg-white overflow-hidden" id={galleryId}>
+    <!-- Counter -->
+    <div class="absolute top-3 right-3 z-10 rounded-full bg-black/50 px-3 py-1 text-xs text-white">
+      <span data-current>1</span> / {count}
+    </div>
+
+    <!-- Viewport -->
+    <div class="overflow-hidden">
+      <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" data-track>
+        {slides.map((src, i) => (
+          <div class="w-full flex-none snap-start" data-index={i}>
+            <img
+              src={src}
+              alt={`Slide ${i + 1}`}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              class="w-full h-auto"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Nav buttons -->
+    <button
+      data-prev
+      class="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white text-2xl hover:bg-black/60 transition-colors"
+      aria-label="Previous"
+    >&lsaquo;</button>
+    <button
+      data-next
+      class="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white text-2xl hover:bg-black/60 transition-colors"
+      aria-label="Next"
+    >&rsaquo;</button>
+  </div>
+
+  <!-- Thumbnails -->
+  <div class="mt-3 flex gap-1.5 overflow-x-auto pb-2" data-thumbs>
+    {slides.map((src, i) => (
+      <button
+        class:list={[
+          'flex-none rounded border-2 overflow-hidden transition-all opacity-50 hover:opacity-80',
+          i === 0 ? 'border-blue-500 opacity-100' : 'border-transparent',
+        ]}
+        data-thumb={i}
+      >
+        <img src={src} alt={`Thumb ${i + 1}`} loading="lazy" decoding="async" class="h-12 w-auto" />
+      </button>
+    ))}
+  </div>
+</section>
+
+<script define:vars={{ galleryId, count }}>
+  const root = document.getElementById(galleryId);
+  if (root) {
+    const track = root.querySelector('[data-track]');
+    const counter = root.querySelector('[data-current]');
+    const prevBtn = root.querySelector('[data-prev]');
+    const nextBtn = root.querySelector('[data-next]');
+    const thumbs = root.parentElement.querySelectorAll('[data-thumb]');
+    let current = 0;
+
+    function goTo(index) {
+      current = Math.max(0, Math.min(count - 1, index));
+      const slide = track.children[current];
+      slide.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      counter.textContent = String(current + 1);
+      thumbs.forEach((t, i) => {
+        t.classList.toggle('border-blue-500', i === current);
+        t.classList.toggle('border-transparent', i !== current);
+        t.classList.toggle('opacity-100', i === current);
+        t.classList.toggle('opacity-50', i !== current);
+      });
+    }
+
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+    thumbs.forEach((t) => {
+      t.addEventListener('click', () => goTo(Number(t.dataset.thumb)));
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+  }
+</script>
+
+<style>
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+</style>

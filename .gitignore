@@ -33,3 +33,8 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Website build output
+website/dist/
+website/node_modules/
+website/.astro/

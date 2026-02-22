@@ -10,6 +10,9 @@ on:
   # 支持手动触发
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   NODE_VERSION: '20'
 
@@ -149,6 +152,36 @@ jobs:
             echo "💡 To update IG_SESSION_STATE secret, run:"
             echo "   base64 < output/ig-session.json | pbcopy"
           fi
+
+      # --- Website Build & Deploy ---
+      - name: Install WebP tools
+        run: sudo apt-get install -y webp
+
+      - name: Prepare website content
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          bash scripts/prepare-website-content.sh "$DATE" ./output ./website
+
+      - name: Commit website content
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add website/src/content/reports/ website/public/images/
+          git diff --cached --quiet || git commit -m "chore: add briefing $(date -u +%Y-%m-%d)"
+          git push || echo "⚠️ Push failed (non-critical)"
+        continue-on-error: true
+
+      - name: Build website
+        run: |
+          cd website
+          npm ci
+          npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/dist
 
       - name: Upload briefing as artifact
         uses: actions/upload-artifact@v4

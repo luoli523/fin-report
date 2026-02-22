@@ -1,0 +1,27 @@
+---
+interface Props {
+  src: string;
+  alt?: string;
+}
+
+const { src, alt = 'Infographic' } = Astro.props;
+const dialogId = `infographic-dialog-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<figure class="my-6">
+  <img
+    src={src}
+    alt={alt}
+    loading="lazy"
+    decoding="async"
+    class="w-full cursor-zoom-in rounded-lg shadow-sm border border-gray-200"
+    onclick={`document.getElementById('${dialogId}').showModal()`}
+  />
+  <dialog
+    id={dialogId}
+    class="max-w-[95vw] max-h-[95vh] rounded-lg bg-transparent backdrop:bg-black/70 p-0"
+    onclick={`if(event.target===this)this.close()`}
+  >
+    <img src={src} alt={alt} class="max-h-[90vh] rounded-lg" />
+  </dialog>
+</figure>

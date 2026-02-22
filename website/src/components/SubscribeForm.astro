@@ -1,0 +1,46 @@
+---
+import { t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'zh' } = Astro.props;
+---
+
+<section class="my-12 rounded-lg border border-blue-100 bg-blue-50/50 p-6 text-center" id="subscribe">
+  <h2 class="text-lg font-bold text-gray-900">{t(lang, 'subscribe.title')}</h2>
+  <p class="mt-2 text-sm text-gray-600">{t(lang, 'subscribe.description')}</p>
+
+  <div class="mt-4 flex flex-col items-center gap-3">
+    <!-- RSS subscribe link -->
+    <a
+      href="/fin-report/rss.xml"
+      target="_blank"
+      class="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-orange-600 transition-colors"
+    >
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/>
+      </svg>
+      {t(lang, 'subscribe.rss')}
+    </a>
+    <p class="text-xs text-gray-400">{t(lang, 'subscribe.rssHint')}</p>
+
+    <!--
+      Email subscription via follow.it (optional):
+      1. Register at https://follow.it
+      2. Add your RSS URL: https://luoli523.github.io/fin-report/rss.xml
+      3. Get the form embed code and replace the form below
+
+      <form action="https://api.follow.it/subscription-form/YOUR_ID/8" method="post" class="mt-3 flex gap-2">
+        <input type="email" name="email" required
+               placeholder={t(lang, 'subscribe.emailPlaceholder')}
+               class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none" />
+        <button type="submit"
+                class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors">
+          {t(lang, 'subscribe.button')}
+        </button>
+      </form>
+    -->
+  </div>
+</section>
