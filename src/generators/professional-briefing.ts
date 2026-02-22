@@ -1327,7 +1327,7 @@ export class ProfessionalBriefingGenerator {
       if (social.contrarianSignals && social.contrarianSignals.length > 0) {
         content += `**逆向信号提示**:\n`;
         for (const signal of social.contrarianSignals) {
-          const emoji = signal.signal === '极端看涨' ? '⚠️🟢' : '⚠️🔴';
+          const emoji = signal.signal === 'extreme_bullish' ? '⚠️🟢' : '⚠️🔴';
           content += `- ${emoji} ${signal.ticker}: ${signal.signal} - ${signal.interpretation}\n`;
         }
         content += `\n`;

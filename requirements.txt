@@ -1,4 +1,4 @@
-notebooklm-py
-instagrapi
-pdf2image
-Pillow
+notebooklm-py>=0.3.0
+instagrapi>=2.0.0
+pdf2image>=1.16.0
+Pillow>=10.0.0

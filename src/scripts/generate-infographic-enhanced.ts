@@ -739,7 +739,7 @@ gantt
         <div class="timeline">
           ${topHeadlines.map((headline, i) => `
             <div class="timeline-item">
-              <div class="timeline-content">${headline}</div>
+              <div class="timeline-content">${headline.headline}${headline.source ? ` (${headline.source})` : ''}</div>
             </div>
           `).join('')}
         </div>

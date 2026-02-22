@@ -130,9 +130,11 @@ jobs:
 
       - name: Send email (with infographic and slides)
         run: npm run send-email
+        continue-on-error: true
 
       - name: Send Telegram
         run: npm run send-telegram
+        continue-on-error: true
 
       - name: Post to Instagram
         run: npm run send-instagram

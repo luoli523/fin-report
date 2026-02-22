@@ -335,7 +335,7 @@ export class SECCollector extends BaseCollector<SECConfig> {
  * 创建 SEC 收集器实例
  */
 export function createSECCollector(config?: Partial<SECConfig>): SECCollector {
-  const userAgent = config?.userAgent || process.env.SEC_USER_AGENT || 'FinanceBriefingAgent contact@example.com';
+  const userAgent = config?.userAgent || process.env.SEC_USER_AGENT || 'FinanceBriefingAgent/1.0 (contact@example.com)';
   
   return new SECCollector({ 
     ...config,

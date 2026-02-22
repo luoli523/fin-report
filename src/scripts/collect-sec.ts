@@ -28,7 +28,7 @@ async function main() {
 
   try {
     // 从环境变量读取配置
-    const userAgent = process.env.SEC_USER_AGENT || 'FinanceBriefingAgent contact@example.com';
+    const userAgent = process.env.SEC_USER_AGENT || 'FinanceBriefingAgent/1.0 (contact@example.com)';
     const symbols = process.env.SEC_SYMBOLS?.split(',') || DEFAULT_SYMBOLS;
     const forms = process.env.SEC_FORMS?.split(',') || IMPORTANT_FORMS;
     const daysBack = parseInt(process.env.SEC_DAYS_BACK || '7');

@@ -252,9 +252,10 @@ export class MarketAnalyzer extends BaseAnalyzer<MarketAnalysis> {
       }
     }
 
-    // 板块表现
-    const bestSector = sectors[0];
-    const worstSector = sectors[sectors.length - 1];
+    // 板块表现（按涨跌幅排序取最佳/最差）
+    const sortedSectors = [...sectors].sort((a, b) => b.performance - a.performance);
+    const bestSector = sortedSectors[0];
+    const worstSector = sortedSectors[sortedSectors.length - 1];
 
     if (bestSector && bestSector.performance > 1) {
       highlights.push(`${bestSector.name}板块领涨，平均涨幅 ${this.formatPercent(bestSector.performance)}`);

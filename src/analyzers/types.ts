@@ -2,6 +2,8 @@
  * 分析器类型定义
  */
 
+import type { ForexAnalysis } from './forex';
+
 // 趋势方向
 export type TrendDirection = 'up' | 'down' | 'neutral';
 
@@ -158,7 +160,7 @@ export interface ComprehensiveAnalysis {
   news?: NewsAnalysis;
   economic?: EconomicAnalysis;
   smartMoney?: SmartMoneyAnalysis;
-  forex?: any; // 外汇分析，类型定义在 forex.ts 中
+  forex?: ForexAnalysis;
 
   // 综合摘要
   summary: {
