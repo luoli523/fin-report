@@ -112,13 +112,17 @@ if [ -f "$INFOGRAPHIC_FILE" ] || [ "$HAS_SLIDES" = "true" ]; then
       echo "  Infographic: $(du -h "$DST" | cut -f1)"
     fi
 
-    # Compress slides
+    # Compress slides (standardize naming to 2-digit padding for <100, 3-digit for >=100)
     if [ "$HAS_SLIDES" = "true" ]; then
       mkdir -p "$IMAGES_DIR/slides/${DATE}"
-      for src_img in "$SLIDES_DIR"/slide-*."$SLIDE_EXT"; do
+      PAD_LEN=2
+      [ "$SLIDE_COUNT" -ge 100 ] && PAD_LEN=3
+      IDX=0
+      for src_img in $(ls "$SLIDES_DIR"/slide-*."$SLIDE_EXT" 2>/dev/null | sort); do
         [ -f "$src_img" ] || continue
-        base=$(basename "$src_img" ".$SLIDE_EXT")
-        cwebp -q 70 -resize 1280 0 "$src_img" -o "$IMAGES_DIR/slides/${DATE}/${base}.webp" 2>/dev/null
+        IDX=$((IDX + 1))
+        DST_NAME=$(printf "slide-%0${PAD_LEN}d.webp" "$IDX")
+        cwebp -q 70 -resize 1280 0 "$src_img" -o "$IMAGES_DIR/slides/${DATE}/${DST_NAME}" 2>/dev/null
       done
       COMPRESSED_COUNT=$(ls "$IMAGES_DIR/slides/${DATE}"/*.webp 2>/dev/null | wc -l | tr -d ' ')
       echo "  Slides: ${COMPRESSED_COUNT} compressed"
