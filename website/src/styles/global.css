@@ -69,10 +69,6 @@
     background: rgba(249, 250, 251, 0.6);
   }
 
-  .section-blessing {
-    @apply border-l-rose-400;
-    background: linear-gradient(135deg, #fff1f2 0%, #ffffff 50%, #fdf2f8 100%);
-  }
 
   /* Prose overrides inside sections */
   .prose .report-section h2:first-child {

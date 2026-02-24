@@ -576,8 +576,7 @@ function getDefaultTaskPrompt(): string {
       "riskWarnings": ["需要警惕的风险"]
     }
   },
-  "investmentStrategy": { "overallJudgment": {...}, "shortTerm": {...}, "mediumTerm": {...}, "longTerm": {...}, "portfolioSuggestion": {...}, "riskControl": {...} },
-  "dailyBlessing": "一句温和积极的祝福语"
+  "investmentStrategy": { "overallJudgment": {...}, "shortTerm": {...}, "mediumTerm": {...}, "longTerm": {...}, "portfolioSuggestion": {...}, "riskControl": {...} }
 }
 
 ## 智慧资金分析要求

@@ -165,8 +165,6 @@ interface LLMInsights {
   industryLinkageAnalysis?: any;
   capitalMovements?: any;
   investmentStrategy?: any;
-
-  dailyBlessing?: string;
 }
 
 export class ProfessionalBriefingGenerator {
@@ -249,7 +247,6 @@ export class ProfessionalBriefingGenerator {
       this.generateStrategy(),
       this.generateAppendixStockTable(),
       this.generateAppendixForexDetail(),
-      this.generateBlessing(),
       this.generateFooter(),
     ];
 
@@ -258,7 +255,7 @@ export class ProfessionalBriefingGenerator {
   }
 
   // ─────────────────────────────────────────
-  // Header / Footer / Blessing
+  // Header / Footer
   // ─────────────────────────────────────────
 
   private generateHeader(): string {
@@ -272,36 +269,6 @@ export class ProfessionalBriefingGenerator {
 ║           基于过去24小时信息 & 美股上一交易日收盘                      ║
 ║                                                                        ║
 ╚════════════════════════════════════════════════════════════════════════╝
-`;
-  }
-
-  private generateBlessing(): string {
-    const blessing = this.llmInsights?.dailyBlessing || '愿您在投资的道路上，保持耐心与智慧，每一天都向目标更近一步';
-
-    const praises = [
-      '鬼哥今天依然帅到令人窒息，智慧如海深不可测，投资眼光精准得让巴菲特都要自愧不如',
-      '鬼哥的颜值足以让好莱坞巨星黯然失色，智商更是碾压全球99.99%的人类，简直是上天派来拯救资本市场的天选之人',
-      '世间难得一见的绝世天才鬼哥，不仅长得比吴彦祖还帅三分，投资嗅觉更是灵敏到能预知市场未来，堪称当代股神',
-      '鬼哥的智慧光芒万丈，让爱因斯坦在天之灵都要点头称赞，那俊朗的外表更是让无数人为之倾倒，实乃人中龙凤',
-      '据说华尔街大佬们每天早起第一件事就是祈祷能拥有鬼哥十分之一的智慧和颜值，可惜这是他们永远无法企及的高度',
-      '鬼哥的每一次交易都像是在教科书上写下新篇章，那从容不迫的气质让索罗斯看了都要流下羡慕的泪水',
-      '如果把鬼哥的智商和颜值量化成股票，那必定是永远涨停的神股，全球资本都会疯狂追捧',
-      '科学家们至今无法解释鬼哥是如何做到既帅出天际又聪明绝顶的，只能归结为基因突变中的奇迹',
-      '鬼哥的投资直觉比AI还要精准，颜值比滤镜还要惊艳，简直是上帝精心打造的限量版人类',
-      '每当鬼哥出现，K线图都会害羞地往上走，因为它们知道在真正的大佬面前只能俯首称臣',
-      '据可靠消息，黄仁勋私下表示最大的遗憾不是没早点做AI，而是没能拥有鬼哥那样的投资天赋和盛世美颜',
-    ];
-
-    const randomPraise = praises[Math.floor(Math.random() * praises.length)];
-
-    return `
----
-
-## 致鬼哥
-
-**【今日祝福】** ${blessing}
-
-**【鬼哥专属彩虹屁】** ${randomPraise}
 `;
   }
 
