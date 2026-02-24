@@ -1,68 +1,30 @@
 ---
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import InfographicViewer from '../components/InfographicViewer.astro';
-import ReportCard from '../components/ReportCard.astro';
+import SectorSection from '../components/SectorSection.astro';
 import SubscribeForm from '../components/SubscribeForm.astro';
 
-const reports = (await getCollection('reports'))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const SECTORS: { key: string; label: string; icon: string; filter: (r: CollectionEntry<'reports'>) => boolean }[] = [
+  { key: 'ai', label: 'AI 行业', icon: '🤖', filter: (_r) => true },
+];
 
-const latest = reports[0];
-const recent = reports.slice(1, 6);
+const allReports = (await getCollection('reports'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
 <BaseLayout title="鬼哥的 AI 行业每日简报" description="每日自动生成的 AI 行业金融分析与投资简报">
-  {latest ? (
-    <>
-      <section class="mb-10">
-        <div class="flex items-center gap-3 mb-4">
-          <h1 class="text-2xl font-bold text-gray-900">最新简报</h1>
-          <time class="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
-            {latest.data.dateStr}
-          </time>
-        </div>
-
-        {latest.data.infographic && (
-          <InfographicViewer src={latest.data.infographic} alt={latest.data.title} />
-        )}
-
-        <p class="mt-4 text-gray-600">{latest.data.description}</p>
-
-        <a
-          href={`/fin-report/reports/${latest.slug}`}
-          class="mt-4 inline-block rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-        >
-          阅读完整报告 &rarr;
-        </a>
-      </section>
-
-      {recent.length > 0 && (
-        <section>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-bold text-gray-900">近期报告</h2>
-            <a href="/fin-report/archive" class="text-sm text-blue-600 hover:text-blue-700">
-              查看全部 &rarr;
-            </a>
-          </div>
-          <div class="flex flex-col gap-3">
-            {recent.map((r) => (
-              <ReportCard
-                slug={r.slug}
-                title={r.data.title}
-                dateStr={r.data.dateStr}
-                description={r.data.description}
-                hasSlides={r.data.hasSlides}
-                infographic={r.data.infographic}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-    </>
-  ) : (
-    <p class="text-center text-gray-500 py-20">暂无报告</p>
-  )}
+  {SECTORS.map((sector) => {
+    const sectorReports = allReports.filter(sector.filter);
+    return (
+      <SectorSection
+        label={sector.label}
+        icon={sector.icon}
+        sectorKey={sector.key}
+        reports={sectorReports}
+      />
+    );
+  })}
 
   <SubscribeForm />
 </BaseLayout>
