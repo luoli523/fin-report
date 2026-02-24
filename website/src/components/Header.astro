@@ -4,9 +4,17 @@ const base = '/fin-report';
 
 <header class="border-b border-gray-200 bg-white">
   <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-    <a href={base} class="text-lg font-bold text-gray-900 hover:text-blue-600 transition-colors">
-      鬼哥的 AI 行业每日简报
-    </a>
+    <div class="flex items-center gap-3">
+      <img
+        src={`${base}/images/guige-avatar.png`}
+        alt="鬼哥"
+        class="w-9 h-9 rounded-full object-cover cursor-pointer ring-2 ring-orange-300 hover:ring-orange-500 transition-all"
+        id="guige-avatar-thumb"
+      />
+      <a href={base} class="text-lg font-bold text-gray-900 hover:text-blue-600 transition-colors">
+        鬼哥的 AI 行业每日简报
+      </a>
+    </div>
 
     <div class="flex items-center gap-6">
       <a href={base} class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
@@ -26,3 +34,41 @@ const base = '/fin-report';
     </div>
   </nav>
 </header>
+
+<div id="guige-lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
+  <div class="relative max-w-2xl w-full mx-4">
+    <img
+      src={`${base}/images/guige-avatar.png`}
+      alt="鬼哥"
+      class="w-full rounded-xl shadow-2xl"
+    />
+    <button
+      id="guige-lightbox-close"
+      class="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors text-lg font-bold"
+    >&times;</button>
+  </div>
+</div>
+
+<script>
+  const thumb = document.getElementById('guige-avatar-thumb');
+  const lightbox = document.getElementById('guige-lightbox');
+  const closeBtn = document.getElementById('guige-lightbox-close');
+
+  thumb?.addEventListener('click', () => {
+    lightbox?.classList.remove('hidden');
+    lightbox?.classList.add('flex');
+  });
+
+  function closeLightbox() {
+    lightbox?.classList.add('hidden');
+    lightbox?.classList.remove('flex');
+  }
+
+  closeBtn?.addEventListener('click', closeLightbox);
+  lightbox?.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+</script>
