@@ -294,5 +294,113 @@ document.addEventListener('DOMContentLoaded', () => {
   if (openBtn)  openBtn.addEventListener('click', openMobileTOC);
   if (closeBtn) closeBtn.addEventListener('click', closeMobileTOC);
   if (backdrop) backdrop.addEventListener('click', closeMobileTOC);
+
+  /* ─── 8. Text visual enhancements ─── */
+
+  const SKIP_TAGS = new Set(['CODE','PRE','SCRIPT','STYLE','TEXTAREA','INPUT']);
+  const NON_TICKERS = new Set([
+    'AI','IT','ETF','CEO','SEC','USD','EUR','GBP','JPY','CNY','CHF','SGD',
+    'TOP','RSS','EDA','GPU','CPU','LLM','API','FAQ','PDF','IPO','ESG',
+    'GDP','CPI','PPI','PMI','NFP','PCE','YOY','QOQ','MOM','BPS','UTC',
+    'THE','AND','FOR','NOT','ALL','HAS','BUT','ITS','ARE','WAS','HAD',
+    'MAY','CAN','RUN','USE','NEW','ANY','LET','YET','HOW','WHO','NOW',
+    'DID','SET','GET','PUT','ADD','END','SAY','OLD','OUR','TRY','OWN',
+    'CAP','NET','LOW','HIGH','AVG','MAX','MIN','RAW','KEY','BUY','DAY',
+  ]);
+
+  function getTextNodes(root) {
+    const nodes = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const n = walker.currentNode;
+      if (!n.textContent.trim()) continue;
+      let p = n.parentElement, ok = true;
+      while (p && p !== root) {
+        if (SKIP_TAGS.has(p.tagName) || p.hasAttribute('data-enh')) { ok = false; break; }
+        p = p.parentElement;
+      }
+      if (ok) nodes.push(n);
+    }
+    return nodes;
+  }
+
+  function replaceInTextNode(node, regex, replacer) {
+    const text = node.textContent;
+    regex.lastIndex = 0;
+    if (!regex.test(text)) return;
+    regex.lastIndex = 0;
+    const frag = document.createDocumentFragment();
+    let last = 0, m;
+    while ((m = regex.exec(text)) !== null) {
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const el = replacer(m);
+      frag.appendChild(el || document.createTextNode(m[0]));
+      last = regex.lastIndex;
+    }
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  }
+
+  // 8a. Risk alert blockquotes
+  content.querySelectorAll('blockquote').forEach(bq => {
+    if (/风险警示|Risk Alert|⚠️/.test(bq.textContent)) {
+      bq.classList.add('risk-alert');
+    }
+  });
+
+  // 8b. Top5 up/down bars
+  content.querySelectorAll('p').forEach(p => {
+    const t = p.textContent;
+    if (/🟢.*涨/.test(t)) p.classList.add('top5-up');
+    else if (/🔴.*跌/.test(t)) p.classList.add('top5-down');
+  });
+
+  // 8c. Advice / tracking highlight blocks
+  content.querySelectorAll('p').forEach(p => {
+    const t = p.textContent.trim();
+    if (t.startsWith('操作建议')) p.classList.add('advice-block');
+    else if (t.startsWith('跟踪指标')) p.classList.add('tracking-block');
+  });
+
+  // 8d. Action checklist
+  content.querySelectorAll('h3').forEach(h3 => {
+    if (/行动清单|Action/.test(h3.textContent)) {
+      const next = h3.nextElementSibling;
+      if (next && (next.tagName === 'UL' || next.tagName === 'OL')) {
+        next.classList.add('action-checklist');
+      }
+    }
+  });
+
+  // 8e. Percentage coloring (all sections, including tables)
+  const pctRe = /([+\-]\d+\.?\d*%)/g;
+  content.querySelectorAll('.report-section').forEach(section => {
+    getTextNodes(section).forEach(node => {
+      replaceInTextNode(node, pctRe, (m) => {
+        const span = document.createElement('span');
+        span.className = m[1].startsWith('-') ? 'pct-down' : 'pct-up';
+        span.textContent = m[1];
+        span.setAttribute('data-enh', '1');
+        return span;
+      });
+    });
+  });
+
+  // 8f. Ticker highlighting (paragraphs & list items, skip appendix & tables)
+  const tickRe = /\b([A-Z]{3,5})\b/g;
+  content.querySelectorAll('.report-section:not(.section-appendix)').forEach(section => {
+    section.querySelectorAll('p, li').forEach(el => {
+      getTextNodes(el).forEach(node => {
+        replaceInTextNode(node, tickRe, (m) => {
+          if (NON_TICKERS.has(m[1])) return null;
+          const span = document.createElement('span');
+          span.className = 'ticker-pill';
+          span.textContent = m[1];
+          span.setAttribute('data-enh', '1');
+          return span;
+        });
+      });
+    });
+  });
 });
 </script>

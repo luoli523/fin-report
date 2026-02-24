@@ -205,4 +205,112 @@
 
   .stock-pill.up   { @apply bg-green-50 text-green-700; }
   .stock-pill.down { @apply bg-red-50 text-red-700; }
+
+  /* ─── Percentage Coloring ─── */
+
+  .pct-up {
+    color: #15803d;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pct-down {
+    color: #dc2626;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ─── Ticker Pills ─── */
+
+  .ticker-pill {
+    display: inline;
+    padding: 0.05em 0.35em;
+    border-radius: 0.25rem;
+    background: #f1f5f9;
+    color: #334155;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* ─── Advice & Tracking Highlight Blocks ─── */
+
+  .prose p.advice-block {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose p.tracking-block {
+    background: #f8fafc;
+    border-left: 3px solid #94a3b8;
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9em;
+  }
+
+  /* ─── Risk Alert Blockquote ─── */
+
+  .prose blockquote.risk-alert {
+    background: #fef2f2;
+    border-left-color: #ef4444;
+    border-left-width: 4px;
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    color: #7f1d1d;
+  }
+
+  .prose blockquote.risk-alert strong {
+    color: #dc2626;
+  }
+
+  /* ─── Top5 Up/Down Bars ─── */
+
+  .prose p.top5-up {
+    background: linear-gradient(90deg, #f0fdf4 0%, transparent 100%);
+    border-left: 3px solid #22c55e;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    margin: 0.5rem 0;
+  }
+
+  .prose p.top5-down {
+    background: linear-gradient(90deg, #fef2f2 0%, transparent 100%);
+    border-left: 3px solid #ef4444;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    margin: 0.5rem 0;
+  }
+
+  /* ─── Action Checklist ─── */
+
+  .prose ul.action-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .prose ul.action-checklist > li {
+    position: relative;
+    padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+    margin: 0.375rem 0;
+    background: #f0f9ff;
+    border-radius: 0.5rem;
+    border: 1px solid #e0f2fe;
+    font-size: 0.95em;
+  }
+
+  .prose ul.action-checklist > li::before {
+    content: '☐';
+    position: absolute;
+    left: 0.75rem;
+    top: 0.625rem;
+    font-size: 1.1em;
+    color: #0284c7;
+  }
 }
