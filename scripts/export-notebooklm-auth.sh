@@ -11,7 +11,19 @@
 #   Value: <粘贴 base64 字符串>
 #
 
-STORAGE_FILE="$HOME/.notebooklm/storage_state.json"
+DEFAULT_PROFILE_STORAGE_FILE="$HOME/.notebooklm/profiles/default/storage_state.json"
+LEGACY_STORAGE_FILE="$HOME/.notebooklm/storage_state.json"
+NOTEBOOKLM_CMD="notebooklm"
+
+if [ -x ".venv/bin/notebooklm" ]; then
+    NOTEBOOKLM_CMD=".venv/bin/notebooklm"
+fi
+
+if [ -f "$DEFAULT_PROFILE_STORAGE_FILE" ]; then
+    STORAGE_FILE="$DEFAULT_PROFILE_STORAGE_FILE"
+else
+    STORAGE_FILE="$LEGACY_STORAGE_FILE"
+fi
 
 echo "================================================"
 echo "  NotebookLM 认证导出工具"
@@ -21,20 +33,26 @@ echo ""
 # 检查文件是否存在
 if [ ! -f "$STORAGE_FILE" ]; then
     echo "❌ 错误: 认证文件不存在"
-    echo "   路径: $STORAGE_FILE"
+    echo "   已检查:"
+    echo "   - $DEFAULT_PROFILE_STORAGE_FILE"
+    echo "   - $LEGACY_STORAGE_FILE"
     echo ""
     echo "请先运行以下命令完成认证:"
     echo "   notebooklm login"
+    echo "   # 如果默认 Chromium 启动失败:"
+    echo "   notebooklm login --browser chrome"
     exit 1
 fi
 
 # 检查认证是否有效
 echo "🔍 检查认证状态..."
-if notebooklm status 2>&1 | grep -q "not authenticated\|login"; then
+if ! "$NOTEBOOKLM_CMD" list --json >/dev/null 2>&1; then
     echo "❌ 错误: NotebookLM 认证已过期"
     echo ""
     echo "请重新运行:"
-    echo "   notebooklm login"
+    echo "   $NOTEBOOKLM_CMD login"
+    echo "   # 如果默认 Chromium 启动失败:"
+    echo "   $NOTEBOOKLM_CMD login --browser chrome"
     exit 1
 fi
 
@@ -43,6 +61,7 @@ echo ""
 
 # 导出 base64
 echo "📦 导出认证信息..."
+echo "   使用认证文件: $STORAGE_FILE"
 echo ""
 echo "================================================"
 echo "  将以下内容添加到 GitHub Secrets"

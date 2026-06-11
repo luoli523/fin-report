@@ -178,8 +178,16 @@ main() {
             ((ERRORS++))
         fi
 
+        print_info "安装 Playwright Chromium（用于 .venv/bin/notebooklm login 默认浏览器）..."
+        if "$VENV_DIR/bin/python3" -m playwright install chromium; then
+            print_success "Playwright Chromium 安装成功"
+        else
+            print_warning "Playwright Chromium 安装失败；可改用系统 Chrome 登录：.venv/bin/notebooklm login --browser chrome"
+            ((WARNINGS++))
+        fi
+
         # 验证安装
-        for pkg in notebooklm instagrapi pdf2image; do
+        for pkg in notebooklm instagrapi pdf2image playwright; do
             if "$VENV_DIR/bin/python3" -c "import $pkg" 2>/dev/null; then
                 print_success "$pkg ✓"
             else
@@ -201,11 +209,12 @@ main() {
     print_header "检查 NotebookLM 认证 (可选)"
 
     if [ -f "$VENV_DIR/bin/notebooklm" ]; then
-        if [ -f "$HOME/.notebooklm/storage_state.json" ]; then
+        if [ -f "$HOME/.notebooklm/profiles/default/storage_state.json" ] || [ -f "$HOME/.notebooklm/storage_state.json" ]; then
             print_success "NotebookLM 认证文件存在"
         else
             print_warning "NotebookLM 未登录"
             print_info "运行: .venv/bin/notebooklm login"
+            print_info "如果 Chromium 启动失败，可运行: .venv/bin/notebooklm login --browser chrome"
             ((WARNINGS++))
         fi
     fi
@@ -305,6 +314,7 @@ main() {
     echo "   .venv/bin/python3          # venv Python"
     echo "   .venv/bin/notebooklm       # NotebookLM CLI"
     echo "   .venv/bin/notebooklm login # 首次需登录 NotebookLM"
+    echo "   .venv/bin/notebooklm login --browser chrome # Chromium 异常时使用系统 Chrome"
     echo ""
     echo "📖 更多信息请查看 README.md"
     echo ""

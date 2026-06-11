@@ -627,13 +627,17 @@ export const MONITORED_SYMBOLS = {
 #### 1. 安装 NotebookLM CLI
 
 ```bash
-pip install notebooklm-py
+pip install "notebooklm-py[browser]"
+python -m playwright install chromium
 ```
 
 #### 2. 认证登录
 
 ```bash
 notebooklm login
+
+# 如果默认 Chromium 启动失败，可改用系统 Chrome
+notebooklm login --browser chrome
 ```
 
 按提示完成 Google 账号认证。

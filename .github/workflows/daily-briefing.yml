@@ -52,7 +52,10 @@ jobs:
         run: |
           if [ -n "$NOTEBOOKLM_STORAGE_STATE" ]; then
             mkdir -p ~/.notebooklm
-            echo "$NOTEBOOKLM_STORAGE_STATE" | base64 -d > ~/.notebooklm/storage_state.json
+            mkdir -p ~/.notebooklm/profiles/default
+            echo "$NOTEBOOKLM_STORAGE_STATE" | base64 -d > ~/.notebooklm/profiles/default/storage_state.json
+            cp ~/.notebooklm/profiles/default/storage_state.json ~/.notebooklm/storage_state.json
+            chmod 600 ~/.notebooklm/profiles/default/storage_state.json
             chmod 600 ~/.notebooklm/storage_state.json
             echo "✅ NotebookLM authentication configured"
           else

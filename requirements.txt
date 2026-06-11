@@ -1,4 +1,4 @@
-notebooklm-py>=0.3.0
+notebooklm-py[browser]>=0.7.1
 instagrapi>=2.0.0
 pdf2image>=1.16.0
 Pillow>=10.0.0
