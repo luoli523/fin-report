@@ -142,9 +142,9 @@ export async function sendBriefingEmail(briefingPath: string, infographicPath?: 
 
     // 发送邮件
     const info = await transporter.sendMail({
-      from: `"AI投资简报" <${config.from || config.smtp.user}>`,
+      from: `"全球宏观 × AI 简报" <${config.from || config.smtp.user}>`,
       to: config.to,
-      subject: `📊 AI Industry 每日简报 - ${today}${hasInfographic || hasSlides ? ' [含' + (hasInfographic ? '信息图' : '') + (hasInfographic && hasSlides ? '+' : '') + (hasSlides ? 'Slides' : '') + ']' : ''}`,
+      subject: `🌍 全球宏观 × AI 每日简报 - ${today}`,
       text: briefingContent, // 纯文本版本
       html: finalHtmlContent, // HTML 版本
       attachments,

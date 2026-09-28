@@ -36,7 +36,10 @@ export class GoogleProvider extends BaseLLMProvider {
     }
 
     const candidate = response.candidates[0];
-    const content = candidate.content?.parts?.[0]?.text || '';
+    const content = (candidate.content?.parts || [])
+      .filter((p: any) => typeof p.text === 'string' && !p.thought)
+      .map((p: any) => p.text)
+      .join('');
     const usage = response.usageMetadata;
 
     return {
@@ -94,6 +97,8 @@ export class GoogleProvider extends BaseLLMProvider {
 
       const req = https.request(options, (res) => {
         let data = '';
+
+        res.setEncoding('utf8'); // 避免多字节字符在 chunk 边界被截断
 
         res.on('data', (chunk) => {
           data += chunk;

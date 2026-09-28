@@ -2,14 +2,14 @@
  * 发送简报到 Telegram
  * 
  * 使用方式:
- *   npm run send-telegram              # 发送当天简报
- *   npm run send-telegram 2026-01-25   # 发送指定日期简报
+ *   npm run send-telegram             # 发送当天 v2 简报（摘要 + 公开 PDF + 私人 PDF）
+ *   npm run send-telegram 2026-09-29  # 发送指定日期
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
-import { sendBriefingTelegram, getTelegramConfig, sendTelegramPhoto, sendBriefingDocument } from '../services/telegram';
+import { getTelegramConfig, sendTelegramMessage, sendBriefingDocument } from '../services/telegram';
 
 dotenv.config();
 
@@ -29,57 +29,35 @@ async function main() {
     process.exit(0);
   }
 
-  // 确定要发送的日期
-  const dateArg = process.argv[2];
-  const targetDate = dateArg || new Date().toISOString().split('T')[0];
-  
-  // 查找简报文件
+  const targetDate = process.argv[2] || new Date().toISOString().split('T')[0];
   const outputDir = path.resolve(process.cwd(), 'output');
-  const briefingPath = path.join(outputDir, `ai-briefing-${targetDate}.md`);
+  const publicMd = path.join(outputDir, `v2-public-${targetDate}.md`);
 
-  if (!fs.existsSync(briefingPath)) {
-    console.error(`❌ 未找到 ${targetDate} 的简报文件`);
-    console.error(`   期望路径: ${briefingPath}`);
-    console.error('\n   请先运行 npm run daily 生成简报');
+  if (!fs.existsSync(publicMd)) {
+    console.error(`❌ 未找到 ${targetDate} 的公开简报，请先运行 npm run v2`);
     process.exit(1);
   }
-
-  console.log(`📄 简报文件: ${briefingPath}`);
   console.log(`📱 Chat ID: ${config.chatId}\n`);
 
-  // 1. 发送文字摘要
-  const success = await sendBriefingTelegram(briefingPath);
-  
-  if (!success) {
-    process.exit(1);
+  // 1. 短文本：regime + 一句话
+  const md = fs.readFileSync(publicMd, 'utf-8');
+  const regime = (md.match(/^> \*\*Regime\*\*: (.+)$/m)?.[1] || '').replace(/\*\*/g, '');
+  const oneLiner = md.match(/^\*\*一句话\*\*: (.+)$/m)?.[1] || '';
+  const text = [`🌍 全球宏观 × AI 简报 ${targetDate}`, regime ? `Regime: ${regime}` : '', '', oneLiner, '', `https://luoli523.github.io/fin-report/reports/${targetDate}/`].join('\n');
+  console.log((await sendTelegramMessage(text)) ? '✅ 摘要已发送' : '⚠️  摘要发送失败');
+
+  // 2. 公开简报 PDF
+  const publicPdf = path.join(outputDir, `v2-public-${targetDate}.pdf`);
+  if (fs.existsSync(publicPdf)) {
+    console.log((await sendBriefingDocument(publicPdf, `🌍 全球宏观 × AI 简报 ${targetDate}`)) ? '✅ 公开简报 PDF 已发送' : '⚠️  公开简报 PDF 发送失败');
   }
 
-  // 2. 发送信息图（infographic）
-  const infographicPath = path.join(outputDir, `ai-briefing-${targetDate}-infographic.png`);
-  if (fs.existsSync(infographicPath)) {
-    console.log(`\n🖼️  发送信息图: ${infographicPath}`);
-    const photoSent = await sendTelegramPhoto(infographicPath, `📊 AI Industry Infographic - ${targetDate}`);
-    if (photoSent) {
-      console.log('   ✅ 信息图发送成功');
-    } else {
-      console.log('   ⚠️  信息图发送失败，继续发送其他文件...');
-    }
+  // 3. 私人组合简报 PDF（只走 Telegram）
+  const privatePdf = path.join(outputDir, `v2-private-${targetDate}.pdf`);
+  if (fs.existsSync(privatePdf)) {
+    console.log((await sendBriefingDocument(privatePdf, `🔒 私人组合简报 ${targetDate}（请勿转发）`)) ? '✅ 私人简报 PDF 已发送' : '⚠️  私人简报 PDF 发送失败');
   } else {
-    console.log(`\n⏭️  未找到信息图文件，跳过: ${infographicPath}`);
-  }
-
-  // 3. 发送幻灯片（slides）
-  const slidesPath = path.join(outputDir, `ai-briefing-${targetDate}-slide-deck.pdf`);
-  if (fs.existsSync(slidesPath)) {
-    console.log(`\n📑 发送幻灯片: ${slidesPath}`);
-    const slidesSent = await sendBriefingDocument(slidesPath, `📑 AI Industry Slide Deck - ${targetDate}`);
-    if (slidesSent) {
-      console.log('   ✅ 幻灯片发送成功');
-    } else {
-      console.log('   ⚠️  幻灯片发送失败');
-    }
-  } else {
-    console.log(`\n⏭️  未找到幻灯片文件，跳过: ${slidesPath}`);
+    console.log('ℹ️  无私人简报（未配置持仓）');
   }
 
   console.log('\n📱 Telegram 发送流程完成\n');

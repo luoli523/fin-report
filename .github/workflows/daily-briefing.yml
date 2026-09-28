@@ -1,23 +1,23 @@
 name: Daily Finance Briefing
 
 on:
-  # 定时运行 (cron 使用 UTC 时间)
-  # 新加坡时间 09:30 = UTC 01:30
-  # 周二到周六（新加坡）= 美股周一到周五收盘后
+  # 新加坡时间 09:30 = UTC 01:30，周二到周六（美股周一到周五收盘后）
   schedule:
-    - cron: '30 1 * * 2-6'  # 周二到周六，UTC 01:30 (新加坡时间 09:30)
-
-  # 支持手动触发
+    - cron: '30 1 * * 2-6'
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
+
 env:
   NODE_VERSION: '20'
 
 jobs:
-  generate-briefing:
+  briefing:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,68 +33,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup Python (for NotebookLM CLI)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Python dependencies
-        run: |
-          sudo apt-get update && sudo apt-get install -y poppler-utils
-          pip install -r requirements.txt
-          which notebooklm && notebooklm --version || echo "NotebookLM CLI verification needed"
-          python3 -c "import instagrapi; print('instagrapi OK')" || echo "instagrapi verification needed"
-          python3 -c "import pdf2image; print('pdf2image OK')" || echo "pdf2image verification needed"
-
-      - name: Setup NotebookLM authentication
-        env:
-          NOTEBOOKLM_STORAGE_STATE: ${{ secrets.NOTEBOOKLM_STORAGE_STATE }}
-        run: |
-          if [ -n "$NOTEBOOKLM_STORAGE_STATE" ]; then
-            mkdir -p ~/.notebooklm
-            mkdir -p ~/.notebooklm/profiles/default
-            echo "$NOTEBOOKLM_STORAGE_STATE" | base64 -d > ~/.notebooklm/profiles/default/storage_state.json
-            cp ~/.notebooklm/profiles/default/storage_state.json ~/.notebooklm/storage_state.json
-            chmod 600 ~/.notebooklm/profiles/default/storage_state.json
-            chmod 600 ~/.notebooklm/storage_state.json
-            echo "✅ NotebookLM authentication configured"
-          else
-            echo "⚠️ NotebookLM authentication not configured (secret not set)"
-          fi
-
-      - name: Setup Instagram session
-        env:
-          IG_SESSION_STATE: ${{ secrets.IG_SESSION_STATE }}
-        run: |
-          if [ -n "$IG_SESSION_STATE" ]; then
-            mkdir -p ~/.instagram
-            echo "$IG_SESSION_STATE" | base64 -d > ~/.instagram/session.json
-            chmod 600 ~/.instagram/session.json
-            echo "✅ Instagram session configured"
-          else
-            echo "⚠️ Instagram session not configured (will login with password)"
-          fi
+      - name: Install CJK fonts for PDF rendering
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
 
       - name: Create .env file
         run: |
           cat << 'ENVEOF' > .env
           FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}
-          FRED_API_KEY=${{ secrets.FRED_API_KEY }}
-          ALPHA_VANTAGE_API_KEY=${{ secrets.ALPHA_VANTAGE_API_KEY }}
-          SEC_USER_AGENT=${{ secrets.SEC_USER_AGENT }}
-          SEC_SYMBOLS=${{ secrets.SEC_SYMBOLS }}
-          SEC_FORMS=${{ secrets.SEC_FORMS }}
-          SEC_DAYS_BACK=${{ secrets.SEC_DAYS_BACK }}
-          STOCKGEIST_API_KEY=${{ secrets.STOCKGEIST_API_KEY }}
-          CONGRESS_DAYS_BACK=${{ secrets.CONGRESS_DAYS_BACK }}
-          LLM_ENABLED=${{ secrets.LLM_ENABLED }}
-          LLM_PROVIDER=${{ secrets.LLM_PROVIDER }}
-          LLM_MODEL=${{ secrets.LLM_MODEL }}
-          LLM_API_KEY=${{ secrets.LLM_API_KEY }}
-          LLM_BASE_URL=${{ secrets.LLM_BASE_URL }}
-          LLM_TEMPERATURE=${{ secrets.LLM_TEMPERATURE }}
-          LLM_MAX_TOKENS=${{ secrets.LLM_MAX_TOKENS }}
-          LLM_TIMEOUT=${{ secrets.LLM_TIMEOUT }}
+          GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          XAI_API_KEY=${{ secrets.XAI_API_KEY }}
+          LLM_STEP_TRIAGE=${{ secrets.LLM_STEP_TRIAGE }}
+          LLM_STEP_SYNTHESIS=${{ secrets.LLM_STEP_SYNTHESIS }}
+          LLM_STEP_WATCHLIST=${{ secrets.LLM_STEP_WATCHLIST }}
+          LLM_STEP_PORTFOLIO=${{ secrets.LLM_STEP_PORTFOLIO }}
+          TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }}
+          HOLDINGS_JSON=${{ secrets.HOLDINGS_JSON }}
           EMAIL_ENABLED=${{ secrets.EMAIL_ENABLED }}
           EMAIL_TO=${{ secrets.EMAIL_TO }}
           EMAIL_FROM=${{ secrets.EMAIL_FROM }}
@@ -105,36 +60,29 @@ jobs:
           TELEGRAM_ENABLED=${{ secrets.TELEGRAM_ENABLED }}
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
-          IG_ENABLED=${{ secrets.IG_ENABLED }}
-          IG_USERNAME=${{ secrets.IG_USERNAME }}
-          IG_PASSWORD=${{ secrets.IG_PASSWORD }}
           ENVEOF
           sed -i 's/^[[:space:]]*//' .env
 
-      - name: Create data directories
-        run: mkdir -p data/raw data/processed data/history output
+      # 私人记忆不进公开仓库，用 cache 跨天持久化
+      - name: Restore private memory
+        uses: actions/cache/restore@v4
+        with:
+          path: data/memory/private.json
+          key: v2-private-memory-${{ github.run_id }}
+          restore-keys: |
+            v2-private-memory-
 
-      - name: Collect market data
-        run: npm run collect
-        continue-on-error: false
+      - name: Run v2 pipeline
+        run: npm run v2
 
-      - name: Analyze data
-        run: npm run analyze
-        continue-on-error: false
+      - name: Save private memory
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/memory/private.json
+          key: v2-private-memory-${{ github.run_id }}
 
-      - name: Generate professional briefing
-        run: npm run generate:pro
-        continue-on-error: false
-
-      - name: Generate NotebookLM infographic
-        run: npm run generate:nlm-infographic
-        continue-on-error: true
-
-      - name: Generate NotebookLM slides
-        run: npm run generate:nlm-slides
-        continue-on-error: true
-
-      - name: Send email (with infographic and slides)
+      - name: Send email
         run: npm run send-email
         continue-on-error: true
 
@@ -142,35 +90,19 @@ jobs:
         run: npm run send-telegram
         continue-on-error: true
 
-      - name: Post to Instagram
-        run: npm run send-instagram
-        continue-on-error: true
-
-      - name: Save Instagram session for next run
-        if: always()
-        run: |
-          if [ -f ~/.instagram/session.json ]; then
-            cp ~/.instagram/session.json output/ig-session.json 2>/dev/null || true
-            echo "✅ Instagram session saved to artifact"
-            echo "💡 To update IG_SESSION_STATE secret, run:"
-            echo "   base64 < output/ig-session.json | pbcopy"
-          fi
-
-      # --- Website Build & Deploy ---
-      - name: Install WebP tools
-        run: sudo apt-get install -y webp
-
+      # --- Website ---
       - name: Prepare website content
         run: |
           DATE=$(date -u +%Y-%m-%d)
           bash scripts/prepare-website-content.sh "$DATE" ./output ./website
 
-      - name: Commit website content
+      - name: Commit website content, world history and public memory
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add website/src/content/reports/ website/public/images/
+          git add website/src/content/reports/ website/public/briefings/ data/history/world/ data/memory/public.json
           git diff --cached --quiet || git commit -m "chore: add briefing $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main || true
           git push || echo "⚠️ Push failed (non-critical)"
         continue-on-error: true
 
@@ -186,22 +118,23 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/dist
 
-      - name: Upload briefing as artifact
+      # 私人简报不进 artifact
+      - name: Upload public outputs as artifact
         uses: actions/upload-artifact@v4
         with:
           name: briefing-${{ github.run_id }}
-          path: output/
+          path: |
+            output/
+            !output/v2-private-*
           retention-days: 30
 
       - name: Summary
         run: |
-          echo "## Daily Briefing Generated" >> $GITHUB_STEP_SUMMARY
+          DATE=$(date -u +%Y-%m-%d)
+          echo "## Daily Briefing $DATE" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Date:** $(date -u +%Y-%m-%d)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f output/ai-briefing-*.md ]; then
-            echo "### Briefing Preview (first 50 lines)" >> $GITHUB_STEP_SUMMARY
+          if [ -f output/v2-public-$DATE.md ]; then
             echo '```markdown' >> $GITHUB_STEP_SUMMARY
-            head -50 output/ai-briefing-*.md >> $GITHUB_STEP_SUMMARY
+            head -40 output/v2-public-$DATE.md >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi

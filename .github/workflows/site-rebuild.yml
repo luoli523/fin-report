@@ -1,0 +1,40 @@
+name: Rebuild Site
+
+# 信息图或简报静态文件被推送后，只重建并部署网站，不跑数据流水线
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/public/images/infographics/**'
+      - 'website/public/briefings/**'
+      - 'website/src/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build website
+        run: |
+          cd website
+          npm ci
+          npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/dist

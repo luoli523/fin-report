@@ -12,7 +12,11 @@ dist/
 # Data files (can be regenerated)
 data/raw/
 data/processed/
-data/history/
+data/history/*
+!data/history/world/
+data/private/
+data/v2/
+data/memory/private.json
 
 # Output files (can be regenerated)
 output/

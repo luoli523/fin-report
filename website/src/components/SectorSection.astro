@@ -1,6 +1,7 @@
 ---
 import ReportCard from './ReportCard.astro';
 import type { CollectionEntry } from 'astro:content';
+import { findInfographic } from '../lib/infographic';
 
 interface Props {
   label: string;
@@ -12,6 +13,7 @@ interface Props {
 const { label, icon, sectorKey, reports } = Astro.props;
 
 const latest = reports[0];
+const latestInfographic = latest ? findInfographic(latest.data.dateStr, latest.data.infographic) : undefined;
 const recent = reports.slice(1, 5);
 ---
 
@@ -34,9 +36,9 @@ const recent = reports.slice(1, 5);
         href={`/fin-report/reports/${latest.slug}`}
         class="flex flex-col sm:flex-row gap-5 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-blue-300 hover:shadow-md mb-5"
       >
-        {latest.data.infographic && (
+        {latestInfographic && (
           <img
-            src={latest.data.infographic}
+            src={latestInfographic}
             alt={latest.data.title}
             loading="lazy"
             decoding="async"
@@ -70,7 +72,7 @@ const recent = reports.slice(1, 5);
               dateStr={r.data.dateStr}
               description={r.data.description}
               hasSlides={r.data.hasSlides}
-              infographic={r.data.infographic}
+              infographic={findInfographic(r.data.dateStr, r.data.infographic)}
             />
           ))}
         </div>

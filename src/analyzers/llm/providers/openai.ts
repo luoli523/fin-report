@@ -76,6 +76,8 @@ export class OpenAIProvider extends BaseLLMProvider {
       const req = https.request(options, (res) => {
         let data = '';
 
+        res.setEncoding('utf8'); // 避免多字节字符在 chunk 边界被截断
+
         res.on('data', (chunk) => {
           data += chunk;
         });

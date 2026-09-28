@@ -2,8 +2,8 @@
  * 发送已生成的简报邮件
  *
  * 用法：
- *   npm run send-email          # 发送当天简报
- *   npm run send-email 2026-01-25  # 发送指定日期简报
+ *   npm run send-email             # 发送当天 v2 公开简报
+ *   npm run send-email 2026-09-29  # 发送指定日期
  */
 
 import * as fs from 'fs';
@@ -35,66 +35,20 @@ async function main() {
     process.exit(1);
   }
 
-  // 查找简报文件
+  // v2 公开简报；私人简报只走 Telegram
   const outputDir = path.resolve(process.cwd(), 'output');
-  const briefingPath = path.join(outputDir, `ai-briefing-${targetDate}.md`);
+  const briefingPath = path.join(outputDir, `v2-public-${targetDate}.md`);
 
   if (!fs.existsSync(briefingPath)) {
-    console.error(`❌ 未找到简报文件: ai-briefing-${targetDate}.md`);
-
-    // 列出可用的简报
-    if (fs.existsSync(outputDir)) {
-      const files = fs.readdirSync(outputDir)
-        .filter(f => f.startsWith('ai-briefing-') && f.endsWith('.md'))
-        .sort()
-        .reverse()
-        .slice(0, 5);
-
-      if (files.length > 0) {
-        console.log('\n📁 可用的简报文件:');
-        files.forEach(f => {
-          const date = f.replace('ai-briefing-', '').replace('.md', '');
-          console.log(`   npm run send-email ${date}`);
-        });
-      }
-    }
+    console.error(`❌ 未找到简报文件: v2-public-${targetDate}.md，请先运行 npm run v2`);
     process.exit(1);
   }
 
-  console.log(`📄 简报文件: ai-briefing-${targetDate}.md`);
-  console.log(`📧 收件人: ${emailConfig.to}`);
+  console.log(`📄 简报文件: v2-public-${targetDate}.md`);
+  console.log(`📧 收件人: ${emailConfig.to}\n`);
 
-  // 查找对应的 infographic 文件
-  const infographicPath = path.join(outputDir, `ai-briefing-${targetDate}-infographic.png`);
-  const hasInfographic = fs.existsSync(infographicPath);
-
-  if (hasInfographic) {
-    console.log(`🖼️  Infographic: ai-briefing-${targetDate}-infographic.png`);
-  } else {
-    console.log(`ℹ️  无 Infographic 文件`);
-  }
-
-  // 查找对应的 slides PDF 文件
-  const slidesPath = path.join(outputDir, `ai-briefing-${targetDate}-slide-deck.pdf`);
-  const hasSlides = fs.existsSync(slidesPath);
-
-  if (hasSlides) {
-    console.log(`📑 Slides: ai-briefing-${targetDate}-slide-deck.pdf`);
-  } else {
-    console.log(`ℹ️  无 Slides 文件`);
-  }
-  console.log('');
-
-  // 发送邮件（带 infographic 和 slides，如果存在）
-  const success = await sendBriefingEmail(
-    briefingPath,
-    hasInfographic ? infographicPath : undefined,
-    hasSlides ? slidesPath : undefined
-  );
-
-  if (!success) {
-    process.exit(1);
-  }
+  const ok = await sendBriefingEmail(briefingPath);
+  if (!ok) process.exit(1);
 }
 
 main().catch(console.error);

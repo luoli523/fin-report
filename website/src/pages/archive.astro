@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ReportCard from '../components/ReportCard.astro';
+import { findInfographic } from '../lib/infographic';
 
 const reports = (await getCollection('reports'))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -32,7 +33,7 @@ for (const r of reports) {
               dateStr={r.data.dateStr}
               description={r.data.description}
               hasSlides={r.data.hasSlides}
-              infographic={r.data.infographic}
+              infographic={findInfographic(r.data.dateStr, r.data.infographic)}
             />
           ))}
         </div>

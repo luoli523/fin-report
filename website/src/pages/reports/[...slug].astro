@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MediaStrip from '../../components/MediaStrip.astro';
 import ReportContent from '../../components/ReportContent.astro';
+import { findInfographic } from '../../lib/infographic';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports');
@@ -14,6 +15,7 @@ export async function getStaticPaths() {
 
 const { report } = Astro.props;
 const { Content } = await report.render();
+const infographic = findInfographic(report.data.dateStr, report.data.infographic);
 ---
 
 <BaseLayout
@@ -34,7 +36,7 @@ const { Content } = await report.render();
     </header>
 
     <MediaStrip
-      infographic={report.data.infographic}
+      infographic={infographic}
       title={report.data.title}
       hasSlides={report.data.hasSlides}
       slideCount={report.data.slideCount}
