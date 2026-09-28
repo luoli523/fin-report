@@ -46,4 +46,4 @@ async function main() {
   console.log('\n下一步: git add website/ && git commit -m "chore: add infographic ' + date + '" && git push');
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+main().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });

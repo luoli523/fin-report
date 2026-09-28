@@ -63,4 +63,4 @@ async function main() {
   console.log('\n📱 Telegram 发送流程完成\n');
 }
 
-main().catch(console.error);
+main().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });

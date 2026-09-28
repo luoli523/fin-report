@@ -51,4 +51,4 @@ async function main() {
   if (!ok) process.exit(1);
 }
 
-main().catch(console.error);
+main().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
