@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
   });
 });
-</script><script>(function(){const slGalleryId = "slg-jnyc4h";
+</script><script>(function(){const slGalleryId = "slg-rsnspi";
 const slideCount = 0;
 const slides = [];
 
@@ -831,6 +831,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!content) return;
 
   const SECTION_MAP = [
+    // v2 结构
+    { match: '世界在发生什么',   type: 'data',      icon: '🌍' },
+    { match: '主线',           type: 'analysis',  icon: '🧭' },
+    { match: '深挖',           type: 'analysis',  icon: '🔬' },
+    { match: '盲区',           type: 'signal',    icon: '💡' },
+    { match: '关注列表',       type: 'strategy',  icon: '🎯' },
+    { match: '日历',           type: 'outlook',   icon: '📅' },
+    { match: '在跟踪',         type: 'outlook',   icon: '🧠' },
+    // 旧结构（历史文章）
     { match: '执行摘要',       type: 'hero',      icon: '📋' },
     { match: 'Executive',      type: 'hero',      icon: '📋' },
     { match: '市场全景',       type: 'data',      icon: '📊' },
