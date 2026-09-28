@@ -23,19 +23,19 @@ const igId = `ig-${Math.random().toString(36).slice(2, 8)}`;
 const slGalleryId = `slg-${Math.random().toString(36).slice(2, 8)}`;
 ---
 
-{hasMedia && <div class:list={['my-6 gap-4', hasAll ? 'flex items-stretch media-strip-row' : 'flex']}>
+{hasMedia && <div class:list={['my-6 gap-4', hasAll ? 'flex items-stretch media-strip-row' : 'flex justify-center']}>
 
   <!-- Infographic: fixed-width thumbnail, click to zoom -->
   {infographic && <button
     class:list={[
       'group relative rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer shrink-0',
-      hasAll ? 'w-[220px]' : 'w-full max-w-sm'
+      hasAll ? 'w-[220px]' : 'w-full max-w-3xl mx-auto'
     ]}
     data-open-dialog={igId}
   >
     <div class="w-full h-full overflow-hidden bg-gray-50 relative">
       <img src={infographic} alt={title} loading="lazy" decoding="async"
-           class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300" />
+           class:list={['w-full h-full transition-transform duration-300', hasAll ? 'object-cover object-top group-hover:scale-105' : 'object-contain group-hover:scale-[1.02]']} />
       <div class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/60 to-transparent">
         <div class="flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
@@ -89,7 +89,7 @@ const slGalleryId = `slg-${Math.random().toString(36).slice(2, 8)}`;
       class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
     </button>
-    <img src={infographic} alt={title} class="max-h-[90vh] rounded-xl" />
+    <img src={infographic} alt={title} class="max-h-[92vh] max-w-[92vw] w-auto rounded-xl" />
   </div>
 </dialog>}
 
