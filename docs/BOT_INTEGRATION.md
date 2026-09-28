@@ -62,3 +62,25 @@ GitHub → Settings → Developer settings → Fine-grained tokens：
 npm run v2:attach-image -- ~/Downloads/infographic.png 2026-09-29
 git add website/public/images/infographics && git commit -m "chore: add infographic 2026-09-29" && git push
 ```
+
+## 4. Daily 结束后自动叫醒
+
+`Daily Finance Briefing` 在 Deploy 到 Pages 之后会 POST 到 Grok Bot 的 webhook 例程（例程名：fin-report 信息图（daily webhook）），body 含 `date` / `brief_md` / `infographic_upload_path` 等字段。Bot 按本文第 1–2 节读简报、生图、回传 PNG；`Rebuild Site` 随后自动重建。
+
+GitHub Secrets（仓库 Settings → Secrets → Actions）：
+
+| Secret | 说明 |
+|---|---|
+| `GROK_BOT_WEBHOOK_URL` | 例程面板里的 POST URL |
+| `GROK_BOT_WEBHOOK_KEY` | 例程面板里的 sender key（请求头 `Authorization: Bearer …`） |
+
+未配置时该 step 跳过，daily 照常完成。本地自测：
+
+```bash
+DATE=$(date -u +%Y-%m-%d)
+curl -fsS -X POST "$GROK_BOT_WEBHOOK_URL" \
+  -H "Authorization: Bearer $GROK_BOT_WEBHOOK_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"source\":\"manual\",\"date\":\"$DATE\",\"latest_json\":\"https://luoli523.github.io/fin-report/briefings/latest.json\",\"brief_md\":\"https://luoli523.github.io/fin-report/briefings/$DATE/brief.md\",\"infographic_upload_path\":\"website/public/images/infographics/$DATE.png\"}"
+```
+

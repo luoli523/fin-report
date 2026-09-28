@@ -120,6 +120,28 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/dist
 
+      # 叫醒 Grok Bot 按 BOT_INTEGRATION.md 生信息图并回传 PNG。
+      # Secrets 未配置时跳过，不影响 daily 本身。
+      - name: Notify Grok Bot (infographic)
+        env:
+          WEBHOOK_URL: ${{ secrets.GROK_BOT_WEBHOOK_URL }}
+          WEBHOOK_KEY: ${{ secrets.GROK_BOT_WEBHOOK_KEY }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ] || [ -z "$WEBHOOK_KEY" ]; then
+            echo "GROK_BOT_WEBHOOK_URL/KEY not set — skip bot notify"
+            exit 0
+          fi
+          DATE=$(date -u +%Y-%m-%d)
+          BODY=$(DATE="$DATE" python3 -c 'import json,os; d=os.environ["DATE"]; print(json.dumps({"source":"daily-briefing","date":d,"latest_json":"https://luoli523.github.io/fin-report/briefings/latest.json","brief_md":f"https://luoli523.github.io/fin-report/briefings/{d}/brief.md","public_md":f"https://luoli523.github.io/fin-report/briefings/{d}/public.md","infographic_upload_path":f"website/public/images/infographics/{d}.png"},ensure_ascii=False))')
+          echo "POSTing infographic wake for $DATE"
+          curl -fsS -X POST "$WEBHOOK_URL" \
+            -H "Authorization: Bearer $WEBHOOK_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$BODY"
+          echo ""
+          echo "Webhook accepted (bot run is async)"
+        continue-on-error: true
+
       # 私人简报不进 artifact
       - name: Upload public outputs as artifact
         uses: actions/upload-artifact@v4
