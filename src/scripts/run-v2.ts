@@ -155,7 +155,9 @@ async function main() {
   console.log(`   阶段缓存: ${stageDir}\n`);
 }
 
-main().catch(e => {
-  console.error('\n❌ v2 失败:', e);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0)) // 第三方客户端会留下句柄让进程不退出，显式退出
+  .catch(e => {
+    console.error('\n❌ v2 失败:', e);
+    process.exit(1);
+  });

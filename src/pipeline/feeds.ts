@@ -4,7 +4,6 @@
  */
 
 import Parser from 'rss-parser';
-import * as https from 'https';
 import { FEEDS } from '../config/feeds';
 import { FeedItem } from './types';
 
@@ -31,16 +30,8 @@ function normalizeTitle(t: string): string {
 
 async function fetchFinnhubGeneral(apiKey: string): Promise<FeedItem[]> {
   const url = `https://finnhub.io/api/v1/news?category=general&token=${apiKey}`;
-  const data: any[] = await new Promise((resolve, reject) => {
-    https.get(url, { timeout: 20000 }, res => {
-      let buf = '';
-      res.setEncoding('utf8');
-      res.on('data', c => (buf += c));
-      res.on('end', () => {
-        try { resolve(res.statusCode === 200 ? JSON.parse(buf) : []); } catch (e) { reject(e); }
-      });
-    }).on('error', reject);
-  });
+  const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
+  const data: any[] = res.ok ? ((await res.json()) as any[]) : [];
   return (data || []).map(n => ({
     id: `finnhub-${n.id}`,
     title: clean(n.headline),
@@ -57,7 +48,9 @@ export async function collectFeeds(windowHours = 36): Promise<{ items: FeedItem[
   const feedStats: Array<{ source: string; count: number; error?: string }> = [];
   const all: FeedItem[] = [];
 
-  const results = await Promise.allSettled(FEEDS.map(f => parser.parseURL(f.url)));
+  const withTimeout = <T,>(p: Promise<T>, ms: number): Promise<T> =>
+    Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error(`timeout ${ms}ms`)), ms))]);
+  const results = await Promise.allSettled(FEEDS.map(f => withTimeout(parser.parseURL(f.url), 30000)));
   results.forEach((r, i) => {
     const def = FEEDS[i];
     if (r.status === 'rejected') {

@@ -26,6 +26,8 @@ export async function createYahooFinanceClient(): Promise<InstanceType<typeof Ya
 }
 
 const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+const withTimeout = <T,>(p: Promise<T>, ms = 30000): Promise<T> =>
+  Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error(`yahoo timeout ${ms}ms`)), ms))]);
 
 /** 分批拉报价，失败的单个重试一次；返回 symbol → 原始 quote */
 export async function fetchQuotesBatched(symbols: string[], batchSize = 10): Promise<{ quotes: Map<string, any>; failed: string[] }> {
@@ -36,7 +38,7 @@ export async function fetchQuotesBatched(symbols: string[], batchSize = 10): Pro
     const batch = symbols.slice(i, i + batchSize);
     if (i > 0) await delay(1500);
     try {
-      const res = await yf.quote(batch);
+      const res = await withTimeout(yf.quote(batch));
       for (const q of Array.isArray(res) ? res : [res]) if (q?.symbol && q.regularMarketPrice != null) quotes.set(q.symbol, q);
       retry.push(...batch.filter(s => !quotes.has(s)));
     } catch (e) {
@@ -48,7 +50,7 @@ export async function fetchQuotesBatched(symbols: string[], batchSize = 10): Pro
   for (const s of retry) {
     await delay(1000);
     try {
-      const q: any = await yf.quote(s);
+      const q: any = await withTimeout(yf.quote(s));
       if (q?.regularMarketPrice != null) quotes.set(s, q); else failed.push(s);
     } catch { failed.push(s); }
   }

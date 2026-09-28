@@ -19,6 +19,7 @@ env:
 jobs:
   briefing:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
 
     steps:
       - name: Checkout repository
@@ -74,6 +75,7 @@ jobs:
 
       - name: Run v2 pipeline
         run: npm run v2
+        timeout-minutes: 25
 
       - name: Save private memory
         if: always()

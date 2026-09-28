@@ -30,11 +30,11 @@ export async function markdownToPdf(markdown: string, pdfPath: string, title: st
   let browser: any;
   try {
     // 新版 headless 在 macOS 上会把文字渲染成空 Type3 字形，用 shell 模式
-    browser = await puppeteer.launch({ headless: 'shell', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    browser = await puppeteer.launch({ headless: 'shell', args: ['--no-sandbox', '--disable-setuid-sandbox'], timeout: 60000, protocolTimeout: 120000 });
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'load' });
+    await page.setContent(html, { waitUntil: 'load', timeout: 60000 });
     await page.evaluateHandle('document.fonts.ready');
-    await page.pdf({ path: pdfPath, format: 'A4', printBackground: true, margin: { top: '14mm', bottom: '14mm', left: '12mm', right: '12mm' } });
+    await page.pdf({ path: pdfPath, timeout: 120000, format: 'A4', printBackground: true, margin: { top: '14mm', bottom: '14mm', left: '12mm', right: '12mm' } });
     console.log(`[pdf] ${pdfPath} (${(fs.statSync(pdfPath).size / 1024).toFixed(0)} KB)`);
     return true;
   } catch (e) {
