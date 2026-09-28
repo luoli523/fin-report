@@ -1,6 +1,6 @@
 {
   "date": "2026-09-28",
-  "collectedAt": "2026-09-28T06:54:42.158Z",
+  "collectedAt": "2026-09-28T10:15:35.879Z",
   "quotes": [
     {
       "symbol": "^GSPC",
@@ -77,7 +77,7 @@
       "changePercent": -0.73320544,
       "fiftyTwoWeekHigh": 72831.73,
       "fiftyTwoWeekLow": 44357.65,
-      "marketTime": "+058711-02-16T20:16:40.000Z"
+      "marketTime": "+058711-02-27T06:50:00.000Z"
     },
     {
       "symbol": "EWJ",
@@ -116,67 +116,67 @@
       "symbol": "^HSI",
       "name": "Hang Seng",
       "group": "global-index",
-      "price": 24690.6,
-      "change": 180.50977,
-      "changePercent": 0.73647124,
+      "price": 24642.51,
+      "change": 132.41992,
+      "changePercent": 0.540267,
       "fiftyTwoWeekHigh": 28056.1,
       "fiftyTwoWeekLow": 22518,
-      "marketTime": "+058711-02-23T11:26:40.000Z"
+      "marketTime": "+058711-04-26T11:13:20.000Z"
     },
     {
       "symbol": "000001.SS",
       "name": "Shanghai Composite",
       "group": "global-index",
-      "price": 3825.678,
-      "change": -62.6958,
-      "changePercent": -1.612509,
+      "price": 3823.6206,
+      "change": -64.753174,
+      "changePercent": -1.6653022,
       "fiftyTwoWeekHigh": 4258.863,
       "fiftyTwoWeekLow": 3741.11,
-      "marketTime": "+058711-02-23T10:20:00.000Z"
+      "marketTime": "+058711-03-09T22:40:00.000Z"
     },
     {
       "symbol": "^STOXX50E",
       "name": "Euro Stoxx 50",
       "group": "global-index",
-      "price": 6302.82,
-      "change": 30.319824,
-      "changePercent": 0.48337704,
+      "price": 6299.45,
+      "change": -3.369629,
+      "changePercent": -0.053465724,
       "fiftyTwoWeekHigh": 6577.2,
-      "fiftyTwoWeekLow": 0,
-      "marketTime": "+058703-12-31T16:00:00.000Z"
+      "fiftyTwoWeekLow": 5376.81,
+      "marketTime": "+058711-07-12T20:10:00.000Z"
     },
     {
       "symbol": "^GDAXI",
       "name": "DAX",
       "group": "global-index",
-      "price": 25408.64,
-      "change": 142.14062,
-      "changePercent": 0.56256557,
+      "price": 25414.29,
+      "change": 5.6484375,
+      "changePercent": 0.022230381,
       "fiftyTwoWeekHigh": 26618.74,
       "fiftyTwoWeekLow": 21863.81,
-      "marketTime": "+058703-12-31T16:00:00.000Z"
+      "marketTime": "+058711-07-12T23:46:40.000Z"
     },
     {
       "symbol": "^FTSE",
       "name": "FTSE 100",
       "group": "global-index",
-      "price": 10695.25,
-      "change": 15.25,
-      "changePercent": 0.14279026,
+      "price": 10723.49,
+      "change": 28.240234,
+      "changePercent": 0.2640424,
       "fiftyTwoWeekHigh": 10989.5,
       "fiftyTwoWeekLow": 9266.3,
-      "marketTime": "+058703-12-14T15:40:00.000Z"
+      "marketTime": "+058711-07-12T23:46:40.000Z"
     },
     {
       "symbol": "^BSESN",
       "name": "India Sensex",
       "group": "global-index",
-      "price": 72929.85,
-      "change": -965.8906,
-      "changePercent": -1.307123,
+      "price": 72771.72,
+      "change": -1124.0234,
+      "changePercent": -1.5210936,
       "fiftyTwoWeekHigh": 86159.02,
       "fiftyTwoWeekLow": 71545.81,
-      "marketTime": "+058711-02-23T11:43:20.000Z"
+      "marketTime": "+058711-07-12T23:46:40.000Z"
     },
     {
       "symbol": "EEM",
@@ -451,12 +451,12 @@
       "name": "VIX",
       "group": "volatility",
       "isLevel": true,
-      "price": 14.87,
-      "change": -0.8000002,
-      "changePercent": -5.1052976,
+      "price": 16.31,
+      "change": 1.4399996,
+      "changePercent": 9.683925,
       "fiftyTwoWeekHigh": 35.3,
-      "fiftyTwoWeekLow": 0,
-      "marketTime": "+058704-06-25T18:16:40.000Z"
+      "fiftyTwoWeekLow": 13.38,
+      "marketTime": "+058711-07-13T00:36:40.000Z"
     },
     {
       "symbol": "^VIX3M",
@@ -486,155 +486,155 @@
       "symbol": "DX-Y.NYB",
       "name": "US Dollar Index",
       "group": "fx",
-      "price": 101.127,
-      "change": 0.15599823,
-      "changePercent": 0.154495,
+      "price": 101.135,
+      "change": 0.16400146,
+      "changePercent": 0.16242272,
       "fiftyTwoWeekHigh": 101.8,
       "fiftyTwoWeekLow": 95.55,
-      "marketTime": "+058711-02-27T00:10:00.000Z"
+      "marketTime": "+058711-07-16T12:13:20.000Z"
     },
     {
       "symbol": "USDJPY=X",
       "name": "USD/JPY",
       "group": "fx",
-      "price": 157.403,
-      "change": 0.21800232,
-      "changePercent": 0.13869332,
+      "price": 157.095,
+      "change": -0.08999634,
+      "changePercent": -0.057258323,
       "fiftyTwoWeekHigh": 163.979,
       "fiftyTwoWeekLow": 146.609,
-      "marketTime": "+058711-03-05T22:50:00.000Z"
+      "marketTime": "+058711-07-23T11:10:00.000Z"
     },
     {
       "symbol": "EURUSD=X",
       "name": "EUR/USD",
       "group": "fx",
-      "price": 1.1379154,
-      "change": -0.0014261007,
-      "changePercent": -0.1251996,
+      "price": 1.1373976,
+      "change": -0.0019438267,
+      "changePercent": -0.17061083,
       "fiftyTwoWeekHigh": 1.2023566,
       "fiftyTwoWeekLow": 1.1325413,
-      "marketTime": "+058711-03-05T11:43:20.000Z"
+      "marketTime": "+058711-07-23T02:00:00.000Z"
     },
     {
       "symbol": "USDCNH=X",
       "name": "USD/CNH",
       "group": "fx",
-      "price": 6.71634,
-      "change": -0.005980015,
-      "changePercent": -0.088957205,
+      "price": 6.71396,
+      "change": -0.008359909,
+      "changePercent": -0.12436047,
       "fiftyTwoWeekHigh": 6.72616,
-      "fiftyTwoWeekLow": 6.71301,
-      "marketTime": "+058711-03-05T22:16:40.000Z"
+      "fiftyTwoWeekLow": 6.71168,
+      "marketTime": "+058711-07-23T11:10:00.000Z"
     },
     {
       "symbol": "USDKRW=X",
       "name": "USD/KRW",
       "group": "fx",
-      "price": 1362.57,
-      "change": 7.289917,
-      "changePercent": 0.53788215,
+      "price": 1360.69,
+      "change": 5.409912,
+      "changePercent": 0.3992319,
       "fiftyTwoWeekHigh": 1587.7,
       "fiftyTwoWeekLow": 1322.42,
-      "marketTime": "+058711-03-05T21:26:40.000Z"
+      "marketTime": "+058711-07-23T10:20:00.000Z"
     },
     {
       "symbol": "USDTWD=X",
       "name": "USD/TWD",
       "group": "fx",
-      "price": 31.765,
-      "change": 0.069999695,
-      "changePercent": 0.22085406,
+      "price": 31.803,
+      "change": 0.1079998,
+      "changePercent": 0.34074712,
       "fiftyTwoWeekHigh": 32.769,
       "fiftyTwoWeekLow": 30.242,
-      "marketTime": "+058711-03-05T22:00:00.000Z"
+      "marketTime": "+058711-07-23T11:10:00.000Z"
     },
     {
       "symbol": "USDCHF=X",
       "name": "USD/CHF",
       "group": "fx",
-      "price": 0.83029,
-      "change": 0.0019900203,
-      "changePercent": 0.24025357,
-      "fiftyTwoWeekHigh": 0.83149,
+      "price": 0.8316,
+      "change": 0.0033000112,
+      "changePercent": 0.3983933,
+      "fiftyTwoWeekHigh": 0.83174,
       "fiftyTwoWeekLow": 0.7629,
-      "marketTime": "+058711-03-05T22:50:00.000Z"
+      "marketTime": "+058711-07-23T10:53:20.000Z"
     },
     {
       "symbol": "USDSGD=X",
       "name": "USD/SGD",
       "group": "fx",
-      "price": 1.27857,
-      "change": 0.0013700724,
-      "changePercent": 0.10727577,
+      "price": 1.27893,
+      "change": 0.0017299652,
+      "changePercent": 0.13544983,
       "fiftyTwoWeekHigh": 1.30959,
       "fiftyTwoWeekLow": 1.25884,
-      "marketTime": "+058711-03-05T23:23:20.000Z"
+      "marketTime": "+058711-07-23T11:43:20.000Z"
     },
     {
       "symbol": "CL=F",
       "name": "WTI Crude",
       "group": "commodity",
-      "price": 93.89,
-      "change": 1.4799957,
-      "changePercent": 1.6015536,
+      "price": 96,
+      "change": 3.5899963,
+      "changePercent": 3.884857,
       "fiftyTwoWeekHigh": 119.48,
       "fiftyTwoWeekLow": 54.98,
-      "marketTime": "+058711-02-26T22:30:00.000Z"
+      "marketTime": "+058711-07-16T12:46:40.000Z"
     },
     {
       "symbol": "BZ=F",
       "name": "Brent Crude",
       "group": "commodity",
-      "price": 98.81,
-      "change": 1.3699951,
-      "changePercent": 1.4059883,
+      "price": 100.76,
+      "change": 3.3199997,
+      "changePercent": 3.4072247,
       "fiftyTwoWeekHigh": 126.1,
       "fiftyTwoWeekLow": 58.72,
-      "marketTime": "+058711-02-26T21:56:40.000Z"
+      "marketTime": "+058711-07-16T12:46:40.000Z"
     },
     {
       "symbol": "NG=F",
       "name": "Natural Gas",
       "group": "commodity",
-      "price": 3.118,
-      "change": -0.106999874,
-      "changePercent": -3.3178256,
+      "price": 3.122,
+      "change": -0.102999926,
+      "changePercent": -3.1937962,
       "fiftyTwoWeekHigh": 7.827,
       "fiftyTwoWeekLow": 2.483,
-      "marketTime": "+058711-02-26T23:20:00.000Z"
+      "marketTime": "+058711-07-16T06:23:20.000Z"
     },
     {
       "symbol": "HG=F",
       "name": "Copper",
       "group": "commodity",
-      "price": 6.6675,
-      "change": -0.098499775,
-      "changePercent": -1.4558052,
+      "price": 6.633,
+      "change": -0.1329999,
+      "changePercent": -1.9657094,
       "fiftyTwoWeekHigh": 6.83,
       "fiftyTwoWeekLow": 4.7085,
-      "marketTime": "+058711-02-26T22:46:40.000Z"
+      "marketTime": "+058711-07-16T11:23:20.000Z"
     },
     {
       "symbol": "GC=F",
       "name": "Gold",
       "group": "commodity",
-      "price": 4207.1,
-      "change": -114.1001,
-      "changePercent": -2.6404724,
+      "price": 4191.1,
+      "change": -130.1001,
+      "changePercent": -3.0107398,
       "fiftyTwoWeekHigh": 5586.2,
       "fiftyTwoWeekLow": 3785.5,
-      "marketTime": "+058711-02-26T21:56:40.000Z"
+      "marketTime": "+058711-07-16T11:40:00.000Z"
     },
     {
       "symbol": "SI=F",
       "name": "Silver",
       "group": "commodity",
-      "price": 61.93,
-      "change": -2.8710022,
-      "changePercent": -4.4304905,
+      "price": 61.74,
+      "change": -3.0610008,
+      "changePercent": -4.723694,
       "fiftyTwoWeekHigh": 121.3,
       "fiftyTwoWeekLow": 45.385,
-      "marketTime": "+058711-02-26T23:36:40.000Z"
+      "marketTime": "+058711-07-16T08:53:20.000Z"
     },
     {
       "symbol": "URA",
@@ -651,12 +651,12 @@
       "symbol": "BTC-USD",
       "name": "Bitcoin",
       "group": "crypto",
-      "price": 83128.06,
-      "change": -1367.3047,
-      "changePercent": -1.6182008,
+      "price": 82762.77,
+      "change": -2098.9453,
+      "changePercent": -2.4733713,
       "fiftyTwoWeekHigh": 126198.07,
       "fiftyTwoWeekLow": 57747.766,
-      "marketTime": "+058711-03-05T21:43:20.000Z"
+      "marketTime": "+058711-07-23T10:36:40.000Z"
     }
   ],
   "failed": []
