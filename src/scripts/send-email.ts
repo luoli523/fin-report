@@ -10,12 +10,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { sendBriefingEmail, getEmailConfig } from '../services/email';
+import { todayInReportTZ } from '../pipeline/dates';
 
 dotenv.config();
 
 async function main() {
   const args = process.argv.slice(2);
-  const targetDate = args[0] || new Date().toISOString().split('T')[0];
+  const targetDate = args[0] || todayInReportTZ();
 
   console.log('\n╔══════════════════════════════════════════════════════════════════════╗');
   console.log('║         📧 简报邮件发送工具                                          ║');

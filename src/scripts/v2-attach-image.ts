@@ -15,6 +15,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { getTelegramConfig, sendTelegramPhoto } from '../services/telegram';
+import { todayInReportTZ } from '../pipeline/dates';
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ async function main() {
     console.error('用法: npm run v2:attach-image -- <图片路径> [YYYY-MM-DD]');
     process.exit(1);
   }
-  const date = dateArg || new Date().toISOString().slice(0, 10);
+  const date = dateArg || todayInReportTZ();
   const ext = path.extname(src).toLowerCase().replace('.', '') || 'png';
   const root = process.cwd();
 

@@ -1,9 +1,10 @@
 name: Daily Finance Briefing
 
 on:
-  # 新加坡时间 09:30 = UTC 01:30，周二到周六（美股周一到周五收盘后）
+  # 新加坡时间 07:00 = 前一日 UTC 23:00；SGT 周二到周六 = UTC 周一到周五（美股周一到周五收盘后）
+  # 注意：此时 UTC 日期仍是前一天，所以所有日期都按 Asia/Singapore 计算（见下方 TZ）
   schedule:
-    - cron: '30 1 * * 2-6'
+    - cron: '0 23 * * 1-5'
   workflow_dispatch:
 
 permissions:
@@ -15,6 +16,7 @@ concurrency:
 
 env:
   NODE_VERSION: '20'
+  TZ: Asia/Singapore
 
 jobs:
   briefing:
@@ -95,7 +97,7 @@ jobs:
       # --- Website ---
       - name: Prepare website content
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(date +%Y-%m-%d)
           bash scripts/prepare-website-content.sh "$DATE" ./output ./website
 
       - name: Commit website content, world history and public memory
@@ -103,7 +105,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add website/src/content/reports/ website/public/briefings/ data/history/world/ data/memory/public.json
-          git diff --cached --quiet || git commit -m "chore: add briefing $(date -u +%Y-%m-%d)"
+          git diff --cached --quiet || git commit -m "chore: add briefing $(date +%Y-%m-%d)"
           git pull --rebase origin main || true
           git push || echo "⚠️ Push failed (non-critical)"
         continue-on-error: true
@@ -131,7 +133,7 @@ jobs:
             echo "GROK_BOT_WEBHOOK_URL/KEY not set — skip bot notify"
             exit 0
           fi
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(date +%Y-%m-%d)
           BODY=$(DATE="$DATE" python3 -c 'import json,os; d=os.environ["DATE"]; print(json.dumps({"source":"daily-briefing","date":d,"latest_json":"https://luoli523.github.io/fin-report/briefings/latest.json","brief_md":f"https://luoli523.github.io/fin-report/briefings/{d}/brief.md","public_md":f"https://luoli523.github.io/fin-report/briefings/{d}/public.md","infographic_upload_path":f"website/public/images/infographics/{d}.png"},ensure_ascii=False))')
           echo "POSTing infographic wake for $DATE"
           curl -fsS -X POST "$WEBHOOK_URL" \
@@ -154,7 +156,7 @@ jobs:
 
       - name: Summary
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(date +%Y-%m-%d)
           echo "## Daily Briefing $DATE" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ -f output/v2-public-$DATE.md ]; then

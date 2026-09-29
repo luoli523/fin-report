@@ -32,6 +32,7 @@ import { loadPublicMemory, loadPrivateMemory, savePublicMemory, savePrivateMemor
 import { renderPublicBriefing, renderPrivateBriefing, renderInfographicBrief } from '../generators/v2-markdown';
 import { markdownToPdf } from '../pipeline/pdf';
 import { EarningsEvent, StageMeta, WatchlistQuote, WorldSnapshot } from '../pipeline/types';
+import { todayInReportTZ } from '../pipeline/dates';
 
 dotenv.config();
 
@@ -40,7 +41,7 @@ type Stage = typeof STAGES[number];
 
 const argv = process.argv.slice(2);
 const arg = (k: string) => argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
-const date = arg('date') || new Date().toISOString().slice(0, 10);
+const date = arg('date') || todayInReportTZ();
 const from: Stage = (arg('from') as Stage) || 'snapshot';
 if (!STAGES.includes(from)) throw new Error(`未知阶段 ${from}，可选: ${STAGES.join(', ')}`);
 const fromIdx = STAGES.indexOf(from);

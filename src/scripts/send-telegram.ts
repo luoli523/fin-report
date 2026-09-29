@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { getTelegramConfig, sendTelegramMessage, sendBriefingDocument } from '../services/telegram';
+import { todayInReportTZ } from '../pipeline/dates';
 
 dotenv.config();
 
@@ -29,7 +30,7 @@ async function main() {
     process.exit(0);
   }
 
-  const targetDate = process.argv[2] || new Date().toISOString().split('T')[0];
+  const targetDate = process.argv[2] || todayInReportTZ();
   const outputDir = path.resolve(process.cwd(), 'output');
   const publicMd = path.join(outputDir, `v2-public-${targetDate}.md`);
 
