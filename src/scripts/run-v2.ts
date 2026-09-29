@@ -35,6 +35,7 @@ import { EarningsEvent, StageMeta, WatchlistQuote, WorldSnapshot } from '../pipe
 import { todayInReportTZ } from '../pipeline/dates';
 
 dotenv.config();
+process.umask(0o077);
 
 const STAGES = ['snapshot', 'feeds', 'detect', 'triage', 'research', 'synthesis', 'watchlist', 'portfolio', 'render'] as const;
 type Stage = typeof STAGES[number];
@@ -42,14 +43,26 @@ type Stage = typeof STAGES[number];
 const argv = process.argv.slice(2);
 const arg = (k: string) => argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 const date = arg('date') || todayInReportTZ();
-const from: Stage = (arg('from') as Stage) || 'snapshot';
+const resume = argv.includes('--resume');
+if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Invalid date');
+const requiredCache: Record<Stage, string[]> = {
+  snapshot: [`data/history/world/${date}.json`, `data/v2/${date}/quotes.json`],
+  feeds: [`data/v2/${date}/feeds.json`, `data/v2/${date}/earnings.json`],
+  detect: [`data/v2/${date}/detect.json`], triage: [`data/v2/${date}/triage.json`],
+  research: [`data/v2/${date}/research.json`], synthesis: [`data/v2/${date}/synthesis.json`],
+  watchlist: [`data/v2/${date}/watchlist.json`], portfolio: [`data/v2/${date}/portfolio.json`], render: [],
+};
+const from: Stage = (arg('from') as Stage) || (resume ? STAGES.find(s => s === 'render' || requiredCache[s].some(p => !fs.existsSync(p)))! : 'snapshot');
 if (!STAGES.includes(from)) throw new Error(`未知阶段 ${from}，可选: ${STAGES.join(', ')}`);
 const fromIdx = STAGES.indexOf(from);
 
 const stageDir = path.resolve(process.cwd(), 'data/v2', date);
 fs.mkdirSync(stageDir, { recursive: true });
 const cachePath = (name: string) => path.join(stageDir, `${name}.json`);
-const save = (name: string, data: unknown) => fs.writeFileSync(cachePath(name), JSON.stringify(data, null, 2));
+const save = (name: string, data: unknown) => {
+  fs.writeFileSync(cachePath(name) + '.tmp', JSON.stringify(data, null, 2));
+  fs.renameSync(cachePath(name) + '.tmp', cachePath(name));
+};
 const load = <T>(name: string): T => {
   const p = cachePath(name);
   if (!fs.existsSync(p)) throw new Error(`缺少缓存 ${p}，无法从 ${from} 阶段续跑`);
@@ -71,6 +84,17 @@ async function llmStage<T>(name: Stage, meta: Record<string, StageMeta>, run: ()
 }
 
 async function main() {
+  if (resume && fs.existsSync(cachePath('complete'))) {
+    const done = load<{files:string[]}>('complete');
+    if (done.files.every(p => fs.existsSync(p))) { console.log(`[v2] ${date} already complete`); return; }
+  }
+  if (date !== todayInReportTZ() && (need('snapshot') || need('feeds'))) throw new Error('不能用当前行情或新闻生成历史日期简报');
+  // A retry must merge against the same starting memory, including after a crash
+  // between saving public and private memory.
+  const memoryInput = resume && fs.existsSync(cachePath('memory-input'))
+    ? load<{publicMemory:ReturnType<typeof loadPublicMemory>; privateMemory:ReturnType<typeof loadPrivateMemory>}>('memory-input')
+    : {publicMemory:loadPublicMemory(), privateMemory:loadPrivateMemory()};
+  if (resume && !fs.existsSync(cachePath('memory-input'))) save('memory-input', memoryInput);
   console.log(`\n=== v2 pipeline · ${date} · from=${from} ===\n`);
   const meta: Record<string, StageMeta> = {};
 
@@ -103,7 +127,7 @@ async function main() {
   if (need('research')) save('research', research);
 
   // 6. 世界观（公开记忆）
-  const publicMemory = loadPublicMemory();
+  const { publicMemory } = memoryInput;
   const synthesis = await llmStage('synthesis', meta, () =>
     runSynthesis(date, snapshot, detected.anomalies, detected.historyDays, triage, feeds.items, research, publicMemory, wl.quotes, earnings));
 
@@ -112,7 +136,7 @@ async function main() {
 
   // 8. 持仓映射（私密）
   const holdings = loadHoldings();
-  const privateMemory = loadPrivateMemory();
+  const { privateMemory } = memoryInput;
   const portfolio = holdings.length > 0
     ? await llmStage('portfolio', meta, () => runPortfolio(date, snapshot, synthesis, watchlistView, holdings, privateMemory))
     : null;
@@ -145,10 +169,11 @@ async function main() {
   }
 
   // 10. 记忆
-  if (need('watchlist')) savePublicMemory(mergePublicMemory(publicMemory, date, synthesis, watchlistView));
+  if (resume || need('watchlist')) savePublicMemory(mergePublicMemory(publicMemory, date, synthesis, watchlistView));
   else console.log('[memory] 未重跑 watchlist 阶段，公开记忆不更新');
-  if (portfolio && need('portfolio')) savePrivateMemory(mergePrivateMemory(privateMemory, date, portfolio));
+  if (portfolio && (resume || need('portfolio'))) savePrivateMemory(mergePrivateMemory(privateMemory, date, portfolio));
   else if (portfolio) console.log('[memory] 未重跑 portfolio 阶段，私人记忆不更新');
+  save('complete', {date, completedAt:new Date().toISOString(), files:[publicPath, publicPath.replace(/\.md$/, '.pdf'), ...(privatePath ? [privatePath, privatePath.replace(/\.md$/, '.pdf')] : [])]});
 
   console.log(`\n✅ v2 完成`);
   console.log(`   公开: ${publicPath} (${(fs.statSync(publicPath).size / 1024).toFixed(1)} KB)`);

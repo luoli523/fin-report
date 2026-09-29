@@ -95,11 +95,20 @@ async function audio(audience: Audience) {
 async function main() {
   fs.mkdirSync(output,{recursive:true});fs.mkdirSync(cache,{recursive:true});
   const lock = path.join(cache, '.lock');
-  try { fs.mkdirSync(lock); } catch { throw new Error(`Narration already running; if stale remove ${lock}`); }
+  const owner = path.join(lock,'pid');
+  if (fs.existsSync(owner)) {
+    try { process.kill(Number(fs.readFileSync(owner,'utf8')),0); }
+    catch(e) {
+      if ((e as NodeJS.ErrnoException).code !== 'ESRCH') throw e;
+      fs.unlinkSync(owner); fs.rmdirSync(lock);
+    }
+  }
+  try { fs.mkdirSync(lock); } catch { throw new Error(`Narration already running; inspect ${lock}`); }
+  fs.writeFileSync(owner,String(process.pid));
   try {
     // Finish text work before loading TTS to avoid two large models in memory.
     if (stage !== 'audio') for (const a of audiences) await script(a);
     if (stage !== 'script') for (const a of audiences) await audio(a);
-  } finally { fs.rmdirSync(lock); }
+  } finally { fs.unlinkSync(owner); fs.rmdirSync(lock); }
 }
 main().then(()=>process.exit(0)).catch(e=>{console.error(e.message);process.exit(1);});
