@@ -150,8 +150,9 @@ jobs:
         with:
           name: briefing-${{ github.run_id }}
           path: |
-            output/
-            !output/v2-private-*
+            output/v2-public-*.md
+            output/v2-public-*.pdf
+            output/v2-infographic-brief-*.md
           retention-days: 30
 
       - name: Summary

@@ -11,7 +11,7 @@ import * as path from 'path';
 import { createLLMProvider, BaseLLMProvider } from '../analyzers/llm/providers';
 import { LLMConfig, LLMProvider } from '../analyzers/llm/types';
 
-export type LLMStep = 'triage' | 'synthesis' | 'watchlist' | 'portfolio';
+export type LLMStep = 'triage' | 'synthesis' | 'watchlist' | 'portfolio' | 'narration_public' | 'narration_private';
 
 interface ProfileDef {
   provider: LLMProvider;
@@ -21,6 +21,9 @@ interface ProfileDef {
   temperature?: number;
   maxTokens?: number;
   timeout?: number;
+  thinking?: boolean;
+  contextWindow?: number;
+  keepAlive?: number;
 }
 
 interface ProfilesFile {
@@ -75,6 +78,9 @@ export function resolveConfig(step: LLMStep): LLMConfig & { profileName: string 
     temperature: def.temperature ?? 0.3,
     maxTokens: def.maxTokens ?? 16384,
     timeout: def.timeout ?? 180000,
+    thinking: def.thinking,
+    contextWindow: def.contextWindow,
+    keepAlive: def.keepAlive,
     profileName,
   };
 }

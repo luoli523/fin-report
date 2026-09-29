@@ -9,6 +9,8 @@
     "send-email": "tsx src/scripts/send-email.ts",
     "send-telegram": "tsx src/scripts/send-telegram.ts",
     "v2:attach-image": "tsx src/scripts/v2-attach-image.ts",
+    "narrate": "tsx src/scripts/narrate.ts",
+    "send-narration": "tsx src/scripts/send-narration.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc"
   },

@@ -19,9 +19,12 @@ export class OllamaProvider extends BaseLLMProvider {
       model: this.config.model,
       messages,
       stream: false,
+      keep_alive: this.config.keepAlive,
+      think: this.config.thinking,
       options: {
         temperature: this.config.temperature || 0.7,
         num_predict: this.config.maxTokens || 4096,
+        num_ctx: this.config.contextWindow,
       },
     });
 

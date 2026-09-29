@@ -1,6 +1,17 @@
 {
   "_comment": "v2 流水线的多模型配置。profiles 定义可用模型（不含密钥，密钥从 apiKeyEnv 指向的环境变量读取）；steps 指定每个 LLM 步骤默认使用哪个 profile（triage 分级、synthesis 世界观、watchlist 公开的关注列表映射、portfolio 私人持仓映射）。运行时可用环境变量 LLM_STEP_<STEP>=<profile> 覆盖，例如 LLM_STEP_SYNTHESIS=claude。价格备注为 2026-09 每百万 token。",
   "profiles": {
+    "local_narration": {
+      "provider": "ollama",
+      "model": "qwen3.8:27b-mlx",
+      "baseURL": "http://127.0.0.1:11434",
+      "temperature": 0.3,
+      "maxTokens": 6000,
+      "thinking": false,
+      "contextWindow": 32768,
+      "keepAlive": 0,
+      "timeout": 900000
+    },
     "flash": {
       "provider": "google",
       "model": "gemini-3.8-flash",
@@ -43,6 +54,8 @@
     "triage": "flash",
     "synthesis": "flash",
     "watchlist": "flash",
-    "portfolio": "flash"
+    "portfolio": "flash",
+    "narration_public": "local_narration",
+    "narration_private": "local_narration"
   }
 }

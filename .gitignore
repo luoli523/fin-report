@@ -16,6 +16,7 @@ data/history/*
 !data/history/world/
 data/private/
 data/v2/
+data/narration/
 data/memory/private.json
 
 # Output files (can be regenerated)

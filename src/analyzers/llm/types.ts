@@ -16,6 +16,9 @@ export interface LLMConfig {
   temperature?: number;
   maxTokens?: number;
   timeout?: number;
+  thinking?: boolean;
+  contextWindow?: number;
+  keepAlive?: number;
 }
 
 export interface LLMResponse {
