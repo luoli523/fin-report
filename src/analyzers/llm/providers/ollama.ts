@@ -21,6 +21,7 @@ export class OllamaProvider extends BaseLLMProvider {
       stream: false,
       keep_alive: this.config.keepAlive,
       think: this.config.thinking,
+      format: this.config.jsonOutput ? 'json' : undefined,
       options: {
         temperature: this.config.temperature || 0.7,
         num_predict: this.config.maxTokens || 4096,
@@ -34,12 +35,16 @@ export class OllamaProvider extends BaseLLMProvider {
       throw new Error('No response from Ollama');
     }
 
+    // Some MLX Qwen responses include an unparsed thinking block even when
+    // think=false. Only the answer after the closing marker is user content.
+    const content = String(response.message.content).split('</think>').at(-1)!.trim();
+
     // Ollama 不返回 token 使用情况，我们进行估算
     const promptTokens = messages.reduce((sum, m) => sum + this.estimateTokens(m.content), 0);
     const completionTokens = this.estimateTokens(response.message.content);
 
     return {
-      content: response.message.content,
+      content,
       usage: {
         promptTokens,
         completionTokens,

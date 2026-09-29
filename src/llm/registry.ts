@@ -24,6 +24,7 @@ interface ProfileDef {
   thinking?: boolean;
   contextWindow?: number;
   keepAlive?: number;
+  jsonOutput?: boolean;
 }
 
 interface ProfilesFile {
@@ -81,6 +82,7 @@ export function resolveConfig(step: LLMStep): LLMConfig & { profileName: string 
     thinking: def.thinking,
     contextWindow: def.contextWindow,
     keepAlive: def.keepAlive,
+    jsonOutput: def.jsonOutput,
     profileName,
   };
 }

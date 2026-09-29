@@ -19,6 +19,7 @@ export interface LLMConfig {
   thinking?: boolean;
   contextWindow?: number;
   keepAlive?: number;
+  jsonOutput?: boolean;
 }
 
 export interface LLMResponse {
