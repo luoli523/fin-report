@@ -50,11 +50,13 @@ LLM_STEP_SYNTHESIS=claude npm run v2 -- --from=synthesis
 
 只有 portfolio 步骤能看到它。公开简报在代码层面接触不到持仓，渲染后还会再过一遍脱敏。
 
-## 本地播报（验收阶段）
+## 本地播报
 
 `npm run narrate -- --date=YYYY-MM-DD` 从已有同日公私简报生成口播稿，并调用本机 `local-tts` 的 `guige` 音色配音。新增口播编辑使用本机 Ollama。可用 `--stage=script` 先生成并审稿，再用 `--stage=audio` 配音；`npm run send-narration -- --date=YYYY-MM-DD` 将两份试听发送到配置的 Telegram 私聊。
 
-运行要求、缓存恢复与迁移状态见 [docs/LOCAL_NARRATION.md](docs/LOCAL_NARRATION.md)。当前仍保留云端每日生成任务，尚未切换定时或公开发布音频。
+两份试听已验收通过，公开音频通过 GitHub Releases 托管，报告页已接入播放器。`npm run daily:local` 串联本机生成、配音、私人 TG 发送和公共发布，支持按步骤续跑。
+
+运行要求、缓存恢复与迁移状态见 [docs/LOCAL_NARRATION.md](docs/LOCAL_NARRATION.md)。本地定时入口已安装但尚未启用；完整运行等待确认私人分析的模型/API 去向，当前仍保留云端每日生成任务。
 
 ## 信息图
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+umask 077
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 STATE="$ROOT/data/local-runner"
 LABEL="com.luoli.fin-report"
