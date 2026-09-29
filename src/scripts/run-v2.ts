@@ -13,7 +13,7 @@
  *   output/v2-infographic-brief-<date>.md     给 Grok 读的精简文案（公开内容）
  *   data/history/world/<date>.json            提交进仓库，异常检测历史
  *   data/memory/public.json                   提交进仓库，论点记忆
- *   data/memory/private.json                  不提交，CI 用 actions/cache 持久化
+ *   data/memory/private.json                  只保存在本机，不提交
  */
 
 import * as fs from 'fs';

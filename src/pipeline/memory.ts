@@ -1,7 +1,7 @@
 /**
  * v2 记忆，分两份：
  * - data/memory/public.json   论点、regime、关注列表层面的 watch items（提交进仓库，仓库是公开的）
- * - data/memory/private.json  可验证判断（calls）、组合层面的 watch items（不提交；CI 用 actions/cache 持久化）
+ * - data/memory/private.json  可验证判断（calls）、组合层面的 watch items（只保存在本机，不提交）
  */
 
 import * as fs from 'fs';

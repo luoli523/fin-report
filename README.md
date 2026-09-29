@@ -3,8 +3,8 @@
 每天美股收盘后自动生成的投资简报。先看整个世界（利率、美元、信用、波动率、商品、全球股指、地缘、供应链），再落到 AI 产业链关注列表，最后单独为持仓人生成一份私密的组合简报。
 
 - 公开简报：站点 https://luoli523.github.io/fin-report/ · 邮件 · Telegram PDF
-- 私人组合简报：只通过 Telegram 发 PDF，不进仓库，不进 CI artifact
-- 每日新加坡时间 09:30 由 GitHub Actions 运行
+- 私人组合简报：通过 Telegram 发 PDF 和本人声音播报；报告与记忆不进 GitHub
+- 新加坡时间周二至周六 07:00 在 Mac 本地运行；GitHub 负责公共托管、网站构建与信息图通知
 
 ## 流水线
 
@@ -15,16 +15,17 @@
 财报日历 ─────────────────┘                                                              └─→ 持仓 LLM ─→ 私人简报 pdf
 ```
 
-每个 LLM 步骤用哪个模型在 `config/llm-profiles.json` 里配置，密钥从环境变量读。默认全部 `gemini-3.8-flash`，一天成本几美分。
+每个 LLM 步骤用哪个模型在 `config/llm-profiles.json` 里配置，密钥从环境变量读。分析及口播校订默认 `gemini-3.8-flash`，口播初稿使用本机 Ollama，配音使用本机 Qwen3-TTS。
 
-跨日记忆分两份：`data/memory/public.json`（论点、regime，提交进仓库）和 `data/memory/private.json`（对持仓的可验证判断与记分，不提交，CI 用 actions/cache 持久化）。异常检测的历史样本在 `data/history/world/`，需要累积 15 天后 z-score 才生效。
+跨日记忆分两份：`data/memory/public.json`（论点、regime，提交进仓库）和 `data/memory/private.json`（对持仓的可验证判断与记分，只保存在本机，不提交）。异常检测的历史样本在 `data/history/world/`，需要累积 15 天后 z-score 才生效。
 
 ## 运行
 
 ```bash
 cp .env.example .env            # 填密钥
 npm install
-npm run v2                      # 跑今天，产物在 output/
+npm run daily                   # 本地完整流程：简报、播报、发送、公共发布
+npm run v2                      # 只生成今天简报，产物在 output/
 npm run v2 -- --from=synthesis  # 复用 data/v2/<日期>/ 缓存，从某阶段重跑
 npm run send-telegram           # 摘要 + 公开 PDF + 私人 PDF
 npm run send-email              # 公开简报
@@ -48,7 +49,7 @@ LLM_STEP_SYNTHESIS=claude npm run v2 -- --from=synthesis
 [{"ticker":"NVDA","tier":"core","costBasis":178.99},{"ticker":"SMCI","tier":"satellite"}]
 ```
 
-只有 portfolio 步骤能看到它。公开简报在代码层面接触不到持仓，渲染后还会再过一遍脱敏。
+原始持仓用于 portfolio 分析；私人简报随后用于私人口播改写与校订。Gemini 会处理用户已授权的私人分析材料。公开口播只读取公开简报，公共发布仅暂存明确列出的公开文件。
 
 ## 本地播报
 
@@ -56,7 +57,7 @@ LLM_STEP_SYNTHESIS=claude npm run v2 -- --from=synthesis
 
 两份试听已验收通过，公开音频通过 GitHub Releases 托管，报告页已接入播放器。`npm run daily:local` 串联本机生成、配音、私人 TG 发送和公共发布，支持按步骤续跑。
 
-运行要求、缓存恢复与迁移状态见 [docs/LOCAL_NARRATION.md](docs/LOCAL_NARRATION.md)。本地定时入口已安装但尚未启用；完整运行等待确认私人分析的模型/API 去向，当前仍保留云端每日生成任务。
+运行要求、缓存恢复与迁移状态见 [docs/LOCAL_NARRATION.md](docs/LOCAL_NARRATION.md)。本地全流程已于 2026-09-29 跑通并启用定时，原云端每日生成任务已停用，旧私人记忆缓存已清理。
 
 ## 信息图
 
@@ -66,10 +67,10 @@ LLM_STEP_SYNTHESIS=claude npm run v2 -- --from=synthesis
 
 ## 部署
 
-GitHub Secrets 与 `.env.example` 同名。`scripts/setup-github-secrets.sh` 可以把本地 `.env` 一键写入 Secrets。
+分析 API、持仓、Telegram 和邮件配置保存在本地 `.env`。GitHub 仅需站点发布权限，以及可选的信息图 webhook 两项 Secrets。
 
-- `daily-briefing.yml`：每日流水线 + 发送 + 站点构建部署
-- `site-rebuild.yml`：信息图或站点源码被推送时只重建站点
+- `scripts/local-daily.sh`：管理 Mac 的每日任务，状态和日志位于 `data/local-runner/`
+- `site-rebuild.yml`：公共内容推送后构建网站；新简报部署后通知信息图 bot
 
 ## 目录
 

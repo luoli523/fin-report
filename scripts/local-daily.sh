@@ -8,6 +8,7 @@ PLIST="$STATE/$LABEL.plist"
 LINK="$HOME/Library/LaunchAgents/$LABEL.plist"
 DOMAIN="gui/$(id -u)"
 mkdir -p "$STATE/logs"
+chmod 700 "$STATE" "$STATE/logs"
 cd "$ROOT"
 case "${1:-status}" in
   run)

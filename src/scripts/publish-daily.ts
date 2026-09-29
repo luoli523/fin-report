@@ -38,4 +38,24 @@ for (const relative of files.slice(4)) {
 git(['add','--',...files],dir);
 if (git(['diff','--cached','--name-only'],dir)) git(['commit','-m',`chore: publish local briefing and narration ${date}`],dir);
 git(['push','origin','HEAD:main'],dir);
-console.log(`[publish] ${date}: public content pushed`);
+const commit = git(['rev-parse','HEAD'],dir);
+const gh = (args:string[]) => execFileSync('gh',[...args,'--repo','luoli523/fin-report'],{encoding:'utf8'}).trim();
+let runId: number | undefined;
+for (let attempt=0; attempt<12; attempt++) {
+  const runs = JSON.parse(gh(['run','list','--workflow','site-rebuild.yml','--commit',commit,'--limit','1','--json','databaseId'])) as Array<{databaseId:number}>;
+  if (runs[0]) { runId=runs[0].databaseId; break; }
+  await new Promise(resolve=>setTimeout(resolve,5000));
+}
+if (!runId) throw new Error('Public content pushed, but site deployment has not started');
+execFileSync('gh',['run','watch',String(runId),'--exit-status','--interval','10','--repo','luoli523/fin-report'],{stdio:'inherit',timeout:600000});
+const audio = JSON.parse(fs.readFileSync(path.join(root,`website/src/data/narration/${date}.json`),'utf8'));
+for (let attempt=0; attempt<18; attempt++) {
+  try {
+    const response = await fetch(`https://luoli523.github.io/fin-report/reports/${date}/`,{signal:AbortSignal.timeout(15000),headers:{'Cache-Control':'no-cache'}});
+    if (response.ok && (await response.text()).includes(audio.url)) {
+      console.log(`[publish] ${date}: public player is live`); process.exit(0);
+    }
+  } catch { /* Pages/CDN may still be updating after the deploy job. */ }
+  await new Promise(resolve=>setTimeout(resolve,10000));
+}
+throw new Error('Site deployment finished, but public player has not appeared yet');

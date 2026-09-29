@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "v2": "tsx src/scripts/run-v2.ts",
-    "daily": "npm run v2 && npm run send-email && npm run send-telegram",
+    "daily": "npm run daily:local",
     "send-email": "tsx src/scripts/send-email.ts",
     "send-telegram": "tsx src/scripts/send-telegram.ts",
     "v2:attach-image": "tsx src/scripts/v2-attach-image.ts",
