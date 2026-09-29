@@ -2,6 +2,7 @@
 import ReportCard from './ReportCard.astro';
 import type { CollectionEntry } from 'astro:content';
 import { findInfographic } from '../lib/infographic';
+import NarrationPlayer from './NarrationPlayer.astro';
 
 interface Props {
   label: string;
@@ -61,6 +62,8 @@ const recent = reports.slice(1, 5);
           </span>
         </div>
       </a>
+
+      <NarrationPlayer date={latest.data.dateStr} />
 
       {/* Recent reports list */}
       {recent.length > 0 && (

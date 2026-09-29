@@ -1,0 +1,21 @@
+---
+import { findNarration } from '../lib/narration';
+interface Props { date: string }
+const { date } = Astro.props;
+const audio = findNarration(date);
+const seconds = Math.round(audio?.duration || 0);
+const duration = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+---
+{audio && (
+  <section class="my-5 rounded-xl border border-blue-100 bg-blue-50/50 p-4" aria-label={`${date} 公开简报播报`}>
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-base font-semibold text-gray-900">听鬼哥讲今日重点 <span class="ml-2 text-sm font-normal text-gray-500">{duration}</span></h2>
+      <span class="text-xs text-gray-500">本人授权的 AI 声音播报</span>
+    </div>
+    <audio controls preload="none" class="w-full" aria-label={`${date} 投资播报`}>
+      <source src={audio.url} type="audio/mpeg" />
+      你的浏览器不支持音频播放，请使用下方链接收听。
+    </audio>
+    <p class="mt-2 text-xs text-gray-500">基于 {date} 公开简报整理。<a href={audio.url} class="text-blue-700 underline">下载音频</a></p>
+  </section>
+)}

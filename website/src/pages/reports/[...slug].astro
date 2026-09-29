@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import MediaStrip from '../../components/MediaStrip.astro';
 import ReportContent from '../../components/ReportContent.astro';
 import { findInfographic } from '../../lib/infographic';
+import NarrationPlayer from '../../components/NarrationPlayer.astro';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports');
@@ -34,6 +35,8 @@ const infographic = findInfographic(report.data.dateStr, report.data.infographic
       <time class="text-sm font-medium text-blue-600">{report.data.dateStr}</time>
       <h1 class="mt-1 text-2xl font-bold text-gray-900">{report.data.title}</h1>
     </header>
+
+    <NarrationPlayer date={report.data.dateStr} />
 
     <MediaStrip
       infographic={infographic}
