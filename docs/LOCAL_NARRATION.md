@@ -1,6 +1,6 @@
 # 本地双版本播报
 
-生成程序在 Mac 上运行；分析流水线暂时保留原有模型配置。新增口播编辑使用本机 Ollama，配音使用独立 local-tts 的 guige 克隆音色。公开稿只读取公开 Markdown，私人稿读取同日公私 Markdown。
+生成程序在 Mac 上运行；分析流水线暂时保留原有模型配置。口播初稿使用本机 Ollama，终审校订使用已获用户授权的 Google Gemini，配音使用独立 local-tts 的 guige 克隆音色。公开稿只读取公开 Markdown，私人稿读取同日公私 Markdown。
 
 ## 使用
 
@@ -21,7 +21,7 @@ npm run send-narration -- --date=2026-09-28
 不要用历史日期重新采集当天行情。历史验收使用该日已经保存的简报。
 
 依赖：本机 Ollama 中的 qwen3.8:27b-mlx；local-tts 在 127.0.0.1:8091 运行并支持 guige；PATH 可找到 ffmpeg、ffprobe。
-配置：config/llm-profiles.json 的 narration_public/narration_private。私人稿必须使用 Ollama。TTS_BASE_URL 默认 http://127.0.0.1:8091/v1/，TTS_VOICE 默认 guige，TTS_SPEED 默认 1。
+配置：config/llm-profiles.json 的 narration_public/narration_private。私人初稿使用 Ollama；校订会将同一份私人简报发送给已获授权的 Gemini。TTS_BASE_URL 默认 http://127.0.0.1:8091/v1/，TTS_VOICE 默认 guige，TTS_SPEED 默认 1。
 
 ## 产物与恢复
 
@@ -33,7 +33,7 @@ npm run send-narration -- --date=2026-09-28
 
 发送按音频内容指纹去重。如果请求中断而无法确认 Telegram 是否收到，会保留 .pending 标记并拒绝自动重发；先在聊天里检查，再决定是否移除该标记。
 
-口播在初稿后增加独立的本机校订步骤，核对原文中的触发条件、失效信号、推断措辞并改善口语表达。程序同时校验字段、长度和明显异常。这不代表已独立核验金融事实或逐字识别音频。上线前应审稿、试听，确认观点没有漂移、传闻未变事实、数字读法准确。
+口播在初稿后增加独立的 Gemini 校订步骤，核对原文中的触发条件、失效信号、推断措辞并改善口语表达。程序同时校验字段、长度和明显异常。这不代表已独立核验金融事实或逐字识别音频。上线前应审稿、试听，确认观点没有漂移、传闻未变事实、数字读法准确。
 
 ## 迁移状态
 
@@ -63,7 +63,7 @@ bash scripts/local-daily.sh disable
 - 切换当天若旧云端已发过摘要/PDF/邮件，在当天状态目录写入 legacy-documents-delivered.json，避免重复；私人音频仍正常发送。
 - GitHub Releases 按月分组，文件名包含内容哈希。音频不进 Git 历史；页面通过原生播放器读取，默认不预加载。已确认音频地址支持 HTTP 206 和 Range，尚未逐一确认手机浏览器兼容性。
 - 发布在独立 checkout 中进行，只暂存明确列出的公开文件。推送失败保留提交，下次先 rebase 后重试；若发布 checkout 留有未提交改动或冲突，须先检查处理。
-- 简报分析仍沿用原模型配置；口播编辑使用本机 Ollama，声音生成使用 local-tts。首次试听有人工校订，后续自动稿件仍应观察质量。
+- 简报分析仍沿用原模型配置；口播初稿使用本机 Ollama、校订使用 Gemini，声音生成使用 local-tts。首次试听有人工校订，后续自动稿件仍应观察质量。
 
 ## 首次验收（2026-09-28 材料）
 

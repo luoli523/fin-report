@@ -61,13 +61,22 @@ async function script(audience: Audience) {
     atomic(file, JSON.stringify(saved, null, 2));
   }
   // A separate editing pass checks conditional actions and uncertainty against
-  // the source. It uses the same local model and keeps both versions locally.
+  // the source. The user authorized the existing Gemini destination for private
+  // analysis; recordings and TTS remain local. Keep both text versions locally.
+  const reviewer = resolveConfig('narration_review');
   const reviewFile = path.join(cache, `${audience}-review.json`);
-  const reviewKey = hash({reviewPrompt, publicText, privateText, draft:saved.script, model:config.model, temperature:config.temperature, thinking:config.thinking, contextWindow:config.contextWindow});
+  const actionConstraints = audience === 'private' ? [
+    privateText.match(/### 行动清单\n([\s\S]*?)(?=\n## |$)/)?.[1],
+    privateText.match(/## 三、对冲\n([\s\S]*?)(?=\n## |$)/)?.[1],
+  ].filter(Boolean).join('\n') : '';
+  const reviewKey = hash({reviewPrompt, publicText, privateText, draft:saved.script, model:reviewer.model, provider:reviewer.provider, temperature:reviewer.temperature, thinking:reviewer.thinking, contextWindow:reviewer.contextWindow, ...(actionConstraints ? {actionConstraints,reviewVersion:2} : {})});
   let reviewed = readJSON(reviewFile);
   if (!reviewed || reviewed.inputHash !== reviewKey || args.includes('--rewrite')) {
-    const r = await chatJSON<Script>(step, reviewPrompt, `日期：${date}\n受众：${audience}\n公开原文：\n${publicText}\n${privateText ? `私人原文：\n${privateText}\n` : ''}待校订口播稿：\n${JSON.stringify(saved.script)}`);
+    const r = await chatJSON<Script>('narration_review', reviewPrompt, `日期：${date}\n受众：${audience}\n公开原文：\n${publicText}\n${privateText ? `私人原文：\n${privateText}\n` : ''}待校订口播稿：\n${JSON.stringify(saved.script)}${actionConstraints ? `\n\n重点校正的行动约束（须完整保留条件，不是立即操作的指令）：\n${actionConstraints}\n\n请重新组织口播，不要原样复述待校订稿。不能无条件建议增持或声称已经盈利。必须讲出连续天数、阈值和且/或关系。最后加一个来自公开原文的机会及风险。` : ''}`);
     validate(r.data, audience);
+    const dayCounts = (text:string) => [...text.matchAll(/连续([零〇一二两三四五六七八九十百\d]+)(?:个交易)?[日天]/g)].map(m=>spokenText(m[1]).replace(/两/g,'二'));
+    const actualDays = dayCounts(r.data.paragraphs.join(''));
+    if (dayCounts(actionConstraints).some(days=>!actualDays.includes(days))) throw new Error('Narration changed or omitted consecutive-day action condition');
     reviewed = {inputHash:reviewKey, script:r.data, model:r.model, createdAt:new Date().toISOString()};
     atomic(reviewFile,JSON.stringify(reviewed,null,2));
   }

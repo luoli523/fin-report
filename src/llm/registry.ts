@@ -11,7 +11,7 @@ import * as path from 'path';
 import { createLLMProvider, BaseLLMProvider } from '../analyzers/llm/providers';
 import { LLMConfig, LLMProvider } from '../analyzers/llm/types';
 
-export type LLMStep = 'triage' | 'synthesis' | 'watchlist' | 'portfolio' | 'narration_public' | 'narration_private';
+export type LLMStep = 'triage' | 'synthesis' | 'watchlist' | 'portfolio' | 'narration_public' | 'narration_private' | 'narration_review';
 
 interface ProfileDef {
   provider: LLMProvider;

@@ -57,6 +57,7 @@
     "watchlist": "flash",
     "portfolio": "flash",
     "narration_public": "local_narration",
-    "narration_private": "local_narration"
+    "narration_private": "local_narration",
+    "narration_review": "flash"
   }
 }
