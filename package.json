@@ -12,6 +12,9 @@
     "narrate": "tsx src/scripts/narrate.ts",
     "send-narration": "tsx src/scripts/send-narration.ts",
     "publish-narration": "tsx src/scripts/publish-narration.ts",
+    "deliver-daily": "tsx src/scripts/deliver-daily.ts",
+    "daily:local": "tsx src/scripts/daily-local.ts",
+    "publish-daily": "tsx src/scripts/publish-daily.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc"
   },

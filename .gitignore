@@ -17,6 +17,8 @@ data/history/*
 data/private/
 data/v2/
 data/narration/
+data/delivery/
+data/local-runner/
 data/memory/private.json
 
 # Output files (can be regenerated)
