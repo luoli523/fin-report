@@ -21,6 +21,7 @@ const audiences: Audience[] = selection === 'both' ? ['public', 'private'] : [se
 const output = path.resolve('output');
 const cache = path.resolve('data/narration', date);
 const prompt = fs.readFileSync('prompts/narration.txt', 'utf8');
+const reviewPrompt = fs.readFileSync('prompts/narration-review.txt', 'utf8');
 const voice = process.env.TTS_VOICE || 'guige';
 const speed = Number(process.env.TTS_SPEED || 1);
 const endpoint = new URL(process.env.TTS_BASE_URL || 'http://127.0.0.1:8091/v1/');
@@ -59,7 +60,18 @@ async function script(audience: Audience) {
     saved = { inputHash: key, script: r.data, model: r.model, createdAt: new Date().toISOString() };
     atomic(file, JSON.stringify(saved, null, 2));
   }
-  const text = spokenText(validate(saved.script, audience));
+  // A separate editing pass checks conditional actions and uncertainty against
+  // the source. It uses the same local model and keeps both versions locally.
+  const reviewFile = path.join(cache, `${audience}-review.json`);
+  const reviewKey = hash({reviewPrompt, publicText, privateText, draft:saved.script, model:config.model, temperature:config.temperature, thinking:config.thinking, contextWindow:config.contextWindow});
+  let reviewed = readJSON(reviewFile);
+  if (!reviewed || reviewed.inputHash !== reviewKey || args.includes('--rewrite')) {
+    const r = await chatJSON<Script>(step, reviewPrompt, `日期：${date}\n受众：${audience}\n公开原文：\n${publicText}\n${privateText ? `私人原文：\n${privateText}\n` : ''}待校订口播稿：\n${JSON.stringify(saved.script)}`);
+    validate(r.data, audience);
+    reviewed = {inputHash:reviewKey, script:r.data, model:r.model, createdAt:new Date().toISOString()};
+    atomic(reviewFile,JSON.stringify(reviewed,null,2));
+  }
+  const text = spokenText(validate(reviewed.script, audience));
   atomic(path.join(output, `v2-${audience}-narration-${date}.txt`), text);
   console.log(`[${audience}] script: ${text.length} characters`);
 }
