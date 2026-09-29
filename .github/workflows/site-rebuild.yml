@@ -22,6 +22,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect newly published briefing
+        id: briefing
+        run: |
+          if git diff --quiet HEAD^ HEAD -- website/public/briefings/latest.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: actions/setup-node@v4
         with:
@@ -38,3 +49,29 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/dist
+
+      # Keep the existing public infographic handoff after publication. Image-only
+      # commits do not change latest.json, so they cannot trigger a webhook loop.
+      - name: Notify infographic bot
+        if: github.event_name == 'push' && steps.briefing.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          WEBHOOK_URL: ${{ secrets.GROK_BOT_WEBHOOK_URL }}
+          WEBHOOK_KEY: ${{ secrets.GROK_BOT_WEBHOOK_KEY }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ] || [ -z "$WEBHOOK_KEY" ]; then
+            echo "Infographic webhook not configured; skipping"
+            exit 0
+          fi
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const manifest = JSON.parse(fs.readFileSync('website/public/briefings/latest.json', 'utf8'));
+          const response = await fetch(process.env.WEBHOOK_URL, {
+            method: 'POST',
+            headers: {'Authorization': `Bearer ${process.env.WEBHOOK_KEY}`, 'Content-Type': 'application/json'},
+            body: JSON.stringify({source:'local-briefing', ...manifest, latest_json:'https://luoli523.github.io/fin-report/briefings/latest.json'}),
+            signal: AbortSignal.timeout(30000),
+          }).catch(() => { throw new Error('Infographic webhook connection failed'); });
+          if (!response.ok) throw new Error(`Infographic webhook HTTP ${response.status}`);
+          console.log('Public infographic handoff accepted');
+          JS
