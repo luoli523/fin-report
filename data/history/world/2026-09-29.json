@@ -1,662 +1,662 @@
 {
   "date": "2026-09-29",
-  "collectedAt": "2026-09-29T01:43:07.796Z",
+  "collectedAt": "2026-09-29T14:31:06.971Z",
   "quotes": [
     {
       "symbol": "^GSPC",
       "name": "S&P 500",
       "group": "us-index",
-      "price": 7683.69,
-      "change": -59.720215,
-      "changePercent": -0.7712392,
+      "price": 7685.88,
+      "change": 2.1899414,
+      "changePercent": 0.028501352,
       "fiftyTwoWeekHigh": 7816.7,
       "fiftyTwoWeekLow": 6316.91,
-      "marketTime": "+058712-09-26T11:03:20.000Z"
+      "marketTime": "+058714-10-12T19:50:00.000Z"
     },
     {
       "symbol": "^IXIC",
       "name": "NASDAQ",
       "group": "us-index",
-      "price": 26820.38,
-      "change": -248.33594,
-      "changePercent": -0.91742784,
+      "price": 26861.094,
+      "change": 40.71289,
+      "changePercent": 0.15180086,
       "fiftyTwoWeekHigh": 27288.79,
       "fiftyTwoWeekLow": 20690.25,
-      "marketTime": "+058712-10-24T02:23:20.000Z"
+      "marketTime": "+058714-10-12T18:26:40.000Z"
     },
     {
       "symbol": "^DJI",
       "name": "Dow Jones",
       "group": "us-index",
-      "price": 51481.51,
-      "change": -347.10938,
-      "changePercent": -0.6697253,
+      "price": 51370.77,
+      "change": -110.74219,
+      "changePercent": -0.21510921,
       "fiftyTwoWeekHigh": 54744.33,
       "fiftyTwoWeekLow": 45057.28,
-      "marketTime": "+058712-09-26T22:10:00.000Z"
+      "marketTime": "+058714-10-12T19:50:00.000Z"
     },
     {
       "symbol": "^RUT",
       "name": "Russell 2000",
       "group": "us-index",
-      "price": 2817.912,
-      "change": -19.639893,
-      "changePercent": -0.6921421,
+      "price": 2816.968,
+      "change": -0.9440918,
+      "changePercent": -0.033503126,
       "fiftyTwoWeekHigh": 3069.71,
       "fiftyTwoWeekLow": 2303.46,
-      "marketTime": "+058712-09-22T08:10:00.000Z"
+      "marketTime": "+058714-10-02T09:16:40.000Z"
     },
     {
       "symbol": "^SOX",
       "name": "PHLX Semiconductor",
       "group": "us-index",
-      "price": 12465.241,
-      "change": -203.6875,
-      "changePercent": -1.6077721,
+      "price": 12763.821,
+      "change": 298.58008,
+      "changePercent": 2.3953469,
       "fiftyTwoWeekHigh": 14655.29,
       "fiftyTwoWeekLow": 6160.05,
-      "marketTime": "+058712-10-24T02:23:20.000Z"
+      "marketTime": "+058714-10-12T18:26:40.000Z"
     },
     {
       "symbol": "RSP",
       "name": "S&P 500 Equal Weight",
       "group": "us-index",
-      "price": 209.74,
-      "change": -1.37,
-      "changePercent": -0.648948,
+      "price": 209.4724,
+      "change": -0.26760864,
+      "changePercent": -0.12759066,
       "fiftyTwoWeekHigh": 223.44,
       "fiftyTwoWeekLow": 182.11,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T17:03:20.000Z"
     },
     {
       "symbol": "^N225",
       "name": "Nikkei 225",
       "group": "global-index",
-      "price": 65205.04,
-      "change": -672.5781,
-      "changePercent": -1.0210189,
+      "price": 65481.27,
+      "change": -396.34766,
+      "changePercent": -0.6016424,
       "fiftyTwoWeekHigh": 72831.73,
       "fiftyTwoWeekLow": 44357.65,
-      "marketTime": "+058713-04-17T01:16:40.000Z"
+      "marketTime": "+058713-11-23T06:33:20.000Z"
     },
     {
       "symbol": "EWJ",
       "name": "MSCI Japan ETF",
       "group": "global-index",
-      "price": 96.83,
-      "change": -1.1,
-      "changePercent": -1.12325,
+      "price": 96.6,
+      "change": -0.23000336,
+      "changePercent": -0.23753315,
       "fiftyTwoWeekHigh": 99.01,
       "fiftyTwoWeekLow": 78.21,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T18:43:20.000Z"
     },
     {
       "symbol": "^KS11",
       "name": "KOSPI",
       "group": "global-index",
-      "price": 6844.26,
-      "change": -45.48047,
-      "changePercent": -0.66011876,
+      "price": 6870.81,
+      "change": -18.930176,
+      "changePercent": -0.2747589,
       "fiftyTwoWeekHigh": 9385.59,
       "fiftyTwoWeekLow": 3421.89,
-      "marketTime": "+058713-04-13T12:33:20.000Z"
+      "marketTime": "+058714-05-23T06:26:40.000Z"
     },
     {
       "symbol": "^TWII",
       "name": "Taiwan TAIEX",
       "group": "global-index",
-      "price": 47911.4,
-      "change": -113.203125,
-      "changePercent": -0.23571357,
+      "price": 47631.96,
+      "change": -392.64062,
+      "changePercent": -0.81758225,
       "fiftyTwoWeekHigh": 48601.53,
       "fiftyTwoWeekLow": 25738.31,
-      "marketTime": "+058713-04-13T13:56:40.000Z"
+      "marketTime": "+058713-10-04T10:10:00.000Z"
     },
     {
       "symbol": "^HSI",
       "name": "Hang Seng",
       "group": "global-index",
-      "price": 24648.64,
-      "change": 6.1308594,
-      "changePercent": 0.0248792,
+      "price": 24523.57,
+      "change": -118.93945,
+      "changePercent": -0.48265967,
       "fiftyTwoWeekHigh": 28056.1,
       "fiftyTwoWeekLow": 22518,
-      "marketTime": "+058713-04-17T02:40:00.000Z"
+      "marketTime": "+058714-01-20T04:33:20.000Z"
     },
     {
       "symbol": "000001.SS",
       "name": "Shanghai Composite",
       "group": "global-index",
-      "price": 3823.6206,
-      "change": -64.753174,
-      "changePercent": -1.6653022,
+      "price": 3830.4514,
+      "change": 6.8308105,
+      "changePercent": 0.17864771,
       "fiftyTwoWeekHigh": 4258.863,
       "fiftyTwoWeekLow": 3741.11,
-      "marketTime": "+058713-04-15T09:00:00.000Z"
+      "marketTime": "+058713-12-03T22:40:00.000Z"
     },
     {
       "symbol": "^STOXX50E",
       "name": "Euro Stoxx 50",
       "group": "global-index",
-      "price": 6301.28,
-      "change": -1.5400391,
-      "changePercent": -0.024434129,
+      "price": 6342.4,
+      "change": 41.120117,
+      "changePercent": 0.6525646,
       "fiftyTwoWeekHigh": 6577.2,
-      "fiftyTwoWeekLow": 0,
-      "marketTime": "+058712-03-18T16:00:00.000Z"
+      "fiftyTwoWeekLow": 5376.81,
+      "marketTime": "+058714-10-02T06:30:00.000Z"
     },
     {
       "symbol": "^GDAXI",
       "name": "DAX",
       "group": "global-index",
-      "price": 25374.42,
-      "change": -34.220703,
-      "changePercent": -0.13468136,
+      "price": 25523.89,
+      "change": 149.4707,
+      "changePercent": 0.58906054,
       "fiftyTwoWeekHigh": 26618.74,
       "fiftyTwoWeekLow": 21863.81,
-      "marketTime": "+058712-03-18T16:00:00.000Z"
+      "marketTime": "+058714-10-02T10:06:40.000Z"
     },
     {
       "symbol": "^FTSE",
       "name": "FTSE 100",
       "group": "global-index",
-      "price": 10684.88,
-      "change": -10.370117,
-      "changePercent": -0.09696002,
+      "price": 10678.73,
+      "change": -6.149414,
+      "changePercent": -0.057552546,
       "fiftyTwoWeekHigh": 10989.5,
       "fiftyTwoWeekLow": 9266.3,
-      "marketTime": "+058712-03-01T15:40:00.000Z"
+      "marketTime": "+058714-10-02T10:06:40.000Z"
     },
     {
       "symbol": "^BSESN",
       "name": "India Sensex",
       "group": "global-index",
-      "price": 72771.72,
-      "change": -1124.0234,
-      "changePercent": -1.5210936,
+      "price": 72529.07,
+      "change": -242.64844,
+      "changePercent": -0.33343783,
       "fiftyTwoWeekHigh": 86159.02,
       "fiftyTwoWeekLow": 71545.81,
-      "marketTime": "+058711-07-14T09:56:40.000Z"
+      "marketTime": "+058714-04-09T09:40:00.000Z"
     },
     {
       "symbol": "EEM",
       "name": "MSCI Emerging Markets ETF",
       "group": "global-index",
-      "price": 67.2,
-      "change": -0.780006,
-      "changePercent": -1.14741,
+      "price": 67.3599,
+      "change": 0.15990448,
+      "changePercent": 0.23795311,
       "fiftyTwoWeekHigh": 71.57,
       "fiftyTwoWeekLow": 51.82,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T19:50:00.000Z"
     },
     {
       "symbol": "XLK",
       "name": "Technology",
       "group": "us-sector",
-      "price": 194.53,
-      "change": -1.74001,
-      "changePercent": -0.886537,
+      "price": 195.91,
+      "change": 1.3800049,
+      "changePercent": 0.70940465,
       "fiftyTwoWeekHigh": 198.73,
       "fiftyTwoWeekLow": 126.68,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T19:50:00.000Z"
     },
     {
       "symbol": "XLF",
       "name": "Financials",
       "group": "us-sector",
-      "price": 54.19,
-      "change": -0.650002,
-      "changePercent": -1.18527,
+      "price": 54.055,
+      "change": -0.13499832,
+      "changePercent": -0.24912037,
       "fiftyTwoWeekHigh": 58.6,
       "fiftyTwoWeekLow": 47.67,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T18:26:40.000Z"
     },
     {
       "symbol": "XLE",
       "name": "Energy",
       "group": "us-sector",
-      "price": 62.1,
-      "change": 0.0599976,
-      "changePercent": 0.0967079,
+      "price": 61.59,
+      "change": -0.5099983,
+      "changePercent": -0.82125336,
       "fiftyTwoWeekHigh": 66.17,
       "fiftyTwoWeekLow": 42.35,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T19:00:00.000Z"
     },
     {
       "symbol": "XLV",
       "name": "Health Care",
       "group": "us-sector",
-      "price": 171.26,
-      "change": 0.559998,
-      "changePercent": 0.328059,
+      "price": 169.32,
+      "change": -1.9399872,
+      "changePercent": -1.1327732,
       "fiftyTwoWeekHigh": 176.6,
-      "fiftyTwoWeekLow": 134.74,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "fiftyTwoWeekLow": 135.67,
+      "marketTime": "+058714-10-12T19:33:20.000Z"
     },
     {
       "symbol": "XLI",
       "name": "Industrials",
       "group": "us-sector",
-      "price": 168.78,
-      "change": -1.64999,
-      "changePercent": -0.968136,
+      "price": 169.29,
+      "change": 0.5099945,
+      "changePercent": 0.30216524,
       "fiftyTwoWeekHigh": 188.19,
       "fiftyTwoWeekLow": 147.14,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T20:06:40.000Z"
     },
     {
       "symbol": "XLY",
       "name": "Consumer Discretionary",
       "group": "us-sector",
-      "price": 109,
-      "change": -1.56,
-      "changePercent": -1.411,
+      "price": 109.145,
+      "change": 0.14499664,
+      "changePercent": 0.13302444,
       "fiftyTwoWeekHigh": 125.01,
       "fiftyTwoWeekLow": 105.19,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T20:06:40.000Z"
     },
     {
       "symbol": "XLP",
       "name": "Consumer Staples",
       "group": "us-sector",
-      "price": 82.28,
-      "change": 0.220001,
-      "changePercent": 0.268098,
+      "price": 81.5705,
+      "change": -0.70949554,
+      "changePercent": -0.8622941,
       "fiftyTwoWeekHigh": 90.14,
       "fiftyTwoWeekLow": 75.16,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T20:40:00.000Z"
     },
     {
       "symbol": "XLU",
       "name": "Utilities",
       "group": "us-sector",
-      "price": 39.25,
-      "change": -0.259998,
-      "changePercent": -0.658057,
+      "price": 39.49,
+      "change": 0.24000168,
+      "changePercent": 0.61146927,
       "fiftyTwoWeekHigh": 47.8,
-      "fiftyTwoWeekLow": 39.06,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "fiftyTwoWeekLow": 39.03,
+      "marketTime": "+058714-10-12T20:06:40.000Z"
     },
     {
       "symbol": "XLRE",
       "name": "Real Estate",
       "group": "us-sector",
-      "price": 41.35,
-      "change": -0.210003,
-      "changePercent": -0.505301,
+      "price": 41.395,
+      "change": 0.045001984,
+      "changePercent": 0.10883189,
       "fiftyTwoWeekHigh": 46.455,
       "fiftyTwoWeekLow": 39.725,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T20:06:40.000Z"
     },
     {
       "symbol": "XLB",
       "name": "Materials",
       "group": "us-sector",
-      "price": 49.47,
-      "change": -0.329998,
-      "changePercent": -0.662647,
+      "price": 49.185,
+      "change": -0.28499985,
+      "changePercent": -0.5761064,
       "fiftyTwoWeekHigh": 54.19,
       "fiftyTwoWeekLow": 42.035,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T19:50:00.000Z"
     },
     {
       "symbol": "XLC",
       "name": "Communication Services",
       "group": "us-sector",
-      "price": 111.18,
-      "change": -1.78,
-      "changePercent": -1.57578,
+      "price": 111.12,
+      "change": -0.05999756,
+      "changePercent": -0.053964343,
       "fiftyTwoWeekHigh": 120.405,
       "fiftyTwoWeekLow": 105.03,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T20:40:00.000Z"
     },
     {
       "symbol": "IGV",
       "name": "Software ETF",
       "group": "us-sector",
-      "price": 105.43,
-      "change": -0.580002,
-      "changePercent": -0.54712,
+      "price": 105.38,
+      "change": -0.05000305,
+      "changePercent": -0.047427725,
       "fiftyTwoWeekHigh": 117.76,
       "fiftyTwoWeekLow": 73.93,
-      "marketTime": "+058712-09-01T08:16:40.000Z"
+      "marketTime": "+058714-10-12T18:43:20.000Z"
     },
     {
       "symbol": "ITA",
       "name": "Aerospace & Defense ETF",
       "group": "us-sector",
-      "price": 209.26,
-      "change": -4.55,
-      "changePercent": -2.12806,
+      "price": 209.777,
+      "change": 0.5169983,
+      "changePercent": 0.24706027,
       "fiftyTwoWeekHigh": 256.6,
       "fiftyTwoWeekLow": 195.71,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T17:03:20.000Z"
     },
     {
       "symbol": "^IRX",
       "name": "US 3M T-Bill",
       "group": "rates",
       "isLevel": true,
-      "price": 4.057,
-      "change": -0.013000011,
-      "changePercent": -0.3194106,
-      "fiftyTwoWeekHigh": 4.0880003,
+      "price": 4.09,
+      "change": 0.032999992,
+      "changePercent": 0.81340873,
+      "fiftyTwoWeekHigh": 4.093,
       "fiftyTwoWeekLow": 3.507,
-      "marketTime": "+058712-07-21T13:46:40.000Z"
+      "marketTime": "+058714-10-02T09:16:40.000Z"
     },
     {
       "symbol": "^FVX",
       "name": "US 5Y Yield",
       "group": "rates",
       "isLevel": true,
-      "price": 5.068,
-      "change": 0.06099987,
-      "changePercent": 1.2182918,
+      "price": 5.079,
+      "change": 0.011000156,
+      "changePercent": 0.21705124,
       "fiftyTwoWeekHigh": 5.102,
       "fiftyTwoWeekLow": 3.507,
-      "marketTime": "+058712-07-21T13:46:40.000Z"
+      "marketTime": "+058714-10-02T09:16:40.000Z"
     },
     {
       "symbol": "^TNX",
       "name": "US 10Y Yield",
       "group": "rates",
       "isLevel": true,
-      "price": 5.2400002,
-      "change": 0.056000233,
-      "changePercent": 1.0802515,
+      "price": 5.251,
+      "change": 0.01099968,
+      "changePercent": 0.20999768,
       "fiftyTwoWeekHigh": 5.274,
       "fiftyTwoWeekLow": 3.947,
-      "marketTime": "+058712-07-21T13:46:40.000Z"
+      "marketTime": "+058714-10-02T09:16:40.000Z"
     },
     {
       "symbol": "^TYX",
       "name": "US 30Y Yield",
       "group": "rates",
       "isLevel": true,
-      "price": 5.561,
-      "change": 0.056999683,
-      "changePercent": 1.0356047,
-      "fiftyTwoWeekHigh": 5.582,
+      "price": 5.58,
+      "change": 0.019000053,
+      "changePercent": 0.34185055,
+      "fiftyTwoWeekHigh": 5.591,
       "fiftyTwoWeekLow": 4.528,
-      "marketTime": "+058712-07-21T13:46:40.000Z"
+      "marketTime": "+058714-10-02T09:16:40.000Z"
     },
     {
       "symbol": "TLT",
       "name": "20Y+ Treasury ETF",
       "group": "rates",
-      "price": 78.62,
-      "change": -0.699997,
-      "changePercent": -0.882497,
+      "price": 78.345,
+      "change": -0.27500153,
+      "changePercent": -0.3497857,
       "fiftyTwoWeekHigh": 92.19,
-      "fiftyTwoWeekLow": 78.2698,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "fiftyTwoWeekLow": 78.2,
+      "marketTime": "+058714-10-12T20:23:20.000Z"
     },
     {
       "symbol": "TIP",
       "name": "TIPS ETF (实际利率代理)",
       "group": "rates",
-      "price": 104.09,
-      "change": -0.450005,
-      "changePercent": -0.430462,
+      "price": 104.03,
+      "change": -0.05999756,
+      "changePercent": -0.057640083,
       "fiftyTwoWeekHigh": 112.24,
-      "fiftyTwoWeekLow": 103.98,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "fiftyTwoWeekLow": 103.87,
+      "marketTime": "+058714-10-12T17:36:40.000Z"
     },
     {
       "symbol": "RINF",
       "name": "Inflation Expectations ETF",
       "group": "rates",
-      "price": 32.595,
-      "change": 0.0764999,
-      "changePercent": 0.235251,
+      "price": 32.62,
+      "change": 0.024997711,
+      "changePercent": 0.07669185,
       "fiftyTwoWeekHigh": 33.09,
       "fiftyTwoWeekLow": 31.74,
-      "marketTime": "+058712-05-11T14:10:00.000Z"
+      "marketTime": "+058714-10-01T19:23:20.000Z"
     },
     {
       "symbol": "HYG",
       "name": "High Yield Corp Bond ETF",
       "group": "credit",
-      "price": 77.54,
-      "change": -0.32,
-      "changePercent": -0.410994,
+      "price": 77.375,
+      "change": -0.16500092,
+      "changePercent": -0.21279457,
       "fiftyTwoWeekHigh": 81.33,
-      "fiftyTwoWeekLow": 77.42,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "fiftyTwoWeekLow": 77.36,
+      "marketTime": "+058714-10-12T20:23:20.000Z"
     },
     {
       "symbol": "LQD",
       "name": "IG Corp Bond ETF",
       "group": "credit",
-      "price": 102.47,
-      "change": -0.739998,
-      "changePercent": -0.716983,
+      "price": 102.435,
+      "change": -0.035003662,
+      "changePercent": -0.034164913,
       "fiftyTwoWeekHigh": 112.93,
       "fiftyTwoWeekLow": 102.18,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T21:13:20.000Z"
     },
     {
       "symbol": "EMB",
       "name": "EM USD Sovereign Bond ETF",
       "group": "credit",
-      "price": 91.34,
-      "change": -0.840004,
-      "changePercent": -0.911265,
+      "price": 91.415,
+      "change": 0.07500458,
+      "changePercent": 0.08211581,
       "fiftyTwoWeekHigh": 97.8,
       "fiftyTwoWeekLow": 91.2,
-      "marketTime": "+058712-09-01T08:16:40.000Z"
+      "marketTime": "+058714-10-12T17:20:00.000Z"
     },
     {
       "symbol": "^VIX",
       "name": "VIX",
       "group": "volatility",
       "isLevel": true,
-      "price": 16.07,
-      "change": 1.1999998,
-      "changePercent": 8.069939,
+      "price": 15.9,
+      "change": -0.17000008,
+      "changePercent": -1.0578723,
       "fiftyTwoWeekHigh": 35.3,
       "fiftyTwoWeekLow": 13.38,
-      "marketTime": "+058712-09-11T18:16:40.000Z"
+      "marketTime": "+058714-10-02T10:56:40.000Z"
     },
     {
       "symbol": "^VIX3M",
       "name": "VIX 3M",
       "group": "volatility",
       "isLevel": true,
-      "price": 18.23,
-      "change": 0.29999924,
-      "changePercent": 1.6731691,
+      "price": 18.01,
+      "change": -0.21999931,
+      "changePercent": -1.2074606,
       "fiftyTwoWeekHigh": 29.46,
       "fiftyTwoWeekLow": 10.06,
-      "marketTime": "+058712-09-11T18:16:40.000Z"
+      "marketTime": "+058714-10-02T10:56:40.000Z"
     },
     {
       "symbol": "^MOVE",
       "name": "MOVE (债市波动率)",
       "group": "volatility",
       "isLevel": true,
-      "price": 101.8206,
-      "change": 5.8181,
-      "changePercent": 6.060363,
+      "price": 104.0175,
+      "change": 2.1968994,
+      "changePercent": 2.1576178,
       "fiftyTwoWeekHigh": 115.02,
-      "fiftyTwoWeekLow": 0,
-      "marketTime": "+058712-09-22T08:10:00.000Z"
+      "fiftyTwoWeekLow": 55.77,
+      "marketTime": "+058714-09-23T01:40:00.000Z"
     },
     {
       "symbol": "DX-Y.NYB",
       "name": "US Dollar Index",
       "group": "fx",
-      "price": 101.208,
-      "change": 0.011001587,
-      "changePercent": 0.010871348,
+      "price": 101.407,
+      "change": 0.20999908,
+      "changePercent": 0.20751514,
       "fiftyTwoWeekHigh": 101.8,
       "fiftyTwoWeekLow": 95.55,
-      "marketTime": "+058713-04-20T15:06:40.000Z"
+      "marketTime": "+058714-10-05T22:50:00.000Z"
     },
     {
       "symbol": "USDJPY=X",
       "name": "USD/JPY",
       "group": "fx",
-      "price": 157.518,
-      "change": 0.14801025,
-      "changePercent": 0.094053,
+      "price": 157.352,
+      "change": -0.017990112,
+      "changePercent": -0.011431658,
       "fiftyTwoWeekHigh": 163.979,
       "fiftyTwoWeekLow": 146.609,
-      "marketTime": "+058713-04-27T14:03:20.000Z"
+      "marketTime": "+058714-10-12T21:13:20.000Z"
     },
     {
       "symbol": "EURUSD=X",
       "name": "EUR/USD",
       "group": "fx",
-      "price": 1.137139,
-      "change": -0.00012934208,
-      "changePercent": -0.011371983,
+      "price": 1.1349449,
+      "change": -0.002323389,
+      "changePercent": -0.20426701,
       "fiftyTwoWeekHigh": 1.2023566,
       "fiftyTwoWeekLow": 1.1325413,
-      "marketTime": "+058713-04-27T12:06:40.000Z"
+      "marketTime": "+058714-10-12T20:23:20.000Z"
     },
     {
       "symbol": "USDCNH=X",
       "name": "USD/CNH",
       "group": "fx",
-      "price": 6.7084,
-      "change": -0.0013003349,
-      "changePercent": -0.019378193,
+      "price": 6.70746,
+      "change": -0.002240181,
+      "changePercent": -0.033390284,
       "fiftyTwoWeekHigh": 6.71097,
-      "fiftyTwoWeekLow": 6.70636,
-      "marketTime": "+058713-04-27T13:46:40.000Z"
+      "fiftyTwoWeekLow": 6.70286,
+      "marketTime": "+058714-10-12T21:30:00.000Z"
     },
     {
       "symbol": "USDKRW=X",
       "name": "USD/KRW",
       "group": "fx",
-      "price": 1359.83,
-      "change": 1.1099854,
-      "changePercent": 0.08167843,
+      "price": 1353.88,
+      "change": -4.839966,
+      "changePercent": -0.35621512,
       "fiftyTwoWeekHigh": 1587.7,
       "fiftyTwoWeekLow": 1322.42,
-      "marketTime": "+058713-04-27T13:30:00.000Z"
+      "marketTime": "+058714-10-12T22:20:00.000Z"
     },
     {
       "symbol": "USDTWD=X",
       "name": "USD/TWD",
       "group": "fx",
-      "price": 31.828,
-      "change": 0.04799843,
-      "changePercent": 0.15103345,
+      "price": 31.801,
+      "change": 0.020999908,
+      "changePercent": 0.066079006,
       "fiftyTwoWeekHigh": 32.769,
       "fiftyTwoWeekLow": 30.242,
-      "marketTime": "+058713-04-27T14:03:20.000Z"
+      "marketTime": "+058714-10-12T20:56:40.000Z"
     },
     {
       "symbol": "USDCHF=X",
       "name": "USD/CHF",
       "group": "fx",
-      "price": 0.83235,
-      "change": 0.0010800362,
-      "changePercent": 0.12992291,
-      "fiftyTwoWeekHigh": 0.8327,
+      "price": 0.83375,
+      "change": 0.00248003,
+      "changePercent": 0.2983459,
+      "fiftyTwoWeekHigh": 0.83496,
       "fiftyTwoWeekLow": 0.7629,
-      "marketTime": "+058713-04-27T14:03:20.000Z"
+      "marketTime": "+058714-10-12T21:30:00.000Z"
     },
     {
       "symbol": "USDSGD=X",
       "name": "USD/SGD",
       "group": "fx",
-      "price": 1.27803,
-      "change": 0.0010399818,
-      "changePercent": 0.08144009,
+      "price": 1.27772,
+      "change": 0.0007299185,
+      "changePercent": 0.057159293,
       "fiftyTwoWeekHigh": 1.30959,
       "fiftyTwoWeekLow": 1.25884,
-      "marketTime": "+058713-04-27T14:36:40.000Z"
+      "marketTime": "+058714-10-12T21:46:40.000Z"
     },
     {
       "symbol": "CL=F",
       "name": "WTI Crude",
       "group": "commodity",
-      "price": 93.67,
-      "change": 1.0699997,
-      "changePercent": 1.1555072,
+      "price": 91.38,
+      "change": -1.2200012,
+      "changePercent": -1.317496,
       "fiftyTwoWeekHigh": 119.48,
       "fiftyTwoWeekLow": 54.98,
-      "marketTime": "+058713-04-20T15:56:40.000Z"
+      "marketTime": "+058714-10-05T23:23:20.000Z"
     },
     {
       "symbol": "BZ=F",
       "name": "Brent Crude",
       "group": "commodity",
-      "price": 99.2,
-      "change": 1.3699951,
-      "changePercent": 1.4003834,
+      "price": 96.71,
+      "change": -1.1200027,
+      "changePercent": -1.1448458,
       "fiftyTwoWeekHigh": 126.1,
       "fiftyTwoWeekLow": 58.72,
-      "marketTime": "+058713-04-20T15:56:40.000Z"
+      "marketTime": "+058714-10-05T23:06:40.000Z"
     },
     {
       "symbol": "NG=F",
       "name": "Natural Gas",
       "group": "commodity",
-      "price": 3.137,
-      "change": 0.031000137,
-      "changePercent": 0.9980727,
+      "price": 3.049,
+      "change": -0.05699992,
+      "changePercent": -1.8351552,
       "fiftyTwoWeekHigh": 7.827,
       "fiftyTwoWeekLow": 2.483,
-      "marketTime": "+058713-04-20T04:00:00.000Z"
+      "marketTime": "+058714-10-05T22:33:20.000Z"
     },
     {
       "symbol": "HG=F",
       "name": "Copper",
       "group": "commodity",
-      "price": 6.617,
-      "change": -0.016499996,
-      "changePercent": -0.24873741,
+      "price": 6.6345,
+      "change": 0.0009999275,
+      "changePercent": 0.015073906,
       "fiftyTwoWeekHigh": 6.83,
-      "fiftyTwoWeekLow": 4.7085,
-      "marketTime": "+058713-04-20T11:46:40.000Z"
+      "fiftyTwoWeekLow": 4.778,
+      "marketTime": "+058714-10-05T22:50:00.000Z"
     },
     {
       "symbol": "GC=F",
       "name": "Gold",
       "group": "commodity",
-      "price": 4161.3,
-      "change": -7.1000977,
-      "changePercent": -0.1703315,
+      "price": 4200.9,
+      "change": 32.5,
+      "changePercent": 0.77967566,
       "fiftyTwoWeekHigh": 5586.2,
       "fiftyTwoWeekLow": 3820.6,
-      "marketTime": "+058713-04-20T15:40:00.000Z"
+      "marketTime": "+058714-10-05T23:23:20.000Z"
     },
     {
       "symbol": "SI=F",
       "name": "Silver",
       "group": "commodity",
-      "price": 61.055,
-      "change": -0.6629982,
-      "changePercent": -1.0742381,
+      "price": 61.56,
+      "change": -0.15799713,
+      "changePercent": -0.25599846,
       "fiftyTwoWeekHigh": 121.3,
       "fiftyTwoWeekLow": 45.385,
-      "marketTime": "+058713-04-20T14:50:00.000Z"
+      "marketTime": "+058714-10-05T23:06:40.000Z"
     },
     {
       "symbol": "URA",
       "name": "Uranium ETF",
       "group": "commodity",
-      "price": 40.13,
-      "change": -0.779999,
-      "changePercent": -1.90662,
+      "price": 40.335,
+      "change": 0.20499802,
+      "changePercent": 0.51077753,
       "fiftyTwoWeekHigh": 62.28,
       "fiftyTwoWeekLow": 37.18,
-      "marketTime": "+058712-09-01T08:00:00.000Z"
+      "marketTime": "+058714-10-12T21:13:20.000Z"
     },
     {
       "symbol": "BTC-USD",
       "name": "Bitcoin",
       "group": "crypto",
-      "price": 82960.88,
-      "change": -715.4453,
-      "changePercent": -0.8550152,
+      "price": 83942.36,
+      "change": 942.5703,
+      "changePercent": 1.1356298,
       "fiftyTwoWeekHigh": 126198.07,
       "fiftyTwoWeekLow": 57747.766,
-      "marketTime": "+058713-04-27T14:03:20.000Z"
+      "marketTime": "+058714-10-12T21:13:20.000Z"
     }
   ],
   "failed": []
