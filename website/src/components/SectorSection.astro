@@ -1,88 +1,101 @@
 ---
-import ReportCard from './ReportCard.astro';
 import type { CollectionEntry } from 'astro:content';
 import { findInfographic } from '../lib/infographic';
-import NarrationPlayer from './NarrationPlayer.astro';
+import { findNarration } from '../lib/narration';
+import { parseRegime, cnDate } from '../lib/regime';
+import PulseLog from './PulseLog.astro';
 
-interface Props {
-  label: string;
-  icon: string;
-  sectorKey: string;
-  reports: CollectionEntry<'reports'>[];
-}
-
-const { label, icon, sectorKey, reports } = Astro.props;
+interface Props { reports: CollectionEntry<'reports'>[] }
+const { reports } = Astro.props;
 
 const latest = reports[0];
-const latestInfographic = latest ? findInfographic(latest.data.dateStr, latest.data.infographic) : undefined;
 const recent = reports.slice(1, 5);
+const total = reports.length;
+
+const reg = latest ? parseRegime(latest.body) : {};
+const d = latest ? cnDate(latest.data.dateStr) : undefined;
+const infographic = latest ? findInfographic(latest.data.dateStr, latest.data.infographic) : undefined;
+const audio = latest ? findNarration(latest.data.dateStr) : undefined;
+const seconds = Math.round(audio?.duration || 0);
+const duration = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+const href = latest ? `/fin-report/reports/${latest.slug}` : '#';
+const vitals: [string, string | undefined][] = [['增长', reg.growth], ['通胀', reg.inflation], ['流动性', reg.liquidity]];
 ---
 
-<section class="mb-12">
-  {/* Sector header */}
-  <div class="flex items-center justify-between mb-5 border-b border-gray-200 pb-3">
-    <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-      <span>{icon}</span>
-      <span>{label}</span>
-    </h2>
-    <a href="/fin-report/archive" class="text-sm text-blue-600 hover:text-blue-700">
-      查看全部 &rarr;
-    </a>
-  </div>
+{latest && d ? (
+  <>
+    <section class="grid grid-cols-1 items-start gap-6 pb-7 pt-9 sm:grid-cols-[232px_minmax(0,1fr)] sm:gap-9" aria-label="今日简报">
+      <a href={href} class="leaf relative block max-w-[232px] rounded-[4px_4px_10px_10px] border border-rule bg-paper-2 px-[18px] pb-4 pt-[18px] text-ink hover:no-underline" aria-label={`${latest.data.dateStr} 简报`}>
+        <div class="font-display text-[15px] tracking-[.08em] text-pencil">{d.year} · {d.month}</div>
+        <div class="mt-1 font-display text-[104px] font-bold leading-[.95] tracking-[-.04em] text-headband tabular-nums">{d.day}</div>
+        <div class="mt-0.5 font-display text-base">{d.weekday}</div>
+        {reg.name && (
+          <dl class="mt-4 grid grid-cols-[auto_1fr] gap-x-3.5 gap-y-1 border-t border-dashed border-rule pt-3 text-sm">
+            {vitals.map(([k, v]) => (
+              <>
+                <dt class="text-pencil">{k}</dt>
+                <dd class="m-0 text-right font-display text-[17px] font-bold">{v || '—'}</dd>
+              </>
+            ))}
+          </dl>
+        )}
+      </a>
 
-  {latest ? (
-    <>
-      <article class="mb-5 overflow-hidden rounded-xl border border-gray-200 bg-white focus-within:border-blue-300">
-        <a
-          href={`/fin-report/reports/${latest.slug}`}
-          class="flex flex-col sm:flex-row gap-5 p-4 transition-colors hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
-        >
-          {latestInfographic && (
-            <img
-              src={latestInfographic}
-              alt={latest.data.title}
-              loading="lazy"
-              decoding="async"
-              class="w-full sm:w-[200px] sm:min-w-[200px] h-auto rounded-lg border border-gray-100 object-cover"
-            />
-          )}
-          <div class="flex flex-col justify-center min-w-0">
-            <div class="flex items-center gap-2 mb-2">
-              <time class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                {latest.data.dateStr}
-              </time>
-              <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-                最新
-              </span>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1 line-clamp-1">{latest.data.title}</h3>
-            <p class="text-sm text-gray-500 line-clamp-2 mb-3">{latest.data.description}</p>
-            <span class="inline-flex items-center text-sm font-medium text-blue-600">
-              阅读完整报告 &rarr;
-            </span>
+      <div class="min-w-0">
+        <h1 class="mb-3.5 text-[28px] leading-tight sm:text-4xl"><a href={href} class="text-ink hover:text-hoodie hover:no-underline">{reg.name || latest.data.title}</a></h1>
+        <p class="mb-4 max-w-[34em] text-lg leading-[1.75]">{reg.oneLiner || latest.data.description.replace(/^\*\*今日概况\*\*:\s*/, '')}</p>
+        {reg.delta && (
+          <div class="grid max-w-[36em] grid-cols-[auto_1fr] gap-3.5 border-y border-rule py-2.5 text-sm text-pencil">
+            <b class="whitespace-nowrap font-medium text-ink">相比昨日</b>
+            <p class="m-0">{reg.delta}</p>
           </div>
-        </a>
-
-        <NarrationPlayer date={latest.data.dateStr} embedded />
-      </article>
-
-      {/* Recent reports list */}
-      {recent.length > 0 && (
-        <div class="flex flex-col gap-3">
-          {recent.map((r) => (
-            <ReportCard
-              slug={r.slug}
-              title={r.data.title}
-              dateStr={r.data.dateStr}
-              description={r.data.description}
-              hasSlides={r.data.hasSlides}
-              infographic={findInfographic(r.data.dateStr, r.data.infographic)}
-            />
-          ))}
+        )}
+        <div class="mt-4 flex flex-wrap items-center gap-5">
+          {audio && (
+            <a href={`${href}#narration`} class="inline-flex items-center gap-3 rounded-full bg-ink py-2 pl-2 pr-[18px] text-sm text-paper hover:no-underline">
+              <span class="grid h-8 w-8 place-items-center rounded-full bg-headband"><svg class="ml-0.5 h-3.5 w-3.5 fill-ink" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></span>
+              听鬼哥讲今日重点<span class="text-headband tabular-nums">{duration}</span>
+            </a>
+          )}
+          <a href={href} class="text-sm">读全文</a>
         </div>
-      )}
-    </>
-  ) : (
-    <p class="text-center text-gray-400 py-10">该板块暂无报告</p>
-  )}
-</section>
+      </div>
+    </section>
+
+    {infographic && (
+      <figure class="m-0 mt-2.5">
+        <a href={href}><img src={infographic} alt={`${latest.data.dateStr} 投资简报信息图`} loading="eager" decoding="async" class="block w-full rounded-md border border-rule shadow-[0_14px_30px_-24px_rgba(31,27,22,.55)]" /></a>
+        <figcaption class="mt-2.5 flex justify-between gap-4 text-[13px] text-pencil"><span>今日信息图</span><span>五条主线 · 盲区与反方 · 关键点位</span></figcaption>
+      </figure>
+    )}
+
+    {recent.length > 0 && (
+      <section class="mt-11" aria-label="往日脉动">
+        <div class="flex flex-wrap items-baseline justify-between gap-4 border-b-2 border-ink pb-2">
+          <h2 class="text-2xl">往日脉动</h2>
+          <p class="m-0 text-[13px] text-pencil">每天一行。往下看，三项状态怎么漂。</p>
+        </div>
+        <PulseLog reports={recent} />
+        <p class="mt-3.5 text-sm"><a href="/fin-report/archive">查看全部 {total} 期</a></p>
+      </section>
+    )}
+  </>
+) : (
+  <p class="py-10 text-center text-pencil">暂无报告</p>
+)}
+
+<style>
+  .leaf {
+    box-shadow: 0 1px 0 #D9CFBA, 0 10px 24px -18px rgba(31, 27, 22, .45);
+  }
+  .leaf::before {
+    content: "";
+    position: absolute; left: 14px; right: 14px; top: -7px; height: 12px;
+    background: radial-gradient(circle at 50% 50%, #FBF6EC 0 3.2px, transparent 3.6px) 0 0 / 16px 12px repeat-x;
+  }
+  .leaf::after {
+    content: "";
+    position: absolute; left: 0; right: 0; top: 0; height: 3px;
+    background: #F28C28; border-radius: 4px 4px 0 0;
+  }
+</style>

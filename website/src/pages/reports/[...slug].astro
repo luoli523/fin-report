@@ -3,8 +3,9 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MediaStrip from '../../components/MediaStrip.astro';
 import ReportContent from '../../components/ReportContent.astro';
-import { findInfographic } from '../../lib/infographic';
 import NarrationPlayer from '../../components/NarrationPlayer.astro';
+import { findInfographic } from '../../lib/infographic';
+import { parseRegime, cnDate } from '../../lib/regime';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports');
@@ -17,6 +18,9 @@ export async function getStaticPaths() {
 const { report } = Astro.props;
 const { Content } = await report.render();
 const infographic = findInfographic(report.data.dateStr, report.data.infographic);
+const reg = parseRegime(report.body);
+const d = cnDate(report.data.dateStr);
+const vitals: [string, string | undefined][] = [['增长', reg.growth], ['通胀', reg.inflation], ['流动性', reg.liquidity]];
 ---
 
 <BaseLayout
@@ -24,19 +28,26 @@ const infographic = findInfographic(report.data.dateStr, report.data.infographic
   description={report.data.description}
   wide
 >
-  <div class="mb-4">
-    <a href="/fin-report/archive" class="text-sm text-blue-600 hover:text-blue-700">
-      &larr; 返回归档
-    </a>
-  </div>
+  <p class="mb-0 mt-2 text-[13px]"><a href="/fin-report/archive">← 脉动日志</a></p>
 
   <article>
-    <header class="mb-2">
-      <time class="text-sm font-medium text-blue-600">{report.data.dateStr}</time>
-      <h1 class="mt-1 text-2xl font-bold text-gray-900">{report.data.title}</h1>
+    <header class="grid grid-cols-[72px_minmax(0,1fr)] items-start gap-4 border-b border-rule pb-6 pt-5 sm:grid-cols-[96px_minmax(0,1fr)] sm:gap-6">
+      <div class="rounded-[3px_3px_8px_8px] border border-rule border-t-[3px] border-t-headband bg-paper-2 px-1.5 pb-2.5 pt-2 text-center">
+        <div class="font-display text-xs text-pencil">{d.month}</div>
+        <div class="font-display text-4xl font-bold leading-none text-headband sm:text-[44px]">{d.day}</div>
+      </div>
+      <div class="min-w-0">
+        <h1 class="text-2xl leading-tight sm:text-3xl">{reg.name || report.data.title}</h1>
+        <div class="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-pencil">
+          {reg.name && vitals.map(([k, v]) => (
+            <span>{k}<b class="ml-1.5 font-display text-base font-bold text-ink">{v || '—'}</b></span>
+          ))}
+          <time datetime={report.data.dateStr}>{report.data.dateStr} · {d.weekday}</time>
+        </div>
+        {reg.oneLiner && <p class="mb-0 mt-3 max-w-[36em] text-base">{reg.oneLiner}</p>}
+        <div id="narration"><NarrationPlayer date={report.data.dateStr} /></div>
+      </div>
     </header>
-
-    <NarrationPlayer date={report.data.dateStr} />
 
     <MediaStrip
       infographic={infographic}

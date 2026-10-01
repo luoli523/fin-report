@@ -28,12 +28,12 @@ const slGalleryId = `slg-${Math.random().toString(36).slice(2, 8)}`;
   <!-- Infographic: fixed-width thumbnail, click to zoom -->
   {infographic && <button
     class:list={[
-      'group relative rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer shrink-0',
+      'group relative rounded-md border border-rule bg-paper-2 overflow-hidden hover:border-pencil transition-colors cursor-pointer shrink-0',
       hasAll ? 'w-[220px]' : 'w-full max-w-3xl mx-auto'
     ]}
     data-open-dialog={igId}
   >
-    <div class="w-full h-full overflow-hidden bg-gray-50 relative">
+    <div class="w-full h-full overflow-hidden bg-paper-2 relative">
       <img src={infographic} alt={title} loading="lazy" decoding="async"
            class:list={['w-full h-full transition-transform duration-300', hasAll ? 'object-cover object-top group-hover:scale-105' : 'object-contain group-hover:scale-[1.02]']} />
       <div class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/60 to-transparent">
@@ -46,11 +46,11 @@ const slGalleryId = `slg-${Math.random().toString(36).slice(2, 8)}`;
   </button>}
 
   <!-- Slides: inline carousel, fills remaining width -->
-  {slides.length > 0 && <div class="flex-1 min-w-0 rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm flex flex-col" id={slGalleryId}>
-    <div class="relative overflow-hidden bg-gray-50 flex-1 min-h-0">
+  {slides.length > 0 && <div class="flex-1 min-w-0 rounded-md border border-rule bg-paper-2 overflow-hidden flex flex-col" id={slGalleryId}>
+    <div class="relative overflow-hidden bg-paper-2 flex-1 min-h-0">
       <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-full" data-sl-track>
         {slides.map((src, i) => (
-          <div class="w-full flex-none snap-start flex items-center justify-center bg-gray-50">
+          <div class="w-full flex-none snap-start flex items-center justify-center bg-paper-2">
             <img src={src} alt={`Slide ${i + 1}`} loading={i < 3 ? 'eager' : 'lazy'} decoding="async" class="w-full h-full object-contain" />
           </div>
         ))}
@@ -67,10 +67,10 @@ const slGalleryId = `slg-${Math.random().toString(36).slice(2, 8)}`;
         </span>
       </div>
     </div>
-    <div class="flex gap-1 px-3 py-2 overflow-x-auto border-t border-gray-100 bg-gray-50/50" data-sl-thumbs>
+    <div class="flex gap-1 px-3 py-2 overflow-x-auto border-t border-rule bg-paper-2" data-sl-thumbs>
       {slides.map((src, i) => (
         <button
-          class:list={['flex-none rounded border-2 overflow-hidden transition-all hover:opacity-90', i === 0 ? 'border-blue-500 opacity-100' : 'border-transparent opacity-50']}
+          class:list={['flex-none rounded border-2 overflow-hidden transition-all hover:opacity-90', i === 0 ? 'border-headband opacity-100' : 'border-transparent opacity-50']}
           data-sl-thumb={i}>
           <img src={src} alt={`Thumb ${i + 1}`} loading="lazy" decoding="async" class="h-9 w-auto" />
         </button>
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateThumbs() {
     thumbs.forEach((t, idx) => {
-      t.classList.toggle('border-blue-500', idx === cur);
+      t.classList.toggle('border-headband', idx === cur);
       t.classList.toggle('border-transparent', idx !== cur);
       t.classList.toggle('opacity-100', idx === cur);
       t.classList.toggle('opacity-50', idx !== cur);

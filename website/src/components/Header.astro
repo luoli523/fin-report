@@ -1,74 +1,25 @@
 ---
 const base = '/fin-report';
+const path = Astro.url.pathname.replace(/\/$/, '');
+const isHome = path === base || path === '';
+const isArchive = path.startsWith(`${base}/archive`);
 ---
 
-<header class="border-b border-gray-200 bg-white">
-  <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-    <div class="flex items-center gap-3">
+<header class="border-b border-rule">
+  <nav class="mx-auto flex max-w-[880px] items-center justify-between gap-4 px-4 py-4">
+    <a href={base} class="flex items-center gap-3 text-ink hover:no-underline">
       <img
         src={`${base}/images/guige-avatar.png`}
         alt="鬼哥"
-        class="w-9 h-9 rounded-full object-cover cursor-pointer ring-2 ring-orange-300 hover:ring-orange-500 transition-all"
-        id="guige-avatar-thumb"
+        class="h-10 w-10 rounded-full border-2 border-headband object-cover object-[28%_30%]"
       />
-      <a href={base} class="text-lg font-bold text-gray-900 hover:text-blue-600 transition-colors">
-        鬼哥的 AI 行业每日简报
-      </a>
-    </div>
+      <span class="font-display text-lg font-bold leading-tight sm:text-xl">鬼哥的 AI 行业每日简报</span>
+    </a>
 
-    <div class="flex items-center gap-6">
-      <a href={base} class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-        首页
-      </a>
-      <a href={`${base}/archive`} class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-        历史归档
-      </a>
-      <a href="/fin-report/rss.xml" target="_blank"
-         class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-         title="RSS 订阅">
-        <svg class="inline-block w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/>
-        </svg>
-        RSS
-      </a>
+    <div class="flex shrink-0 items-center gap-4 whitespace-nowrap text-sm sm:gap-5">
+      <a href={base} class:list={[isHome ? 'text-ink' : 'text-pencil hover:text-ink']} aria-current={isHome ? 'page' : undefined}>首页</a>
+      <a href={`${base}/archive`} class:list={[isArchive ? 'text-ink' : 'text-pencil hover:text-ink']} aria-current={isArchive ? 'page' : undefined}>脉动日志</a>
+      <a href={`${base}/rss.xml`} target="_blank" class="text-pencil hover:text-ink" title="RSS 订阅">RSS</a>
     </div>
   </nav>
 </header>
-
-<div id="guige-lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
-  <div class="relative max-w-2xl w-full mx-4">
-    <img
-      src={`${base}/images/guige-avatar.png`}
-      alt="鬼哥"
-      class="w-full rounded-xl shadow-2xl"
-    />
-    <button
-      id="guige-lightbox-close"
-      class="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors text-lg font-bold"
-    >&times;</button>
-  </div>
-</div>
-
-<script>
-  const thumb = document.getElementById('guige-avatar-thumb');
-  const lightbox = document.getElementById('guige-lightbox');
-  const closeBtn = document.getElementById('guige-lightbox-close');
-
-  thumb?.addEventListener('click', () => {
-    lightbox?.classList.remove('hidden');
-    lightbox?.classList.add('flex');
-  });
-
-  function closeLightbox() {
-    lightbox?.classList.add('hidden');
-    lightbox?.classList.remove('flex');
-  }
-
-  closeBtn?.addEventListener('click', closeLightbox);
-  lightbox?.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeLightbox();
-  });
-</script>

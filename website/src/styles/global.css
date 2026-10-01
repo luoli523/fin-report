@@ -8,21 +8,35 @@
   }
 
   body {
-    @apply min-h-screen bg-gray-50 text-gray-900 antialiased;
+    @apply min-h-screen bg-paper text-ink antialiased font-body;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+    text-wrap: balance;
   }
 
   /* Markdown table styling for reports */
   .prose table {
     @apply text-sm;
+    font-variant-numeric: tabular-nums;
   }
 
   .prose th {
-    @apply bg-gray-100;
+    @apply bg-transparent text-pencil font-medium text-xs border-b border-ink;
   }
 
   .prose td,
   .prose th {
-    @apply border border-gray-200 px-3 py-1.5;
+    @apply border-0 border-b border-rule px-3 py-2 align-top;
+  }
+
+  .prose td:first-child {
+    @apply font-display font-bold text-[15px] text-ink;
+  }
+
+  .prose a {
+    @apply text-hoodie;
   }
 }
 
@@ -35,40 +49,20 @@
     pointer-events: none;
   }
 
-  /* ─── Section Cards ─── */
+  /* ─── Sections: one rule under each heading, no cards ─── */
 
   .report-section {
-    @apply bg-white rounded-xl mb-5 px-6 py-5 border-l-4 border-l-gray-200;
-    @apply shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-shadow duration-200;
+    @apply mb-10;
     scroll-margin-top: 1rem;
   }
 
-  .report-section:hover {
-    @apply shadow-md;
+  .report-section > h2:first-child {
+    @apply text-ink text-2xl pb-2 border-b border-rule;
   }
 
-  .section-hero {
-    @apply border-l-blue-600 shadow-md;
-    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 40%, #eef2ff 100%);
+  .section-appendix > h2:first-child {
+    @apply text-pencil text-xl;
   }
-
-  .section-hero h2:first-child {
-    @apply text-blue-900;
-  }
-
-  .section-data     { @apply border-l-sky-400; }
-  .section-holdings  { @apply border-l-emerald-500; }
-  .section-analysis  { @apply border-l-purple-500; }
-  .section-news      { @apply border-l-orange-400; }
-  .section-outlook   { @apply border-l-amber-500; }
-  .section-signal    { @apply border-l-cyan-500; }
-  .section-strategy  { @apply border-l-indigo-500; }
-
-  .section-appendix {
-    @apply border-l-gray-300;
-    background: rgba(249, 250, 251, 0.6);
-  }
-
 
   /* Prose overrides inside sections */
   .prose .report-section h2:first-child {
@@ -92,18 +86,18 @@
   }
 
   .toc-link {
-    @apply block pl-3 py-1.5 text-sm leading-snug text-gray-400;
+    @apply block pl-3 py-1.5 text-sm leading-snug text-pencil;
     @apply border-l-2 border-transparent transition-all duration-200;
     text-decoration: none;
   }
 
   .toc-link:hover {
-    @apply text-gray-700 border-l-gray-300;
+    @apply text-ink border-l-rule;
     text-decoration: none;
   }
 
   .toc-link.active {
-    @apply text-blue-600 border-l-blue-600 font-medium;
+    @apply text-ink border-l-headband font-medium;
     text-decoration: none;
   }
 
@@ -119,39 +113,39 @@
   }
 
   .holding-card {
-    @apply bg-white rounded-lg border p-4 transition-shadow hover:shadow-md;
+    @apply bg-paper-2 rounded-md border border-rule p-4;
     border-top-width: 3px;
   }
 
-  .holding-card.signal-buy    { border-top-color: #10b981; }
-  .holding-card.signal-sell   { border-top-color: #ef4444; }
-  .holding-card.signal-hold   { border-top-color: #9ca3af; }
+  .holding-card.signal-buy    { border-top-color: #2E8B57; }
+  .holding-card.signal-sell   { border-top-color: #C8372D; }
+  .holding-card.signal-hold   { border-top-color: #8A8378; }
 
   .holding-ticker {
-    @apply text-lg font-bold text-gray-900;
+    @apply text-lg font-bold text-ink;
   }
 
   .holding-signal-badge {
     @apply inline-block px-2 py-0.5 text-xs font-semibold rounded-full mt-1;
   }
 
-  .holding-signal-badge.buy    { @apply bg-emerald-100 text-emerald-700; }
-  .holding-signal-badge.sell   { @apply bg-red-100 text-red-700; }
-  .holding-signal-badge.hold   { @apply bg-gray-100 text-gray-600; }
+  .holding-signal-badge.buy    { @apply text-up border border-up; }
+  .holding-signal-badge.sell   { @apply text-down border border-down; }
+  .holding-signal-badge.hold   { @apply text-pencil border border-pencil; }
 
   .holding-status {
-    @apply text-sm text-gray-600 mt-2 leading-relaxed;
+    @apply text-sm text-ink mt-2 leading-relaxed;
   }
 
   .holding-keypoint {
-    @apply text-xs text-gray-500 mt-2 pt-2 border-t border-gray-100 leading-relaxed;
+    @apply text-xs text-pencil mt-2 pt-2 border-t border-rule leading-relaxed;
   }
 
   /* ─── Appendix Collapse ─── */
 
   .appendix-toggle {
     @apply inline-flex items-center gap-1 text-sm font-medium cursor-pointer;
-    @apply text-blue-600 hover:text-blue-700 bg-transparent border-0 p-0 mt-1 mb-2;
+    @apply text-hoodie bg-transparent border-0 p-0 mt-1 mb-2;
   }
 
   .appendix-body {
@@ -172,46 +166,39 @@
   /* ─── Mobile TOC ─── */
 
   .toc-mobile-link {
-    @apply block py-2.5 px-3 text-gray-700 rounded-lg transition-colors;
+    @apply block py-2.5 px-3 text-ink rounded-lg transition-colors;
     text-decoration: none;
   }
 
   .toc-mobile-link:hover {
-    @apply text-blue-600 bg-blue-50;
+    @apply text-ink bg-paper-2;
     text-decoration: none;
   }
 
   .toc-mobile-link.active {
-    @apply text-blue-600 bg-blue-50 font-medium;
-  }
-
-  /* ─── Section icon in heading ─── */
-
-  .section-icon {
-    @apply mr-1.5;
-    font-size: 1.1em;
+    @apply text-ink bg-paper-2 font-medium;
   }
 
   /* ─── Stock ticker pills in theme sections ─── */
 
   .stock-pill {
     @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
-    @apply bg-gray-100 text-gray-700;
+    @apply bg-paper-2 text-ink;
   }
 
-  .stock-pill.up   { @apply bg-green-50 text-green-700; }
-  .stock-pill.down { @apply bg-red-50 text-red-700; }
+  .stock-pill.up   { @apply text-up; }
+  .stock-pill.down { @apply text-down; }
 
   /* ─── Percentage Coloring ─── */
 
   .pct-up {
-    color: #15803d;
+    color: #2E8B57;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
   .pct-down {
-    color: #dc2626;
+    color: #C8372D;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
@@ -222,9 +209,8 @@
     display: inline;
     padding: 0.05em 0.35em;
     border-radius: 0.25rem;
-    background: #f1f5f9;
-    color: #334155;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #F3EBDA;
+    color: #1F1B16;
     font-size: 0.88em;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -233,8 +219,8 @@
   /* ─── Advice & Tracking Highlight Blocks ─── */
 
   .prose p.advice-block {
-    background: #eff6ff;
-    border-left: 3px solid #3b82f6;
+    background: #F3EBDA;
+    border-left: 3px solid #F28C28;
     border-radius: 0.375rem;
     padding: 0.75rem 1rem;
     margin-top: 0.75rem;
@@ -242,8 +228,8 @@
   }
 
   .prose p.tracking-block {
-    background: #f8fafc;
-    border-left: 3px solid #94a3b8;
+    background: transparent;
+    border-left: 3px solid #D9CFBA;
     border-radius: 0.375rem;
     padding: 0.75rem 1rem;
     margin-top: 0.75rem;
@@ -254,31 +240,31 @@
   /* ─── Risk Alert Blockquote ─── */
 
   .prose blockquote.risk-alert {
-    background: #fef2f2;
-    border-left-color: #ef4444;
+    background: transparent;
+    border-left-color: #C8372D;
     border-left-width: 4px;
     border-radius: 0.5rem;
     padding: 1rem 1.25rem;
-    color: #7f1d1d;
+    color: #1F1B16;
   }
 
   .prose blockquote.risk-alert strong {
-    color: #dc2626;
+    color: #C8372D;
   }
 
   /* ─── Top5 Up/Down Bars ─── */
 
   .prose p.top5-up {
-    background: linear-gradient(90deg, #f0fdf4 0%, transparent 100%);
-    border-left: 3px solid #22c55e;
+    background: transparent;
+    border-left: 3px solid #2E8B57;
     padding: 0.5rem 0.75rem;
     border-radius: 0.375rem;
     margin: 0.5rem 0;
   }
 
   .prose p.top5-down {
-    background: linear-gradient(90deg, #fef2f2 0%, transparent 100%);
-    border-left: 3px solid #ef4444;
+    background: transparent;
+    border-left: 3px solid #C8372D;
     padding: 0.5rem 0.75rem;
     border-radius: 0.375rem;
     margin: 0.5rem 0;
@@ -295,9 +281,9 @@
     position: relative;
     padding: 0.625rem 0.75rem 0.625rem 2.25rem;
     margin: 0.375rem 0;
-    background: #f0f9ff;
+    background: #F3EBDA;
     border-radius: 0.5rem;
-    border: 1px solid #e0f2fe;
+    border: 1px solid #D9CFBA;
     font-size: 0.95em;
   }
 
@@ -307,6 +293,6 @@
     left: 0.75rem;
     top: 0.625rem;
     font-size: 1.1em;
-    color: #0284c7;
+    color: #F28C28;
   }
 }

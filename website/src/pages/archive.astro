@@ -1,8 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ReportCard from '../components/ReportCard.astro';
-import { findInfographic } from '../lib/infographic';
+import PulseLog from '../components/PulseLog.astro';
 
 const reports = (await getCollection('reports'))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -15,28 +14,17 @@ for (const r of reports) {
 }
 ---
 
-<BaseLayout title="历史归档 - 鬼哥的 AI 行业每日简报" description="所有每日简报按日期排列">
-  <h1 class="mb-2 text-2xl font-bold text-gray-900">历史归档</h1>
-  <p class="mb-8 text-gray-500">所有每日简报按日期排列</p>
+<BaseLayout title="脉动日志 - 鬼哥的 AI 行业每日简报" description="每日 Regime 一行，往下看市场状态怎么变">
+  <h1 class="mt-6 text-3xl">脉动日志</h1>
+  <p class="mb-8 mt-1 text-pencil">每日 Regime 一行，往下看市场状态怎么变。共 {reports.length} 期。</p>
 
   {reports.length === 0 ? (
-    <p class="text-center text-gray-500 py-20">暂无报告</p>
+    <p class="py-20 text-center text-pencil">暂无报告</p>
   ) : (
     [...grouped.entries()].map(([month, items]) => (
-      <section class="mb-8">
-        <h2 class="mb-3 text-lg font-semibold text-gray-700 border-b border-gray-200 pb-2">{month}</h2>
-        <div class="flex flex-col gap-3">
-          {items.map((r) => (
-            <ReportCard
-              slug={r.slug}
-              title={r.data.title}
-              dateStr={r.data.dateStr}
-              description={r.data.description}
-              hasSlides={r.data.hasSlides}
-              infographic={findInfographic(r.data.dateStr, r.data.infographic)}
-            />
-          ))}
-        </div>
+      <section class="mb-10">
+        <h2 class="border-b-2 border-ink pb-2 text-xl">{month}</h2>
+        <PulseLog reports={items} />
       </section>
     ))
   )}

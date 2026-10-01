@@ -1,0 +1,49 @@
+---
+/**
+ * 脉动日志：一天一行。Regime 名称 + 三项状态对齐成列，旧格式简报三列留空。
+ */
+import type { CollectionEntry } from 'astro:content';
+import { parseRegime, stateTone } from '../lib/regime';
+
+interface Props { reports: CollectionEntry<'reports'>[]; showYear?: boolean }
+const { reports, showYear = false } = Astro.props;
+
+const rows = reports.map((r) => {
+  const reg = parseRegime(r.body);
+  return {
+    slug: r.slug,
+    date: showYear ? r.data.dateStr : r.data.dateStr.slice(5),
+    name: reg.name || r.data.title.replace(/\s*\d{4}-\d{2}-\d{2}$/, ''),
+    desc: r.data.description.replace(/^\*\*今日概况\*\*:\s*/, '').replace(/\uFFFD/g, ''),
+    states: [reg.growth, reg.inflation, reg.liquidity],
+  };
+});
+
+const tone = { hot: 'text-down', dim: 'text-pencil', plain: 'text-ink' };
+---
+
+<table class="w-full border-collapse text-sm">
+  <thead>
+    <tr class="text-left text-xs font-normal text-pencil">
+      <th class="border-b border-rule pb-1.5 pt-2.5 font-normal">日期</th>
+      <th class="border-b border-rule pb-1.5 pt-2.5 font-normal">Regime</th>
+      <th class="w-[52px] sm:w-[72px] border-b border-rule px-1 pb-1.5 pt-2.5 text-center font-normal">增长</th>
+      <th class="w-[52px] sm:w-[72px] border-b border-rule px-1 pb-1.5 pt-2.5 text-center font-normal">通胀</th>
+      <th class="w-[52px] sm:w-[72px] border-b border-rule px-1 pb-1.5 pt-2.5 text-center font-normal">流动性</th>
+    </tr>
+  </thead>
+  <tbody>
+    {rows.map((row) => (
+      <tr>
+        <td class="w-16 whitespace-nowrap border-b border-rule py-3 pr-3 align-top text-pencil tabular-nums">{row.date}</td>
+        <td class="min-w-0 border-b border-rule py-3 align-top">
+          <a href={`/fin-report/reports/${row.slug}`} class="font-display text-[17px] font-bold text-ink hover:text-hoodie">{row.name}</a>
+          <span class="mt-0.5 line-clamp-2 block text-[13px] text-pencil max-sm:hidden">{row.desc}</span>
+        </td>
+        {row.states.map((v) => (
+          <td class:list={['whitespace-nowrap border-b border-rule px-1 py-3 text-center align-top font-display text-sm sm:text-base', v ? tone[stateTone(v)] : 'text-rule']}>{v || '—'}</td>
+        ))}
+      </tr>
+    ))}
+  </tbody>
+</table>

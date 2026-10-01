@@ -6,7 +6,7 @@ const collapseLabel = '收起';
 
 <!-- Reading progress bar -->
 <div id="reading-progress-container" class="fixed top-0 left-0 right-0 z-50 h-0.5 bg-transparent">
-  <div id="reading-progress" class="h-full bg-blue-500/70 transition-[width] duration-150 ease-out" style="width:0%"></div>
+  <div id="reading-progress" class="h-full bg-headband/80 transition-[width] duration-150 ease-out" style="width:0%"></div>
 </div>
 
 <!-- Two-column layout: TOC sidebar + content -->
@@ -15,13 +15,13 @@ const collapseLabel = '收起';
   <!-- Desktop TOC sidebar -->
   <nav id="toc-desktop" class="hidden lg:block lg:w-48 lg:shrink-0" aria-label={tocTitle}>
     <div class="sticky top-6">
-      <h3 class="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-3">{tocTitle}</h3>
-      <ul id="toc-list"></ul>
+      <h3 class="mb-3 font-body text-xs font-normal text-pencil">{tocTitle}</h3>
+      <ul id="toc-list" class="border-l border-rule"></ul>
     </div>
   </nav>
 
   <!-- Main content area -->
-  <div id="report-content" class="prose prose-gray prose-sm max-w-none flex-1 min-w-0">
+  <div id="report-content" class="prose prose-sm max-w-none flex-1 min-w-0 prose-headings:font-display prose-headings:text-ink prose-p:text-ink prose-strong:text-ink prose-li:text-ink prose-blockquote:border-rule prose-blockquote:text-ink">
     <slot />
   </div>
 </div>
@@ -29,7 +29,7 @@ const collapseLabel = '收起';
 <!-- Mobile TOC floating button -->
 <button
   id="toc-mobile-btn"
-  class="fixed bottom-6 right-6 z-40 lg:hidden w-12 h-12 rounded-full shadow-lg flex items-center justify-center bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-all"
+  class="fixed bottom-6 right-6 z-40 lg:hidden w-12 h-12 rounded-full shadow-lg flex items-center justify-center bg-ink text-paper hover:bg-ink/90 active:scale-95 transition-all"
   aria-label={tocTitle}
 >
   <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -40,10 +40,10 @@ const collapseLabel = '收起';
 <!-- Mobile TOC overlay -->
 <div id="toc-mobile-overlay" class="fixed inset-0 z-50 hidden lg:hidden">
   <div id="toc-mobile-backdrop" class="absolute inset-0 bg-black/40"></div>
-  <div id="toc-mobile-panel" class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl overflow-y-auto p-6" style="max-height:70vh">
+  <div id="toc-mobile-panel" class="absolute bottom-0 left-0 right-0 bg-paper rounded-t-2xl overflow-y-auto p-6" style="max-height:70vh">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-gray-900">{tocTitle}</h3>
-      <button id="toc-mobile-close" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg" aria-label="Close">
+      <h3 class="text-lg font-semibold text-ink">{tocTitle}</h3>
+      <button id="toc-mobile-close" class="p-1 text-pencil hover:text-ink rounded-lg" aria-label="Close">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -121,14 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     section.id = `section-${i}`;
     section.className = `report-section section-${info.type}`;
     section.setAttribute('data-type', info.type);
-
-    if (info.icon) {
-      const span = document.createElement('span');
-      span.className = 'section-icon';
-      span.textContent = info.icon;
-      span.setAttribute('aria-hidden', 'true');
-      s.heading.prepend(span);
-    }
 
     section.appendChild(s.heading);
     s.elements.forEach(el => section.appendChild(el));
