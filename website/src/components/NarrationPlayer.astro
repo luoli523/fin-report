@@ -16,7 +16,7 @@ const duration = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2,
       <Heading class="text-base font-semibold text-gray-900">听鬼哥讲今日重点 <span class="ml-2 text-sm font-normal text-gray-500">{duration}</span></Heading>
       <span class="text-xs text-gray-500">本人授权的 AI 声音播报</span>
     </div>
-    <audio controls preload="none" class="w-full" aria-label={`${date} 投资播报`}>
+    <audio controls preload="metadata" class="w-full" aria-label={`${date} 投资播报`}>
       <source src={audio.url} type="audio/mpeg" />
       你的浏览器不支持音频播放，请使用下方链接收听。
     </audio>
