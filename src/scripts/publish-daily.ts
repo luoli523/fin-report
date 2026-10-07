@@ -51,7 +51,7 @@ execFileSync('gh',['run','watch',String(runId),'--exit-status','--interval','10'
 const audio = JSON.parse(fs.readFileSync(path.join(root,`website/src/data/narration/${date}.json`),'utf8'));
 for (let attempt=0; attempt<18; attempt++) {
   try {
-    const response = await fetch(`https://luoli523.github.io/fin-report/reports/${date}/`,{signal:AbortSignal.timeout(15000),headers:{'Cache-Control':'no-cache'}});
+    const response = await fetch(`https://guige.ai/fin-report/reports/${date}/`,{signal:AbortSignal.timeout(15000),headers:{'Cache-Control':'no-cache'}});
     if (response.ok && (await response.text()).includes(audio.url)) {
       console.log(`[publish] ${date}: public player is live`); process.exit(0);
     }

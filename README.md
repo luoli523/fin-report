@@ -2,7 +2,7 @@
 
 每天美股收盘后自动生成的投资简报。先看整个世界（利率、美元、信用、波动率、商品、全球股指、地缘、供应链），再落到 AI 产业链关注列表，最后单独为持仓人生成一份私密的组合简报。
 
-- 公开简报：站点 https://luoli523.github.io/fin-report/ · 邮件 · Telegram PDF
+- 公开简报：站点 https://guige.ai/fin-report/ · 邮件 · Telegram PDF
 - 私人组合简报：通过 Telegram 发 PDF 和本人声音播报；报告与记忆不进 GitHub
 - 新加坡时间周二至周六 07:00 在 Mac 本地运行；GitHub 负责公共托管、网站构建与信息图通知
 

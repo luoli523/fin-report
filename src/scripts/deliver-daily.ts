@@ -13,7 +13,7 @@ async function main() {
   if (!legacy) {
     const publicMd = fs.readFileSync(`output/v2-public-${date}.md`,'utf8');
     const headline = publicMd.match(/^\*\*一句话\*\*: (.+)$/m)?.[1] || '';
-    const text = `全球宏观 × AI 简报 ${date}\n${headline}\nhttps://luoli523.github.io/fin-report/reports/${date}/`;
+    const text = `全球宏观 × AI 简报 ${date}\n${headline}\nhttps://guige.ai/fin-report/reports/${date}/`;
     const form = new FormData(); form.append('text',text);
     try { await deliverOnce(date,'summary',text,'sendMessage',form); } catch(e) { errors.push((e as Error).message); }
   }

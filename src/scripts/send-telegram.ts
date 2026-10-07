@@ -44,7 +44,7 @@ async function main() {
   const md = fs.readFileSync(publicMd, 'utf-8');
   const regime = (md.match(/^> \*\*Regime\*\*: (.+)$/m)?.[1] || '').replace(/\*\*/g, '');
   const oneLiner = md.match(/^\*\*一句话\*\*: (.+)$/m)?.[1] || '';
-  const text = [`🌍 全球宏观 × AI 简报 ${targetDate}`, regime ? `Regime: ${regime}` : '', '', oneLiner, '', `https://luoli523.github.io/fin-report/reports/${targetDate}/`].join('\n');
+  const text = [`🌍 全球宏观 × AI 简报 ${targetDate}`, regime ? `Regime: ${regime}` : '', '', oneLiner, '', `https://guige.ai/fin-report/reports/${targetDate}/`].join('\n');
   console.log((await sendTelegramMessage(text)) ? '✅ 摘要已发送' : '⚠️  摘要发送失败');
 
   // 2. 公开简报 PDF

@@ -69,7 +69,7 @@ jobs:
           const response = await fetch(process.env.WEBHOOK_URL, {
             method: 'POST',
             headers: {'Authorization': `Bearer ${process.env.WEBHOOK_KEY}`, 'Content-Type': 'application/json'},
-            body: JSON.stringify({source:'local-briefing', ...manifest, latest_json:'https://luoli523.github.io/fin-report/briefings/latest.json'}),
+            body: JSON.stringify({source:'local-briefing', ...manifest, latest_json:'https://guige.ai/fin-report/briefings/latest.json'}),
             signal: AbortSignal.timeout(30000),
           }).catch(() => { throw new Error('Infographic webhook connection failed'); });
           if (!response.ok) throw new Error(`Infographic webhook HTTP ${response.status}`);

@@ -5,7 +5,7 @@
 ## 1. 读今天的简报（无需凭证）
 
 ```
-GET https://luoli523.github.io/fin-report/briefings/latest.json
+GET https://guige.ai/fin-report/briefings/latest.json
 ```
 
 返回：
@@ -13,9 +13,9 @@ GET https://luoli523.github.io/fin-report/briefings/latest.json
 ```json
 {
   "date": "2026-09-29",
-  "page": "https://luoli523.github.io/fin-report/reports/2026-09-29/",
-  "public_md": "https://luoli523.github.io/fin-report/briefings/2026-09-29/public.md",
-  "brief_md": "https://luoli523.github.io/fin-report/briefings/2026-09-29/brief.md",
+  "page": "https://guige.ai/fin-report/reports/2026-09-29/",
+  "public_md": "https://guige.ai/fin-report/briefings/2026-09-29/public.md",
+  "brief_md": "https://guige.ai/fin-report/briefings/2026-09-29/brief.md",
   "infographic_upload_path": "website/public/images/infographics/2026-09-29.png",
   "generated_at": "2026-09-29T01:45:00Z"
 }
@@ -81,6 +81,6 @@ DATE=$(date -u +%Y-%m-%d)
 curl -fsS -X POST "$GROK_BOT_WEBHOOK_URL" \
   -H "Authorization: Bearer $GROK_BOT_WEBHOOK_KEY" \
   -H "Content-Type: application/json" \
-  -d "{\"source\":\"manual\",\"date\":\"$DATE\",\"latest_json\":\"https://luoli523.github.io/fin-report/briefings/latest.json\",\"brief_md\":\"https://luoli523.github.io/fin-report/briefings/$DATE/brief.md\",\"infographic_upload_path\":\"website/public/images/infographics/$DATE.png\"}"
+  -d "{\"source\":\"manual\",\"date\":\"$DATE\",\"latest_json\":\"https://guige.ai/fin-report/briefings/latest.json\",\"brief_md\":\"https://guige.ai/fin-report/briefings/$DATE/brief.md\",\"infographic_upload_path\":\"website/public/images/infographics/$DATE.png\"}"
 ```
 
