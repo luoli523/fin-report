@@ -6,7 +6,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Holding } from './types';
+import { Holding, WatchlistQuote } from './types';
 import { getStockSymbols, getETFSymbols } from '../config';
 
 export function loadHoldings(): Holding[] {
@@ -33,6 +33,19 @@ export function describeHoldingsForLLM(holdings: Holding[]): string {
   if (holdings.length === 0) return '（未提供真实持仓，请把 watchlist 中的核心票视为关注对象）';
   return holdings
     .map(h => `- ${h.ticker}（${h.tier === 'core' ? '核心' : '卫星'}）${h.costBasis ? ` 成本约 $${h.costBasis}` : ''}${h.note ? ` 备注: ${h.note}` : ''}`)
+    .join('\n');
+}
+
+/** 持仓当日行情：没有当前价时模型会拿成本价冒充现价，缺行情的要明确告知 */
+export function describeHoldingQuotesForLLM(holdings: Holding[], quotes: WatchlistQuote[]): string {
+  const bySymbol = new Map(quotes.map(q => [q.symbol.toUpperCase(), q]));
+  return holdings
+    .map(h => {
+      const q = bySymbol.get(h.ticker);
+      return q
+        ? `- ${h.ticker}: ${q.price.toFixed(2)} (${q.changePercent >= 0 ? '+' : ''}${q.changePercent.toFixed(2)}%)`
+        : `- ${h.ticker}: 今日行情缺失，不要推断当前价`;
+    })
     .join('\n');
 }
 

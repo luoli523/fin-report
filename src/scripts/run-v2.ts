@@ -138,7 +138,7 @@ async function main() {
   const holdings = loadHoldings();
   const { privateMemory } = memoryInput;
   const portfolio = holdings.length > 0
-    ? await llmStage('portfolio', meta, () => runPortfolio(date, snapshot, synthesis, watchlistView, holdings, privateMemory))
+    ? await llmStage('portfolio', meta, () => runPortfolio(date, snapshot, synthesis, watchlistView, holdings, privateMemory, wl.quotes))
     : null;
   if (!portfolio) console.log('[portfolio] 无持仓，跳过私人简报');
 

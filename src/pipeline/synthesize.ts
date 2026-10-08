@@ -7,7 +7,7 @@
 
 import { chatJSON } from '../llm/registry';
 import { loadPrompt, formatWorldSnapshot, formatAnomalies } from './triage';
-import { describeHoldingsForLLM } from './holdings';
+import { describeHoldingsForLLM, describeHoldingQuotesForLLM } from './holdings';
 import { describePublicMemoryForLLM, describePrivateMemoryForLLM } from './memory';
 import { Anomaly, EarningsEvent, FeedItem, Holding, MemoryState, ResearchFinding, StageMeta, TriageResult, WatchlistQuote, WorldSnapshot } from './types';
 import { formatWatchlistQuotes, topMovers } from '../collectors/watchlist-quotes';
@@ -148,7 +148,7 @@ ${describePublicMemoryForLLM(publicMemory)}
 
 export async function runPortfolio(
   date: string, snapshot: WorldSnapshot, synthesis: SynthesisResult, watchlistView: WatchlistResult,
-  holdings: Holding[], privateMemory: MemoryState,
+  holdings: Holding[], privateMemory: MemoryState, quotes: WatchlistQuote[] = [],
 ): Promise<{ result: PortfolioResult; meta: StageMeta }> {
   const user = `# 日期: ${date}
 
@@ -163,6 +163,9 @@ ${formatWorldSnapshot(snapshot)}
 
 # 持仓人的真实持仓（私密）
 ${describeHoldingsForLLM(holdings)}
+
+# 持仓当日行情（当前价以此为准）
+${describeHoldingQuotesForLLM(holdings, quotes)}
 
 # 私人记忆（含待验证判断，需要记分）
 ${describePrivateMemoryForLLM(privateMemory)}
