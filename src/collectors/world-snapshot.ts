@@ -39,6 +39,10 @@ export async function collectWorldSnapshot(date: string): Promise<WorldSnapshot>
     if (wq) quotes.push(wq);
   }
 
+  // 大面积失败多半是网络没通：不落盘，让 --resume 重试时重新抓取，而不是基于空快照续跑
+  if (quotes.length < symbols.length / 2) {
+    throw new Error(`世界快照只拿到 ${quotes.length}/${symbols.length} 个行情，疑似网络或 Yahoo 故障；检查网络后重跑`);
+  }
   const snapshot: WorldSnapshot = { date, collectedAt: new Date().toISOString(), quotes, failed };
   await fs.promises.mkdir(WORLD_HISTORY_DIR, { recursive: true });
   await fs.promises.writeFile(path.join(WORLD_HISTORY_DIR, `${date}.json`), JSON.stringify(snapshot, null, 2));

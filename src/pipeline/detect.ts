@@ -76,10 +76,10 @@ export function detectAnomalies(today: WorldSnapshot, history: WorldSnapshot[]):
   push(spx && vix && spx.changePercent > 0.3 && vix.change > 0.5, 'medium',
     '股涨 VIX 也涨：有人在买保护，上涨质量存疑');
   push(vix && vix3m && vix.price > vix3m.price, 'high',
-    `VIX 期限结构倒挂（${vix!.price.toFixed(1)} > ${vix3m!.price.toFixed(1)}）：短期恐慌定价`);
+    `VIX 期限结构倒挂（${vix?.price.toFixed(1)} > ${vix3m?.price.toFixed(1)}）：短期恐慌定价`);
   push(jpy && jpy.changePercent < -1.0, 'high',
-    `日元单日升值 ${Math.abs(jpy!.changePercent).toFixed(2)}%：警惕套息交易平仓压力`);
-  push(move_ && move_.change > 6, 'high', `MOVE 单日跳升 ${move_!.change.toFixed(1)}：债市波动率冲击`);
+    `日元单日升值 ${Math.abs(jpy?.changePercent ?? 0).toFixed(2)}%：警惕套息交易平仓压力`);
+  push(move_ && move_.change > 6, 'high', `MOVE 单日跳升 ${move_?.change.toFixed(1)}：债市波动率冲击`);
   push(spx && rsp && spx.changePercent - rsp.changePercent > 0.6, 'medium',
     '标普明显跑赢等权指数：涨幅集中在少数巨头，广度差');
   push(spx && tlt && spx.changePercent < -1 && tlt.changePercent < -0.5, 'high',
